@@ -70,3 +70,18 @@ Pour une mesure, préciser le protocole, le nombre d'essais et les versions. Pou
 **Limites.** Le mode LLM n'a pas été exercé contre un fournisseur réel. Une alerte de dépréciation Starlette/AnyIO apparaît dans les tests. Pas de test avec participants, d'injection de panne navigateur, de 3D ou de déploiement public. Le rapport distingue ces limites des résultats observés.
 
 **Choix d'implémentation.** Le même nœud LangGraph `agent` est paramétré par personnage. La sélection LLM du coach conserve le texte factuel du moteur. La version publique est projetée explicitement ; les flux internes ne sont pas transmis au navigateur. Les parties sont conservées dans `.data/`, ignoré par Git.
+
+
+## 3 septembre 2026 — interface anglaise et calibration OpenAI
+
+**Demande.** Passer tout le contenu du site en anglais, continuer l'implémentation et tester la clé OpenAI déjà fournie afin de choisir un modèle efficace et abordable.
+
+**Réalisé.** Traduction du briefing, dashboard, actions, erreurs, personnages, événements, débrief et instructions des modèles. Les anciennes parties françaises restent enregistrées ; la reprise des parties anglaises possède son propre identifiant navigateur. Le rapport est conservé en français.
+
+**Calibration.** Comparaison Luna/nano, test du raisonnement low, puis trois parties complètes et corrections ciblées. La configuration locale retient `openai:gpt-5.6-luna`, `none`, 384 tokens et 20 secondes, sans retry fournisseur. La clé a été préservée à l'identique sans être affichée ou versionnée. Le serveur a été relancé en mode `llm`.
+
+**Constats et ajustements.** Description des actions autorisées, termes réels des propositions, identité et interdiction de s'envoyer un message. Un échec du coach a motivé l'envoi d'un identifiant unique par moment. La revue indépendante a identifié des unités de travail ambiguës et une validation technique absente du contexte ; ces informations sont maintenant explicites. Assistance IA utilisée pour traduire, implémenter, analyser et revoir le travail.
+
+**Résultats.** 156 appels instrumentés, environ 0,0268247 USD estimé pour ces appels. Une suite de tests a également effectué des appels non instrumentés en héritant du mode live ; son coût est inconnu et exclu de ce montant. La dernière partie livre avec budget 22, confiance 66 et moral 68 pour 0,00583 USD estimé ; elle comporte un secours de personnage et un coach LLM valide. 26 tests backend passants après isolation de la configuration locale et blocage des transports HTTP externes, Ruff et build Next.js vérifiés. HTTP 200 sur la page anglaise, état `llm` sur health et création de partie HTTP 201 via le proxy.
+
+**Preuves et limites.** [Calibration détaillée](model-calibration.md), [trace finale](evidence/model-evaluation-final.json), essais intermédiaires conservés. Le coût est une estimation issue des tokens, pas une facture. Les sorties libres restent susceptibles d'erreur et les petits échantillons ne démontrent pas une supériorité générale ni une efficacité pédagogique. Pas de nouvelle revue visuelle navigateur ou de déploiement public.

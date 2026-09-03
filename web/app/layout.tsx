@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Project Meltdown — Salle de crise",
-  description: "Trois jours. Quatre parties prenantes. Chaque décision compte.",
+  title: "Project Meltdown — Crisis room",
+  description: "Three days. Four stakeholders. Every decision matters.",
 };
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

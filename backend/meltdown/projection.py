@@ -15,10 +15,10 @@ def public_events(game):
 
 
 ALTERNATIVES = {
-    "investigate": "Comparer ce parcours à une partie où l’audit est demandé dès le premier tour.",
-    "capacity": "Tester une autre répartition de la capacité entre correction, socle et repos.",
-    "negotiate": "Explorer une clarification du besoin avant de confirmer un périmètre.",
-    "communicate": "Comparer l’effet d’un point de situation plus précoce sur la négociation.",
+    "investigate": "Compare this run with a game where the audit is requested on the first turn.",
+    "capacity": "Try a different allocation of capacity between the fix, core delivery, and rest.",
+    "negotiate": "Explore clarifying the need before committing to a scope.",
+    "communicate": "Compare how an earlier status update affects the negotiation.",
 }
 
 
@@ -58,7 +58,7 @@ def build_debrief(game):
         ]
     return {
         "headline": game["outcome"]["title"],
-        "summary": f"Après {game['turn']} tours : avancement {game['metrics']['progress']} %, budget {game['metrics']['budget']}/100, confiance client {game['metrics']['trust']}/100 et moral {game['metrics']['morale']}/100. Les moments ci-dessous proviennent des événements enregistrés. Les alternatives sont des pistes à tester, pas des résultats simulés.",
+        "summary": f"After {game['turn']} turns: progress {game['metrics']['progress']} %, budget {game['metrics']['budget']}/100, client trust {game['metrics']['trust']}/100 and morale {game['metrics']['morale']}/100. The moments below come from recorded events. Alternatives are suggestions to try, not simulated outcomes.",
         "moments": candidates[:3],
         "source": "rules",
     }
@@ -66,18 +66,18 @@ def build_debrief(game):
 
 def public_view(game):
     if game["verified"]:
-        security = {"status": "safe", "label": "Validée", "detail": "Correction vérifiée dans le scénario"}
+        security = {"status": "safe", "label": "Verified", "detail": "Fix verified within the scenario"}
     elif game["risk_known"]:
         security = {
             "status": "critical",
-            "label": "Risque critique",
-            "detail": "Correction et validation nécessaires",
+            "label": "Critical risk",
+            "detail": "Fix and verification required",
         }
     else:
         security = {
             "status": "unknown",
-            "label": "À évaluer",
-            "detail": "Un signal technique reste à qualifier",
+            "label": "Needs assessment",
+            "detail": "A technical warning needs investigation",
         }
     tasks = []
     for key, task in game["tasks"].items():
@@ -90,11 +90,11 @@ def public_view(game):
             {
                 "id": key,
                 **deepcopy(task),
-                "status": "Terminé"
+                "status": "Complete"
                 if task["remaining"] == 0
-                else "Priorité active"
+                else "Active priority"
                 if active
-                else "En attente",
+                else "Waiting",
             }
         )
     characters = [
@@ -104,7 +104,7 @@ def public_view(game):
                 field: game["agents"][key][field]
                 for field in ("name", "role", "initials", "color", "stress", "trust", "activity")
             },
-            "status": "Sous pression" if game["agents"][key]["stress"] > 70 else "En poste",
+            "status": "Under pressure" if game["agents"][key]["stress"] > 70 else "On duty",
         }
         for key in ROLES
     ]

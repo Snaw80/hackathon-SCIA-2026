@@ -1,0 +1,326 @@
+{
+  "recorded_at": "2026-09-03T13:27:46.674643+00:00",
+  "budget_usd": 0.1,
+  "reasoning_effort": "low",
+  "prompt_sha256": "5d791cbbc24de169f98e31427c3fe1df9f297ae8a947bbdb5d53dc35422f23c1",
+  "pricing_usd_per_million": {
+    "gpt-5.6-luna": [
+      0.2,
+      0.02,
+      1.2
+    ],
+    "gpt-5.4-nano": [
+      0.2,
+      0.02,
+      1.25
+    ],
+    "gpt-5.4-mini": [
+      0.75,
+      0.075,
+      4.5
+    ]
+  },
+  "models": [
+    {
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "low",
+      "max_output_tokens": 512,
+      "cases": [
+        {
+          "case": "requested_audit",
+          "valid": true,
+          "expected_actions": [
+            "audit"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "audit",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 4687
+        },
+        {
+          "case": "assigned_work",
+          "valid": true,
+          "expected_actions": [
+            "work"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "work",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1599
+        },
+        {
+          "case": "client_clarification",
+          "valid": true,
+          "expected_actions": [
+            "reveal_need"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "reveal_need",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1479
+        },
+        {
+          "case": "reasonable_scope",
+          "valid": true,
+          "expected_actions": [
+            "accept_scope"
+          ],
+          "behavior_pass": false,
+          "intent": {
+            "action": "message",
+            "message": "The demonstration can succeed with a reduced scope, but the extra feature was promised before technical capacity was confirmed. Please propose the smallest reliable scope and explicitly confirm what will be demonstrated.",
+            "recipient": "sales",
+            "fact_ids": [
+              "demo_acceptable",
+              "promise"
+            ]
+          },
+          "duration_ms": 2601
+        },
+        {
+          "case": "overloaded_developer",
+          "valid": true,
+          "expected_actions": [
+            "refuse",
+            "warn"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "warn",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 2816
+        },
+        {
+          "case": "completed_fix",
+          "valid": true,
+          "expected_actions": [
+            "verify"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "verify",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 2090
+        },
+        {
+          "case": "idle_client",
+          "valid": true,
+          "expected_actions": [
+            "wait",
+            "message"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "message",
+            "message": "Please confirm what reduced scope we can demonstrate, since the deadline allows it if explicitly agreed (demo_acceptable). I need clarity before management sees the extra feature that was promised before technical capacity was confirmed (promise).",
+            "recipient": "sales",
+            "fact_ids": [
+              "demo_acceptable",
+              "promise"
+            ]
+          },
+          "duration_ms": 2621
+        },
+        {
+          "case": "untrusted_inbox",
+          "valid": true,
+          "expected_actions": [
+            "work",
+            "warn"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "work",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1495
+        }
+      ],
+      "summary": {
+        "responses_with_usage": 8,
+        "input_tokens": 4498,
+        "output_tokens": 607,
+        "estimated_usd": 0.001628,
+        "median_ms": 2344.5,
+        "max_ms": 4687
+      },
+      "usage": [
+        {
+          "usage": {
+            "input_tokens": 544,
+            "output_tokens": 47,
+            "total_tokens": 591,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 19
+            }
+          },
+          "duration_ms": 4687,
+          "parsed": true,
+          "estimated_usd": 0.0001652
+        },
+        {
+          "usage": {
+            "input_tokens": 575,
+            "output_tokens": 51,
+            "total_tokens": 626,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 23
+            }
+          },
+          "duration_ms": 1599,
+          "parsed": true,
+          "estimated_usd": 0.0001762
+        },
+        {
+          "usage": {
+            "input_tokens": 545,
+            "output_tokens": 45,
+            "total_tokens": 590,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 15
+            }
+          },
+          "duration_ms": 1478,
+          "parsed": true,
+          "estimated_usd": 0.000163
+        },
+        {
+          "usage": {
+            "input_tokens": 580,
+            "output_tokens": 131,
+            "total_tokens": 711,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 62
+            }
+          },
+          "duration_ms": 2600,
+          "parsed": true,
+          "estimated_usd": 0.0002732
+        },
+        {
+          "usage": {
+            "input_tokens": 586,
+            "output_tokens": 100,
+            "total_tokens": 686,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 72
+            }
+          },
+          "duration_ms": 2815,
+          "parsed": true,
+          "estimated_usd": 0.0002372
+        },
+        {
+          "usage": {
+            "input_tokens": 552,
+            "output_tokens": 53,
+            "total_tokens": 605,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 25
+            }
+          },
+          "duration_ms": 2089,
+          "parsed": true,
+          "estimated_usd": 0.000174
+        },
+        {
+          "usage": {
+            "input_tokens": 513,
+            "output_tokens": 119,
+            "total_tokens": 632,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 42
+            }
+          },
+          "duration_ms": 2620,
+          "parsed": true,
+          "estimated_usd": 0.0002454
+        },
+        {
+          "usage": {
+            "input_tokens": 603,
+            "output_tokens": 61,
+            "total_tokens": 664,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 33
+            }
+          },
+          "duration_ms": 1494,
+          "parsed": true,
+          "estimated_usd": 0.0001938
+        }
+      ]
+    }
+  ],
+  "note": "Small smoke evaluation; not a general quality benchmark. Costs estimated from reported usage, not billing invoices.",
+  "reserved_upper_bound_usd": 0.014995,
+  "attempted_calls": 8
+}

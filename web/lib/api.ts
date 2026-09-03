@@ -18,7 +18,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(
       typeof body.detail === "string"
         ? body.detail
-        : "La demande n’a pas pu être traitée. Réessayez.",
+        : "The request could not be processed. Please try again.",
       response.status,
     );
   }

@@ -7,7 +7,7 @@ Un serious game de gestion de crise : six tours, quatre personnages, deux décis
 Prérequis : Node.js 20.9+ avec npm et [uv](https://docs.astral.sh/uv/). `uv` installe Python 3.12 si nécessaire.
 
 ```bash
-cp .env.example .env
+test -f .env || cp .env.example .env
 ./scripts/dev.sh
 ```
 
@@ -44,18 +44,19 @@ Le mode par défaut, `MELTDOWN_AGENT_MODE=rules`, fonctionne sans clé ni appel 
 Pour utiliser des modèles via LangChain, configurer dans `.env` :
 
 - `MELTDOWN_AGENT_MODE=llm`
-- `MELTDOWN_MODEL` : l'identifiant `provider:model` du modèle souhaité.
+- `MELTDOWN_MODEL` : `openai:gpt-5.6-luna`, retenu après les essais locaux.
+- `MELTDOWN_REASONING_EFFORT=none`, `MELTDOWN_MAX_OUTPUT_TOKENS=384`, `MELTDOWN_TIMEOUT_SECONDS=20`.
 - La clé du fournisseur correspondant ; les intégrations OpenAI et Anthropic sont installées.
 
-Redémarrer le serveur et démarrer une nouvelle partie. Le mode d'une partie est fixé à sa création ; une reprise avec un mode différent est refusée pour éviter d'étiqueter incorrectement les résultats. Les appels utilisent une sortie structurée, un timeout de 12 secondes et aucune relance automatique du fournisseur. Une erreur ou une intention invalide active la politique de secours ; la trace l'indique. Au maximum huit appels aux personnages par tour, puis un appel de sélection pédagogique en fin de partie en mode LLM.
+Redémarrer le serveur et démarrer une nouvelle partie. Le mode d'une partie est fixé à sa création ; une reprise avec un mode différent est refusée pour éviter d'étiqueter incorrectement les résultats. Les appels utilisent une sortie structurée, un plafond de 384 tokens de sortie, un timeout de 20 secondes et aucune relance automatique du fournisseur. Une erreur ou une intention invalide active la politique de secours ; la trace l'indique. Au maximum huit appels aux personnages par tour, puis un appel de sélection pédagogique en fin de partie en mode LLM.
 
 Le coach LLM sélectionne et ordonne des moments parmi des faits déjà rédigés par le moteur. Il ne produit pas de nouvelles affirmations factuelles libres. Un bilan à règles reste disponible si le coach échoue.
 
-**Le mode LLM est intégré mais n'a pas été testé avec un fournisseur réel pendant cette implémentation.** Les essais enregistrés utilisent le mode à règles.
+Le modèle a été testé avec des appels OpenAI réels. Les tests automatisés imposent le mode à règles et bloquent les appels HTTP externes, indépendamment du `.env` local. Le [protocole, les résultats et le coût estimé](docs/model-calibration.md) sont documentés. La clé reste dans `.env`, ignoré par Git. Le plafond de sortie comprend les éventuels tokens de raisonnement ; aucune relance automatique n'est effectuée.
 
 ## Architecture
 
-- `web/` : Next.js, React et TypeScript ; tableau de commandement en français et proxy `/api` vers FastAPI.
+- `web/` : Next.js, React et TypeScript ; tableau de commandement en anglais et proxy `/api` vers FastAPI.
 - `backend/meltdown/graph.py` : pause joueur avec `interrupt`, reprise par `Command`, distribution avec `Send`, collecte des intentions et deux rondes maximum.
 - `scenario.py` : faits, personnages, actions et observations privées.
 - `engine.py` : règles, validations, conséquences et progression du temps.
@@ -81,6 +82,14 @@ Avec les serveurs lancés, enregistrer deux parcours complets via le proxy publi
 python3 scripts/demo.py
 ```
 
+En mode LLM, ce script effectue des appels payants. Pour une comparaison explicitement bornée (maximum 0,25 USD par exécution) :
+
+```bash
+uv run python scripts/evaluate_models.py --models gpt-5.6-luna --play gpt-5.6-luna --budget-usd 0.15
+```
+
+Cet essai utilise une base temporaire et sauvegarde les résultats dans `docs/evidence/model-evaluation.json`. Le plafond couvre cet essai seulement ; les parties jouées dans l'application consomment leur propre budget API.
+
 Les JSON publics sont enregistrés dans `docs/evidence/`. Ce script crée deux nouvelles parties et ne modifie pas la partie affichée dans le navigateur.
 
 ## Documentation du hackathon
@@ -92,4 +101,4 @@ Les JSON publics sont enregistrés dans `docs/evidence/`. Ce script crée deux n
 - [Rapport](docs/rapport.md)
 - [Journal](docs/journal.md)
 
-Le premier MVP livré est le tableau 2D jouable. Le bureau 3D, les essais pédagogiques avec des participants, l'hébergement et les mesures sur un vrai modèle restent les prochains jalons.
+Le premier MVP livré est le tableau 2D jouable en anglais, avec agents OpenAI évalués. Le rapport reste en français. Les anciennes parties françaises restent en base ; l'interface anglaise mémorise séparément sa dernière partie. Le bureau 3D, les essais pédagogiques avec des participants et l'hébergement restent les prochains jalons.

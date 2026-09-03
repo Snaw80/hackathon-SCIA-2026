@@ -48,9 +48,7 @@ class GameService:
             if (receipt := self.store.receipt(game_id, data)) is not None:
                 return receipt
             if current["mode"] != self.policy.mode:
-                raise ValueError(
-                    "Le mode des agents a changé. Démarrez une nouvelle partie pour utiliser ce mode."
-                )
+                raise ValueError("The agent mode has changed. Start a new game to use this mode.")
             config = self.config(game_id)
             snapshot = self.graph.get_state(config)
             # Resume interrupted infrastructure work before accepting a new decision.

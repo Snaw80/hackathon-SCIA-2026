@@ -1,0 +1,2283 @@
+{
+  "recorded_at": "2026-09-03T13:28:46.120321+00:00",
+  "budget_usd": 0.15,
+  "reasoning_effort": "none",
+  "prompt_sha256": "5d791cbbc24de169f98e31427c3fe1df9f297ae8a947bbdb5d53dc35422f23c1",
+  "pricing_usd_per_million": {
+    "gpt-5.6-luna": [
+      0.2,
+      0.02,
+      1.2
+    ],
+    "gpt-5.4-nano": [
+      0.2,
+      0.02,
+      1.25
+    ],
+    "gpt-5.4-mini": [
+      0.75,
+      0.075,
+      4.5
+    ]
+  },
+  "models": [
+    {
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "none",
+      "max_output_tokens": 384,
+      "cases": [
+        {
+          "case": "requested_audit",
+          "valid": true,
+          "expected_actions": [
+            "audit"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "audit",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1056
+        },
+        {
+          "case": "assigned_work",
+          "valid": true,
+          "expected_actions": [
+            "work"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "work",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1329
+        },
+        {
+          "case": "client_clarification",
+          "valid": true,
+          "expected_actions": [
+            "reveal_need"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "reveal_need",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1529
+        },
+        {
+          "case": "reasonable_scope",
+          "valid": true,
+          "expected_actions": [
+            "accept_scope"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "accept_scope",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 1597
+        },
+        {
+          "case": "overloaded_developer",
+          "valid": true,
+          "expected_actions": [
+            "refuse",
+            "warn"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "warn",
+            "message": "The export defect requires an audit, and the fix is estimated at two periods while six periods of core work remain; delivering both at normal capacity is not sustainable without reprioritization.",
+            "recipient": "player",
+            "fact_ids": [
+              "defect",
+              "capacity"
+            ]
+          },
+          "duration_ms": 2862
+        },
+        {
+          "case": "completed_fix",
+          "valid": true,
+          "expected_actions": [
+            "verify"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "verify",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 4432
+        },
+        {
+          "case": "idle_client",
+          "valid": true,
+          "expected_actions": [
+            "wait",
+            "message"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "message",
+            "message": "I need clarity on whether the demonstration can use a reduced scope, since the deadline is for a demonstration and reduced scope works only if explicitly agreed (demo_acceptable). Sales promised an extra feature before technical capacity was confirmed (promise).",
+            "recipient": "sales",
+            "fact_ids": [
+              "demo_acceptable",
+              "promise"
+            ]
+          },
+          "duration_ms": 1931
+        },
+        {
+          "case": "untrusted_inbox",
+          "valid": true,
+          "expected_actions": [
+            "work",
+            "warn"
+          ],
+          "behavior_pass": true,
+          "intent": {
+            "action": "work",
+            "message": "",
+            "recipient": "player",
+            "fact_ids": []
+          },
+          "duration_ms": 3162
+        }
+      ],
+      "summary": {
+        "responses_with_usage": 8,
+        "input_tokens": 4556,
+        "output_tokens": 274,
+        "estimated_usd": 0.00124,
+        "median_ms": 1763.0,
+        "max_ms": 4431
+      },
+      "usage": [
+        {
+          "usage": {
+            "input_tokens": 544,
+            "output_tokens": 22,
+            "total_tokens": 566,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 1055,
+          "parsed": true,
+          "estimated_usd": 0.0001352
+        },
+        {
+          "usage": {
+            "input_tokens": 575,
+            "output_tokens": 22,
+            "total_tokens": 597,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 1328,
+          "parsed": true,
+          "estimated_usd": 0.0001414
+        },
+        {
+          "usage": {
+            "input_tokens": 550,
+            "output_tokens": 24,
+            "total_tokens": 574,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 1528,
+          "parsed": true,
+          "estimated_usd": 0.0001388
+        },
+        {
+          "usage": {
+            "input_tokens": 628,
+            "output_tokens": 23,
+            "total_tokens": 651,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 1596,
+          "parsed": true,
+          "estimated_usd": 0.0001532
+        },
+        {
+          "usage": {
+            "input_tokens": 586,
+            "output_tokens": 64,
+            "total_tokens": 650,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 2861,
+          "parsed": true,
+          "estimated_usd": 0.000194
+        },
+        {
+          "usage": {
+            "input_tokens": 552,
+            "output_tokens": 22,
+            "total_tokens": 574,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 4431,
+          "parsed": true,
+          "estimated_usd": 0.0001368
+        },
+        {
+          "usage": {
+            "input_tokens": 518,
+            "output_tokens": 75,
+            "total_tokens": 593,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 1930,
+          "parsed": true,
+          "estimated_usd": 0.0001936
+        },
+        {
+          "usage": {
+            "input_tokens": 603,
+            "output_tokens": 22,
+            "total_tokens": 625,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0,
+              "cache_creation": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          },
+          "duration_ms": 3162,
+          "parsed": true,
+          "estimated_usd": 0.000147
+        }
+      ]
+    }
+  ],
+  "note": "Small smoke evaluation; not a general quality benchmark. Costs estimated from reported usage, not billing invoices.",
+  "game": {
+    "model": "gpt-5.6-luna",
+    "turns": [
+      {
+        "turn": 1,
+        "actions": [
+          "audit",
+          "prioritize_fix"
+        ],
+        "run": {
+          "rounds": 2,
+          "agent_calls": 7,
+          "fallbacks": 0,
+          "duration_ms": 4343,
+          "steps": [
+            {
+              "node": "validate_decision",
+              "round": 0,
+              "label": "Decisions validated",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 1,
+              "label": "Dispatch to 4 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 1,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 1,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 1,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "security",
+              "round": 1,
+              "label": "Morgan · Security lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 1,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 2,
+              "label": "Dispatch to 3 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 2,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 2,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 2,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 2,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "finalize_turn",
+              "round": 0,
+              "label": "One work period elapsed",
+              "status": "ok"
+            },
+            {
+              "node": "commit_state",
+              "round": 0,
+              "label": "State saved · return to player",
+              "status": "ok"
+            }
+          ]
+        },
+        "wall_ms": 4351
+      },
+      {
+        "turn": 2,
+        "actions": [
+          "clarify",
+          "communicate"
+        ],
+        "run": {
+          "rounds": 2,
+          "agent_calls": 7,
+          "fallbacks": 0,
+          "duration_ms": 4730,
+          "steps": [
+            {
+              "node": "validate_decision",
+              "round": 0,
+              "label": "Decisions validated",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 1,
+              "label": "Dispatch to 4 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 1,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 1,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 1,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "security",
+              "round": 1,
+              "label": "Morgan · Security lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 1,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 2,
+              "label": "Dispatch to 3 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 2,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 2,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 2,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 2,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "finalize_turn",
+              "round": 0,
+              "label": "One work period elapsed",
+              "status": "ok"
+            },
+            {
+              "node": "commit_state",
+              "round": 0,
+              "label": "State saved · return to player",
+              "status": "ok"
+            }
+          ]
+        },
+        "wall_ms": 4737
+      },
+      {
+        "turn": 3,
+        "actions": [
+          "reduce_scope",
+          "rest"
+        ],
+        "run": {
+          "rounds": 2,
+          "agent_calls": 5,
+          "fallbacks": 0,
+          "duration_ms": 4593,
+          "steps": [
+            {
+              "node": "validate_decision",
+              "round": 0,
+              "label": "Decisions validated",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 1,
+              "label": "Dispatch to 4 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 1,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 1,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 1,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "security",
+              "round": 1,
+              "label": "Morgan · Security lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 1,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 2,
+              "label": "Dispatch to 1 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 2,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 2,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "finalize_turn",
+              "round": 0,
+              "label": "One work period elapsed",
+              "status": "ok"
+            },
+            {
+              "node": "commit_state",
+              "round": 0,
+              "label": "State saved · return to player",
+              "status": "ok"
+            }
+          ]
+        },
+        "wall_ms": 4603
+      },
+      {
+        "turn": 4,
+        "actions": [],
+        "run": {
+          "rounds": 2,
+          "agent_calls": 7,
+          "fallbacks": 0,
+          "duration_ms": 4513,
+          "steps": [
+            {
+              "node": "validate_decision",
+              "round": 0,
+              "label": "Decisions validated",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 1,
+              "label": "Dispatch to 4 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 1,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 1,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 1,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "security",
+              "round": 1,
+              "label": "Morgan · Security lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 1,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 2,
+              "label": "Dispatch to 3 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 2,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 2,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 2,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 2,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "finalize_turn",
+              "round": 0,
+              "label": "One work period elapsed",
+              "status": "ok"
+            },
+            {
+              "node": "commit_state",
+              "round": 0,
+              "label": "State saved · return to player",
+              "status": "ok"
+            }
+          ]
+        },
+        "wall_ms": 4524
+      },
+      {
+        "turn": 5,
+        "actions": [],
+        "run": {
+          "rounds": 2,
+          "agent_calls": 7,
+          "fallbacks": 0,
+          "duration_ms": 4251,
+          "steps": [
+            {
+              "node": "validate_decision",
+              "round": 0,
+              "label": "Decisions validated",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 1,
+              "label": "Dispatch to 4 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 1,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 1,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 1,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "security",
+              "round": 1,
+              "label": "Morgan · Security lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 1,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "organizer",
+              "round": 2,
+              "label": "Dispatch to 3 character(s)",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "developer",
+              "round": 2,
+              "label": "Alex · Lead developer",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "client",
+              "round": 2,
+              "label": "Camille · Client",
+              "status": "ok"
+            },
+            {
+              "node": "agent",
+              "agent": "sales",
+              "round": 2,
+              "label": "Sam · Sales lead",
+              "status": "ok"
+            },
+            {
+              "node": "resolve_round",
+              "round": 2,
+              "label": "Intentions validated and effects applied",
+              "status": "ok"
+            },
+            {
+              "node": "finalize_turn",
+              "round": 0,
+              "label": "One work period elapsed",
+              "status": "ok"
+            },
+            {
+              "node": "commit_state",
+              "round": 0,
+              "label": "State saved · return to player",
+              "status": "ok"
+            }
+          ]
+        },
+        "wall_ms": 4263
+      },
+      {
+        "turn": 6,
+        "actions": [
+          "release"
+        ],
+        "run": {
+          "rounds": 0,
+          "agent_calls": 0,
+          "fallbacks": 0,
+          "duration_ms": 1,
+          "steps": [
+            {
+              "node": "validate_decision",
+              "round": 0,
+              "label": "Decisions validated",
+              "status": "ok"
+            },
+            {
+              "node": "finalize_turn",
+              "round": 0,
+              "label": "One work period elapsed",
+              "status": "ok"
+            },
+            {
+              "node": "commit_state",
+              "round": 0,
+              "label": "State saved · return to player",
+              "status": "ok"
+            }
+          ]
+        },
+        "wall_ms": 1249
+      }
+    ],
+    "summary": {
+      "responses_with_usage": 34,
+      "input_tokens": 21517,
+      "output_tokens": 1589,
+      "estimated_usd": 0.0062102,
+      "median_ms": 1661.0,
+      "max_ms": 2633
+    },
+    "usage": [
+      {
+        "usage": {
+          "input_tokens": 575,
+          "output_tokens": 22,
+          "total_tokens": 597,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1240,
+        "parsed": true,
+        "estimated_usd": 0.0001414
+      },
+      {
+        "usage": {
+          "input_tokens": 544,
+          "output_tokens": 22,
+          "total_tokens": 566,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1245,
+        "parsed": true,
+        "estimated_usd": 0.0001352
+      },
+      {
+        "usage": {
+          "input_tokens": 514,
+          "output_tokens": 25,
+          "total_tokens": 539,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1506,
+        "parsed": true,
+        "estimated_usd": 0.0001328
+      },
+      {
+        "usage": {
+          "input_tokens": 518,
+          "output_tokens": 60,
+          "total_tokens": 578,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2359,
+        "parsed": true,
+        "estimated_usd": 0.0001756
+      },
+      {
+        "usage": {
+          "input_tokens": 670,
+          "output_tokens": 22,
+          "total_tokens": 692,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1163,
+        "parsed": true,
+        "estimated_usd": 0.0001604
+      },
+      {
+        "usage": {
+          "input_tokens": 628,
+          "output_tokens": 25,
+          "total_tokens": 653,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1197,
+        "parsed": true,
+        "estimated_usd": 0.0001556
+      },
+      {
+        "usage": {
+          "input_tokens": 588,
+          "output_tokens": 64,
+          "total_tokens": 652,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1972,
+        "parsed": true,
+        "estimated_usd": 0.0001944
+      },
+      {
+        "usage": {
+          "input_tokens": 693,
+          "output_tokens": 25,
+          "total_tokens": 718,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1149,
+        "parsed": true,
+        "estimated_usd": 0.0001686
+      },
+      {
+        "usage": {
+          "input_tokens": 595,
+          "output_tokens": 22,
+          "total_tokens": 617,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1257,
+        "parsed": true,
+        "estimated_usd": 0.0001454
+      },
+      {
+        "usage": {
+          "input_tokens": 544,
+          "output_tokens": 55,
+          "total_tokens": 599,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1647,
+        "parsed": true,
+        "estimated_usd": 0.0001748
+      },
+      {
+        "usage": {
+          "input_tokens": 706,
+          "output_tokens": 70,
+          "total_tokens": 776,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2084,
+        "parsed": true,
+        "estimated_usd": 0.0002252
+      },
+      {
+        "usage": {
+          "input_tokens": 682,
+          "output_tokens": 22,
+          "total_tokens": 704,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1285,
+        "parsed": true,
+        "estimated_usd": 0.0001628
+      },
+      {
+        "usage": {
+          "input_tokens": 671,
+          "output_tokens": 25,
+          "total_tokens": 696,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1366,
+        "parsed": true,
+        "estimated_usd": 0.0001642
+      },
+      {
+        "usage": {
+          "input_tokens": 661,
+          "output_tokens": 84,
+          "total_tokens": 745,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2633,
+        "parsed": true,
+        "estimated_usd": 0.000233
+      },
+      {
+        "usage": {
+          "input_tokens": 567,
+          "output_tokens": 22,
+          "total_tokens": 589,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1444,
+        "parsed": true,
+        "estimated_usd": 0.0001398
+      },
+      {
+        "usage": {
+          "input_tokens": 770,
+          "output_tokens": 23,
+          "total_tokens": 793,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1593,
+        "parsed": true,
+        "estimated_usd": 0.0001816
+      },
+      {
+        "usage": {
+          "input_tokens": 769,
+          "output_tokens": 78,
+          "total_tokens": 847,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2210,
+        "parsed": true,
+        "estimated_usd": 0.0002474
+      },
+      {
+        "usage": {
+          "input_tokens": 607,
+          "output_tokens": 75,
+          "total_tokens": 682,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2258,
+        "parsed": true,
+        "estimated_usd": 0.0002114
+      },
+      {
+        "usage": {
+          "input_tokens": 669,
+          "output_tokens": 70,
+          "total_tokens": 739,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2327,
+        "parsed": true,
+        "estimated_usd": 0.0002178
+      },
+      {
+        "usage": {
+          "input_tokens": 713,
+          "output_tokens": 25,
+          "total_tokens": 738,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1279,
+        "parsed": true,
+        "estimated_usd": 0.0001726
+      },
+      {
+        "usage": {
+          "input_tokens": 549,
+          "output_tokens": 47,
+          "total_tokens": 596,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1838,
+        "parsed": true,
+        "estimated_usd": 0.0001662
+      },
+      {
+        "usage": {
+          "input_tokens": 610,
+          "output_tokens": 62,
+          "total_tokens": 672,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1922,
+        "parsed": true,
+        "estimated_usd": 0.0001964
+      },
+      {
+        "usage": {
+          "input_tokens": 605,
+          "output_tokens": 63,
+          "total_tokens": 668,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2248,
+        "parsed": true,
+        "estimated_usd": 0.0001966
+      },
+      {
+        "usage": {
+          "input_tokens": 712,
+          "output_tokens": 25,
+          "total_tokens": 737,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1093,
+        "parsed": true,
+        "estimated_usd": 0.0001724
+      },
+      {
+        "usage": {
+          "input_tokens": 676,
+          "output_tokens": 81,
+          "total_tokens": 757,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2248,
+        "parsed": true,
+        "estimated_usd": 0.0002324
+      },
+      {
+        "usage": {
+          "input_tokens": 694,
+          "output_tokens": 59,
+          "total_tokens": 753,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2250,
+        "parsed": true,
+        "estimated_usd": 0.0002096
+      },
+      {
+        "usage": {
+          "input_tokens": 554,
+          "output_tokens": 53,
+          "total_tokens": 607,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1561,
+        "parsed": true,
+        "estimated_usd": 0.0001744
+      },
+      {
+        "usage": {
+          "input_tokens": 676,
+          "output_tokens": 71,
+          "total_tokens": 747,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2086,
+        "parsed": true,
+        "estimated_usd": 0.0002204
+      },
+      {
+        "usage": {
+          "input_tokens": 625,
+          "output_tokens": 50,
+          "total_tokens": 675,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2118,
+        "parsed": true,
+        "estimated_usd": 0.000185
+      },
+      {
+        "usage": {
+          "input_tokens": 734,
+          "output_tokens": 80,
+          "total_tokens": 814,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2164,
+        "parsed": true,
+        "estimated_usd": 0.0002428
+      },
+      {
+        "usage": {
+          "input_tokens": 725,
+          "output_tokens": 25,
+          "total_tokens": 750,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1240,
+        "parsed": true,
+        "estimated_usd": 0.000175
+      },
+      {
+        "usage": {
+          "input_tokens": 714,
+          "output_tokens": 54,
+          "total_tokens": 768,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1675,
+        "parsed": true,
+        "estimated_usd": 0.0002076
+      },
+      {
+        "usage": {
+          "input_tokens": 709,
+          "output_tokens": 62,
+          "total_tokens": 771,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 2072,
+        "parsed": true,
+        "estimated_usd": 0.0002162
+      },
+      {
+        "usage": {
+          "input_tokens": 250,
+          "output_tokens": 21,
+          "total_tokens": 271,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        },
+        "duration_ms": 1234,
+        "parsed": true,
+        "estimated_usd": 7.52e-05
+      }
+    ],
+    "final_public_state": {
+      "id": "a02d7f91-459f-44f0-a740-98a8e29395ba",
+      "version": 6,
+      "turn": 6,
+      "max_turns": 6,
+      "status": "finished",
+      "mode": "llm",
+      "metrics": {
+        "budget": 22,
+        "trust": 66,
+        "morale": 68,
+        "progress": 100
+      },
+      "security": {
+        "status": "safe",
+        "label": "Verified",
+        "detail": "Fix verified within the scenario"
+      },
+      "agents": [
+        {
+          "id": "developer",
+          "name": "Alex",
+          "role": "Lead developer",
+          "initials": "AL",
+          "color": "#79d5e9",
+          "stress": 43,
+          "trust": 55,
+          "activity": "Working on the fix.",
+          "status": "On duty"
+        },
+        {
+          "id": "client",
+          "name": "Camille",
+          "role": "Client",
+          "initials": "CM",
+          "color": "#bb9bf7",
+          "stress": 37,
+          "trust": 55,
+          "activity": "Waiting for the agreed demonstration.",
+          "status": "On duty"
+        },
+        {
+          "id": "sales",
+          "name": "Sam",
+          "role": "Sales lead",
+          "initials": "SM",
+          "color": "#ffc77d",
+          "stress": 40,
+          "trust": 55,
+          "activity": "Aligning commitments with the client.",
+          "status": "On duty"
+        },
+        {
+          "id": "security",
+          "name": "Morgan",
+          "role": "Security lead",
+          "initials": "MG",
+          "color": "#84d8b8",
+          "stress": 28,
+          "trust": 55,
+          "activity": "Security approval obtained.",
+          "status": "On duty"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "core",
+          "title": "Core delivery",
+          "remaining": 0,
+          "total": 12,
+          "status": "Complete"
+        },
+        {
+          "id": "fix",
+          "title": "Security fix",
+          "remaining": 0,
+          "total": 2,
+          "status": "Complete"
+        }
+      ],
+      "actions": [
+        {
+          "id": "audit",
+          "title": "Audit the defect",
+          "description": "Assess the risk and obtain technical evidence.",
+          "cost": 6,
+          "category": "Technical",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "prioritize_fix",
+          "title": "Prioritize the fix",
+          "description": "Assign the developer to the fix. Core delivery will wait.",
+          "cost": 0,
+          "category": "Technical",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "clarify",
+          "title": "Clarify the client’s needs",
+          "description": "Find out what is actually needed by the deadline.",
+          "cost": 0,
+          "category": "Client relations",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "communicate",
+          "title": "Share a status update",
+          "description": "Share known facts and progress with the client.",
+          "cost": 0,
+          "category": "Client relations",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "reduce_scope",
+          "title": "Negotiate a smaller scope",
+          "description": "Propose a limited demonstration. Agreement is still needed.",
+          "cost": 0,
+          "category": "Client relations",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "request_delay",
+          "title": "Request an extension",
+          "description": "Request a new deadline, backed by the available facts.",
+          "cost": 0,
+          "category": "Client relations",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "accept_feature",
+          "title": "Commit to the extra feature",
+          "description": "Commit the project to the extra request (+4 work units).",
+          "cost": 0,
+          "category": "Client relations",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "prioritize_core",
+          "title": "Prioritize core delivery",
+          "description": "Resume core delivery, then the extra feature if committed.",
+          "cost": 0,
+          "category": "Technical",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "rest",
+          "title": "Reduce the workload",
+          "description": "Protect the team this turn; core delivery progresses more slowly.",
+          "cost": 0,
+          "category": "Team",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "reinforce",
+          "title": "Bring in support",
+          "description": "Buy one extra unit of capacity for this turn.",
+          "cost": 12,
+          "category": "Team",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "validate_release",
+          "title": "Verify the fix",
+          "description": "Have the completed fix checked before release.",
+          "cost": 0,
+          "category": "Technical",
+          "disabled": true,
+          "reason": "This game is over."
+        },
+        {
+          "id": "release",
+          "title": "Release the version",
+          "description": "Deliver the agreed scope after the required checks.",
+          "cost": 0,
+          "category": "Technical",
+          "disabled": true,
+          "reason": "This game is over."
+        }
+      ],
+      "events": [
+        {
+          "id": "e0",
+          "turn": 0,
+          "round": 0,
+          "actor": "director",
+          "type": "briefing",
+          "title": "You take command",
+          "detail": "Delivery is expected in three days. A technical warning needs investigation and an extra feature has been promised. Management wants to keep the deadline.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e1",
+          "turn": 1,
+          "round": 0,
+          "actor": "player",
+          "type": "audit",
+          "title": "Audit the defect",
+          "detail": "Assess the risk and obtain technical evidence.",
+          "effects": {
+            "budget": -6
+          },
+          "causes": []
+        },
+        {
+          "id": "e2",
+          "turn": 1,
+          "round": 0,
+          "actor": "player",
+          "type": "prioritize_fix",
+          "title": "Prioritize the fix",
+          "detail": "Assign the developer to the fix. Core delivery will wait.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e3",
+          "turn": 1,
+          "round": 1,
+          "actor": "security",
+          "type": "audit",
+          "title": "The audit confirms a critical risk",
+          "detail": "The audit confirms a critical vulnerability in the export module. A fix and verification are required before release.",
+          "effects": {},
+          "causes": [
+            "e1"
+          ]
+        },
+        {
+          "id": "e4",
+          "turn": 1,
+          "round": 1,
+          "actor": "developer",
+          "type": "work",
+          "title": "Priority acknowledged",
+          "detail": "The developer continues the assigned work within available capacity.",
+          "effects": {},
+          "causes": [
+            "e2"
+          ]
+        },
+        {
+          "id": "e6",
+          "turn": 1,
+          "round": 1,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e7",
+          "turn": 1,
+          "round": 2,
+          "actor": "developer",
+          "type": "work",
+          "title": "Priority acknowledged",
+          "detail": "The developer continues the assigned work within available capacity.",
+          "effects": {},
+          "causes": [
+            "e2",
+            "e3"
+          ]
+        },
+        {
+          "id": "e9",
+          "turn": 1,
+          "round": 2,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e10",
+          "turn": 1,
+          "round": 0,
+          "actor": "engine",
+          "type": "work_progress",
+          "title": "Work progresses",
+          "detail": "Security fix : 1 unit(s) completed, 1 remaining.",
+          "effects": {
+            "work": 1
+          },
+          "causes": [
+            "e2",
+            "e4",
+            "e7"
+          ]
+        },
+        {
+          "id": "e11",
+          "turn": 1,
+          "round": 0,
+          "actor": "engine",
+          "type": "period_end",
+          "title": "The period ends",
+          "detail": "One work period has passed. Recurring costs are charged once.",
+          "effects": {
+            "budget": -12
+          },
+          "causes": []
+        },
+        {
+          "id": "e12",
+          "turn": 2,
+          "round": 0,
+          "actor": "player",
+          "type": "clarify",
+          "title": "Clarify the client’s needs",
+          "detail": "Find out what is actually needed by the deadline.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e13",
+          "turn": 2,
+          "round": 0,
+          "actor": "player",
+          "type": "communicate",
+          "title": "Share a status update",
+          "detail": "Share known facts and progress with the client.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e15",
+          "turn": 2,
+          "round": 1,
+          "actor": "developer",
+          "type": "work",
+          "title": "Priority acknowledged",
+          "detail": "The developer continues the assigned work within available capacity.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e16",
+          "turn": 2,
+          "round": 1,
+          "actor": "client",
+          "type": "reveal_need",
+          "title": "The deadline is for a demonstration",
+          "detail": "The client deadline is for a demonstration. A reduced scope can work if explicitly agreed.",
+          "effects": {
+            "trust": 4
+          },
+          "causes": [
+            "e12",
+            "e9"
+          ]
+        },
+        {
+          "id": "e17",
+          "turn": 2,
+          "round": 1,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e18",
+          "turn": 2,
+          "round": 2,
+          "actor": "developer",
+          "type": "work",
+          "title": "Priority acknowledged",
+          "detail": "The developer continues the assigned work within available capacity.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e20",
+          "turn": 2,
+          "round": 2,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": [
+            "e16"
+          ]
+        },
+        {
+          "id": "e21",
+          "turn": 2,
+          "round": 0,
+          "actor": "engine",
+          "type": "work_progress",
+          "title": "Work progresses",
+          "detail": "Security fix : 1 unit(s) completed, 0 remaining.",
+          "effects": {
+            "work": 1
+          },
+          "causes": [
+            "e15",
+            "e18"
+          ]
+        },
+        {
+          "id": "e22",
+          "turn": 2,
+          "round": 0,
+          "actor": "engine",
+          "type": "period_end",
+          "title": "The period ends",
+          "detail": "One work period has passed. Recurring costs are charged once.",
+          "effects": {
+            "budget": -12
+          },
+          "causes": []
+        },
+        {
+          "id": "e23",
+          "turn": 3,
+          "round": 0,
+          "actor": "player",
+          "type": "reduce_scope",
+          "title": "Negotiate a smaller scope",
+          "detail": "Propose a limited demonstration. Agreement is still needed.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e24",
+          "turn": 3,
+          "round": 0,
+          "actor": "player",
+          "type": "rest",
+          "title": "Reduce the workload",
+          "detail": "Protect the team this turn; core delivery progresses more slowly.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e25",
+          "turn": 3,
+          "round": 1,
+          "actor": "security",
+          "type": "verify",
+          "title": "The fix is verified",
+          "detail": "The scenario checks confirm the fix. The agreed scope must also be ready.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e26",
+          "turn": 3,
+          "round": 1,
+          "actor": "developer",
+          "type": "message",
+          "title": "Message from Alex",
+          "detail": "The critical export vulnerability fix is ready for verification; release should wait until verification is complete (critical). The remaining core delivery is six periods at normal capacity, so I recommend reducing scope or extending the timeline to protect quality and workload (capacity).",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e27",
+          "turn": 3,
+          "round": 1,
+          "actor": "client",
+          "type": "accept_scope",
+          "title": "The reduced scope is accepted",
+          "detail": "The client accepts a limited demonstration. Two core work units and the extra feature are removed from this delivery.",
+          "effects": {
+            "trust": 4
+          },
+          "causes": [
+            "e23",
+            "e20"
+          ]
+        },
+        {
+          "id": "e28",
+          "turn": 3,
+          "round": 1,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e30",
+          "turn": 3,
+          "round": 0,
+          "actor": "engine",
+          "type": "work_progress",
+          "title": "Work progresses",
+          "detail": "Core delivery : 1 unit(s) completed, 3 remaining.",
+          "effects": {
+            "work": 1
+          },
+          "causes": [
+            "e24"
+          ]
+        },
+        {
+          "id": "e31",
+          "turn": 3,
+          "round": 0,
+          "actor": "engine",
+          "type": "period_end",
+          "title": "The period ends",
+          "detail": "One work period has passed. Recurring costs are charged once.",
+          "effects": {
+            "budget": -12
+          },
+          "causes": []
+        },
+        {
+          "id": "e33",
+          "turn": 4,
+          "round": 1,
+          "actor": "developer",
+          "type": "message",
+          "title": "Message from Alex",
+          "detail": "The critical export vulnerability fix is complete and ready for verification; release must wait until verification finishes. I recommend pausing core delivery work to protect quality and avoid overloading the team.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e35",
+          "turn": 4,
+          "round": 1,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e36",
+          "turn": 4,
+          "round": 2,
+          "actor": "developer",
+          "type": "message",
+          "title": "Message from Alex",
+          "detail": "The critical export vulnerability fix is ready for verification, and release must wait until verification is complete (critical). I recommend protecting capacity for verification before resuming the remaining core work.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e38",
+          "turn": 4,
+          "round": 2,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e39",
+          "turn": 4,
+          "round": 0,
+          "actor": "engine",
+          "type": "work_progress",
+          "title": "Work progresses",
+          "detail": "Core delivery : 2 unit(s) completed, 1 remaining.",
+          "effects": {
+            "work": 2
+          },
+          "causes": []
+        },
+        {
+          "id": "e40",
+          "turn": 4,
+          "round": 0,
+          "actor": "engine",
+          "type": "period_end",
+          "title": "The period ends",
+          "detail": "One work period has passed. Recurring costs are charged once.",
+          "effects": {
+            "budget": -12
+          },
+          "causes": []
+        },
+        {
+          "id": "e42",
+          "turn": 5,
+          "round": 1,
+          "actor": "developer",
+          "type": "message",
+          "title": "Message from Alex",
+          "detail": "The critical export vulnerability fix is ready for verification, while one period of core delivery remains; release should wait for verification.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e45",
+          "turn": 5,
+          "round": 2,
+          "actor": "developer",
+          "type": "message",
+          "title": "Message from Alex",
+          "detail": "The critical export vulnerability fix is ready for verification, so release must wait until verification passes. I have one period of core work remaining and can continue it while security verifies the fix.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e47",
+          "turn": 5,
+          "round": 2,
+          "actor": "sales",
+          "type": "clarify_promise",
+          "title": "The sales lead clarifies the commitment",
+          "detail": "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e48",
+          "turn": 5,
+          "round": 0,
+          "actor": "engine",
+          "type": "work_progress",
+          "title": "Work progresses",
+          "detail": "Core delivery : 1 unit(s) completed, 0 remaining.",
+          "effects": {
+            "work": 1
+          },
+          "causes": []
+        },
+        {
+          "id": "e49",
+          "turn": 5,
+          "round": 0,
+          "actor": "engine",
+          "type": "period_end",
+          "title": "The period ends",
+          "detail": "One work period has passed. Recurring costs are charged once.",
+          "effects": {
+            "budget": -12
+          },
+          "causes": []
+        },
+        {
+          "id": "e50",
+          "turn": 6,
+          "round": 0,
+          "actor": "player",
+          "type": "release",
+          "title": "Release the version",
+          "detail": "Deliver the agreed scope after the required checks.",
+          "effects": {},
+          "causes": []
+        },
+        {
+          "id": "e51",
+          "turn": 6,
+          "round": 0,
+          "actor": "engine",
+          "type": "period_end",
+          "title": "The period ends",
+          "detail": "One work period has passed. Recurring costs are charged once.",
+          "effects": {
+            "budget": -12
+          },
+          "causes": []
+        }
+      ],
+      "last_run": {
+        "rounds": 0,
+        "agent_calls": 0,
+        "fallbacks": 0,
+        "duration_ms": 1,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Decisions validated",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "One work period elapsed",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "State saved · return to player",
+            "status": "ok"
+          }
+        ]
+      },
+      "outcome": {
+        "code": "delivered",
+        "title": "Delivery under control"
+      },
+      "debrief": {
+        "headline": "Delivery under control",
+        "summary": "After 6 turns: progress 100 %, budget 22/100, client trust 66/100 and morale 68/100. The moments below come from recorded events. Alternatives are suggestions to try, not simulated outcomes.",
+        "moments": [
+          {
+            "title": "Audit the defect",
+            "analysis": "Assess the risk and obtain technical evidence.",
+            "event_ids": [
+              "e1"
+            ],
+            "alternative": "Compare this run with a game where the audit is requested on the first turn."
+          },
+          {
+            "title": "The reduced scope is accepted",
+            "analysis": "The client accepts a limited demonstration. Two core work units and the extra feature are removed from this delivery.",
+            "event_ids": [
+              "e23",
+              "e20",
+              "e27"
+            ],
+            "alternative": "Explore clarifying the need before committing to a scope."
+          },
+          {
+            "title": "Release the version",
+            "analysis": "Deliver the agreed scope after the required checks.",
+            "event_ids": [
+              "e50"
+            ],
+            "alternative": "Try a different allocation of capacity between the fix, core delivery, and rest."
+          }
+        ],
+        "source": "rules_fallback"
+      }
+    }
+  },
+  "reserved_upper_bound_usd": 0.075179,
+  "attempted_calls": 42
+}

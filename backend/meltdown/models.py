@@ -14,7 +14,7 @@ class TurnRequest(BaseModel):
     @classmethod
     def unique_actions(cls, value):
         if len(set(value)) != len(value):
-            raise ValueError("Une décision ne peut être choisie deux fois.")
+            raise ValueError("A decision cannot be selected twice.")
         return value
 
 

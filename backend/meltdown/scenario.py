@@ -6,120 +6,120 @@ ROLES = {
         "role": "Lead developer",
         "initials": "AL",
         "color": "#79d5e9",
-        "private_goal": "Préserver la qualité et une charge de travail tenable.",
+        "private_goal": "Protect quality and a sustainable workload.",
     },
     "client": {
         "name": "Camille",
-        "role": "Cliente",
+        "role": "Client",
         "initials": "CM",
         "color": "#bb9bf7",
-        "private_goal": "Réussir la démonstration à sa direction sans perdre sa crédibilité.",
+        "private_goal": "Deliver a successful demonstration to management and protect credibility.",
     },
     "sales": {
         "name": "Sam",
-        "role": "Commercial",
+        "role": "Sales lead",
         "initials": "SM",
         "color": "#ffc77d",
-        "private_goal": "Conserver le contrat et faire reconnaître sa contribution.",
+        "private_goal": "Keep the contract and earn recognition for the contribution.",
     },
     "security": {
         "name": "Morgan",
-        "role": "Responsable sécurité",
+        "role": "Security lead",
         "initials": "MG",
         "color": "#84d8b8",
-        "private_goal": "Obtenir une validation de sécurité fondée sur des preuves.",
+        "private_goal": "Obtain security approval backed by evidence.",
     },
 }
 FACTS = {
-    "defect": "Un défaut a été repéré dans le module d’export ; sa gravité demande un audit.",
-    "critical": "L’audit confirme une faille critique dans le module d’export. La correction et sa validation sont nécessaires avant livraison.",
-    "demo_acceptable": "L’échéance du client concerne une démonstration. Un périmètre réduit peut convenir s’il est explicitement négocié.",
-    "promise": "Le commercial a promis une fonctionnalité supplémentaire avant de confirmer la capacité technique.",
-    "capacity": "Le correctif demande deux périodes. Le socle restant demande trois périodes de travail normal.",
+    "defect": "A defect was found in the export module; an audit is needed to assess its severity.",
+    "critical": "The audit confirms a critical vulnerability in the export module. A fix and verification are required before release.",
+    "demo_acceptable": "The client deadline is for a demonstration. A reduced scope can work if explicitly agreed.",
+    "promise": "The sales lead promised an extra feature before confirming technical capacity.",
+    "capacity": "The fix takes two periods. The remaining core delivery takes three periods at normal capacity.",
 }
 ACTIONS = {
     "audit": (
-        "Auditer le défaut",
-        "Qualifier le risque et obtenir une preuve technique.",
+        "Audit the defect",
+        "Assess the risk and obtain technical evidence.",
         6,
-        "Technique",
+        "Technical",
         ["security"],
     ),
     "prioritize_fix": (
-        "Prioriser le correctif",
-        "Affecter le développeur à la correction. Le socle attendra.",
+        "Prioritize the fix",
+        "Assign the developer to the fix. Core delivery will wait.",
         0,
-        "Technique",
+        "Technical",
         ["developer", "security"],
     ),
     "clarify": (
-        "Clarifier le besoin client",
-        "Comprendre ce qui est réellement attendu à l’échéance.",
+        "Clarify the client’s needs",
+        "Find out what is actually needed by the deadline.",
         0,
-        "Relation client",
+        "Client relations",
         ["client"],
     ),
     "communicate": (
-        "Partager un point de situation",
-        "Communiquer les faits connus et l’avancement au client.",
+        "Share a status update",
+        "Share known facts and progress with the client.",
         0,
-        "Relation client",
+        "Client relations",
         ["client", "sales"],
     ),
     "reduce_scope": (
-        "Négocier un périmètre réduit",
-        "Proposer une démonstration limitée. L’accord reste à obtenir.",
+        "Negotiate a smaller scope",
+        "Propose a limited demonstration. Agreement is still needed.",
         0,
-        "Relation client",
+        "Client relations",
         ["client", "sales"],
     ),
     "request_delay": (
-        "Demander un report",
-        "Demander une nouvelle échéance, avec les faits disponibles.",
+        "Request an extension",
+        "Request a new deadline, backed by the available facts.",
         0,
-        "Relation client",
+        "Client relations",
         ["client", "sales"],
     ),
     "accept_feature": (
-        "Accepter la fonctionnalité",
-        "Engager le projet sur la demande supplémentaire (+4 unités).",
+        "Commit to the extra feature",
+        "Commit the project to the extra request (+4 work units).",
         0,
-        "Relation client",
+        "Client relations",
         ["developer", "client", "sales"],
     ),
     "prioritize_core": (
-        "Prioriser la livraison",
-        "Reprendre le socle, puis la fonctionnalité si elle est engagée.",
+        "Prioritize core delivery",
+        "Resume core delivery, then the extra feature if committed.",
         0,
-        "Technique",
+        "Technical",
         ["developer"],
     ),
     "rest": (
-        "Réduire la charge",
-        "Protéger l’équipe ce tour ; la progression du socle est réduite.",
+        "Reduce the workload",
+        "Protect the team this turn; core delivery progresses more slowly.",
         0,
-        "Équipe",
+        "Team",
         ["developer"],
     ),
     "reinforce": (
-        "Mobiliser du renfort",
-        "Acheter une unité de capacité supplémentaire pour ce tour.",
+        "Bring in support",
+        "Buy one extra unit of capacity for this turn.",
         12,
-        "Équipe",
+        "Team",
         ["developer"],
     ),
     "validate_release": (
-        "Valider la correction",
-        "Faire vérifier un correctif terminé avant la livraison.",
+        "Verify the fix",
+        "Have the completed fix checked before release.",
         0,
-        "Technique",
+        "Technical",
         ["security"],
     ),
     "release": (
-        "Livrer la version",
-        "Livrer le périmètre convenu après les validations nécessaires.",
+        "Release the version",
+        "Deliver the agreed scope after the required checks.",
         0,
-        "Technique",
+        "Technical",
         list(ROLES),
     ),
 }
@@ -135,9 +135,9 @@ def new_game(game_id, mode="rules"):
         "mode": mode,
         "metrics": {"budget": 100, "trust": 58, "morale": 68, "progress": 50},
         "tasks": {
-            "core": {"title": "Socle de la livraison", "remaining": 6, "total": 12},
-            "fix": {"title": "Correctif de sécurité", "remaining": 2, "total": 2},
-            "feature": {"title": "Fonctionnalité supplémentaire", "remaining": 4, "total": 4},
+            "core": {"title": "Core delivery", "remaining": 6, "total": 12},
+            "fix": {"title": "Security fix", "remaining": 2, "total": 2},
+            "feature": {"title": "Extra feature", "remaining": 4, "total": 4},
         },
         "agents": {
             key: {
@@ -153,28 +153,28 @@ def new_game(game_id, mode="rules"):
                     ROLES["developer"],
                     46,
                     ["defect", "capacity"],
-                    "Un défaut à examiner, une livraison à terminer.",
+                    "A defect to investigate and a delivery to finish.",
                 ),
                 (
                     "client",
                     ROLES["client"],
                     37,
                     ["demo_acceptable", "promise"],
-                    "Attend une confirmation du périmètre et de la date.",
+                    "Waiting for confirmation of scope and deadline.",
                 ),
                 (
                     "sales",
                     ROLES["sales"],
                     40,
                     ["promise"],
-                    "La fonctionnalité supplémentaire a déjà été annoncée.",
+                    "The extra feature has already been announced.",
                 ),
                 (
                     "security",
                     ROLES["security"],
                     28,
                     ["defect"],
-                    "L’alerte technique doit encore être qualifiée.",
+                    "The technical warning still needs investigation.",
                 ),
             ]
         },
@@ -196,8 +196,8 @@ def new_game(game_id, mode="rules"):
                 "round": 0,
                 "actor": "director",
                 "type": "briefing",
-                "title": "Vous prenez les commandes",
-                "detail": "La livraison est attendue dans trois jours. Une alerte technique reste à qualifier et une fonctionnalité a été promise. La direction souhaite maintenir l’échéance.",
+                "title": "You take command",
+                "detail": "Delivery is expected in three days. A technical warning needs investigation and an extra feature has been promised. Management wants to keep the deadline.",
                 "effects": {},
                 "causes": [],
                 "audience": ["player"],
@@ -213,38 +213,38 @@ def new_game(game_id, mode="rules"):
 
 def action_reason(game, action):
     if game["status"] != "active":
-        return "La partie est terminée."
+        return "This game is over."
     if action not in ACTIONS:
-        return "Décision inconnue."
+        return "Unknown decision."
     if game["metrics"]["budget"] < ACTIONS[action][2]:
-        return "Budget insuffisant."
+        return "Insufficient budget."
     if action == "audit" and game["risk_known"]:
-        return "L’audit est déjà disponible."
+        return "The audit is already available."
     if action == "prioritize_fix" and game["tasks"]["fix"]["remaining"] == 0:
-        return "Le correctif est terminé."
+        return "The fix is complete."
     if action == "clarify" and "demo_acceptable" in game["player_knowledge"]:
-        return "Le besoin métier a déjà été clarifié."
+        return "The business need has already been clarified."
     if action == "reduce_scope" and "demo_acceptable" not in game["player_knowledge"]:
-        return "Clarifiez d’abord le besoin du client."
+        return "Clarify the client’s needs first."
     if action == "reduce_scope" and game["scope"] == "partial":
-        return "Un périmètre réduit a déjà été accepté."
+        return "A reduced scope has already been agreed."
     if action == "accept_feature" and game["feature_committed"]:
-        return "La fonctionnalité est déjà engagée."
+        return "The extra feature is already committed."
     if action == "request_delay" and game["delay_agreed"]:
-        return "Le report a déjà été accepté."
+        return "The extension has already been agreed."
     if action == "validate_release" and (game["tasks"]["fix"]["remaining"] > 0 or not game["risk_known"]):
-        return "Un audit et un correctif terminé sont nécessaires."
+        return "An audit and a completed fix are required."
     if action == "validate_release" and game["verified"]:
-        return "La correction est déjà validée."
+        return "The fix has already been verified."
     if action == "release":
         if not game["verified"]:
-            return "La validation de sécurité est nécessaire."
+            return "Security approval is required."
         if game["scope"] == "unagreed":
-            return "Un accord client sur le périmètre est nécessaire."
+            return "Client agreement on the scope is required."
         if game["tasks"]["core"]["remaining"] > 0 or (
             game["scope"] == "full" and game["tasks"]["feature"]["remaining"] > 0
         ):
-            return "Le périmètre convenu n’est pas terminé."
+            return "The agreed scope is not complete."
     return None
 
 
@@ -275,6 +275,24 @@ def allowed_intents(game, actor, round_number):
     return allowed
 
 
+INTENT_DESCRIPTIONS = {
+    "wait": "No new intervention; already assigned work still progresses.",
+    "message": "Send a useful message as yourself to another character or the player.",
+    "audit": "Investigate the known defect and establish its severity.",
+    "verify": "Verify the completed, audited fix and grant security approval.",
+    "work": "Acknowledge and continue assigned work within available capacity.",
+    "refuse": "Pause work this turn because your workload is unsustainable.",
+    "warn": "Flag competing priorities or unsustainable workload to the player.",
+    "reveal_need": "Answer the clarification request: disclose your actual demonstration needs.",
+    "accept_scope": "Accept the proposed smaller demonstration if it meets your known business need.",
+    "accept_delay": "Accept a proposed extension if the known evidence and trust justify it.",
+    "counter": "Withhold agreement and ask for assurances when the proposal is not convincing.",
+    "reject": "Reject the proposed scope or deadline change.",
+    "acknowledge": "Acknowledge the status update and improve trust through transparency.",
+    "clarify_promise": "Explain your earlier extra-feature promise and align commitments with the client.",
+}
+
+
 def observation(game, actor, round_number, inbox=None):
     agent = game["agents"][actor]
     context = {
@@ -293,11 +311,22 @@ def observation(game, actor, round_number, inbox=None):
         "directives": [action for action in game["actions"] if actor in ACTIONS[action][4]],
         "progress": game["metrics"]["progress"],
     }
+    context["action_options"] = {action: INTENT_DESCRIPTIONS[action] for action in context["allowed_actions"]}
+    if actor in ("client", "sales"):
+        terms = {
+            "reduce_scope": "Offer awaiting your agreement: deliver a limited demonstration, removing the extra feature and two core work units from this delivery. The client’s demonstration need remains the goal.",
+            "request_delay": "Offer awaiting your agreement: postpone delivery beyond the original deadline. Review remaining work at the end of the six turns.",
+        }
+        context["proposals"] = [{"id": key, "terms": terms[key]} for key in game["proposals"]]
     if actor in ("developer", "security"):
         context["work"] = {
             "priority": game["priority"],
             "fix_remaining": game["tasks"]["fix"]["remaining"],
             "core_remaining": game["tasks"]["core"]["remaining"],
+            "remaining_unit": "work units, not periods",
+            "normal_core_units_per_period": 2,
+            "normal_fix_units_per_period": 1,
+            "security_verified": game["verified"],
         }
     if actor == "client":
         context["client_trust"] = game["metrics"]["trust"]

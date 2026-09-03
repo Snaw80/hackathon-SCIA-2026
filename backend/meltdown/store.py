@@ -40,7 +40,7 @@ class Store:
         if not row:
             return None
         if row[0] != fingerprint(request):
-            raise ValueError("Cet identifiant de demande a déjà été utilisé pour une autre décision.")
+            raise ValueError("This request ID has already been used for another decision.")
         return json.loads(row[1])
 
     def commit(self, game, request):
@@ -56,7 +56,7 @@ class Store:
                 (game["version"], json.dumps(game), game["id"], request["expected_version"]),
             )
             if updated.rowcount != 1:
-                raise ValueError("La version enregistrée a changé. Rechargez la partie.")
+                raise ValueError("The saved version has changed. Reload the game.")
             self.conn.execute(
                 "INSERT INTO requests VALUES (?, ?, ?, ?)",
                 (game["id"], request["request_id"], fingerprint(request), json.dumps(response)),

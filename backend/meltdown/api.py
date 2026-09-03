@@ -35,14 +35,14 @@ def create_app(db_path=None, policy=None):
         try:
             return app.state.service.get(game_id)
         except KeyError:
-            raise HTTPException(404, "Cette partie est introuvable.") from None
+            raise HTTPException(404, "This game could not be found.") from None
 
     @app.post("/api/games/{game_id}/turns")
     def advance(game_id: str, request: TurnRequest):
         try:
             return app.state.service.advance(game_id, request)
         except KeyError:
-            raise HTTPException(404, "Cette partie est introuvable.") from None
+            raise HTTPException(404, "This game could not be found.") from None
         except ValueError as exc:
             raise HTTPException(409, str(exc)) from None
 

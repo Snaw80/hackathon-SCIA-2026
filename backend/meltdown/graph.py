@@ -33,7 +33,7 @@ def build_graph(store, policy, checkpointer):
     def prepare(state):
         game = prepare_turn(state["game"], TurnRequest.model_validate(state["request"]))
         game["last_run"]["steps"].append(
-            {"node": "validate_decision", "round": 0, "label": "Décisions validées", "status": "ok"}
+            {"node": "validate_decision", "round": 0, "label": "Decisions validated", "status": "ok"}
         )
         return {"game": game, "round": 1, "started_at": time.time()}
 
@@ -59,7 +59,7 @@ def build_graph(store, policy, checkpointer):
             {
                 "node": "organizer",
                 "round": round_number,
-                "label": f"Distribution à {len(selected)} personnage(s)",
+                "label": f"Dispatch to {len(selected)} character(s)",
                 "status": "ok",
             }
         )
@@ -121,7 +121,7 @@ def build_graph(store, policy, checkpointer):
             {
                 "node": "resolve_round",
                 "round": state["round"],
-                "label": "Intentions vérifiées et effets appliqués",
+                "label": "Intentions validated and effects applied",
                 "status": "ok",
             }
         )
@@ -138,7 +138,7 @@ def build_graph(store, policy, checkpointer):
         game = finalize_turn(state["game"])
         game["last_run"]["duration_ms"] = max(0, round((time.time() - state["started_at"]) * 1000))
         game["last_run"]["steps"].append(
-            {"node": "finalize_turn", "round": 0, "label": "Une période de travail écoulée", "status": "ok"}
+            {"node": "finalize_turn", "round": 0, "label": "One work period elapsed", "status": "ok"}
         )
         return {"game": game}
 
@@ -159,7 +159,7 @@ def build_graph(store, policy, checkpointer):
             {
                 "node": "commit_state",
                 "round": 0,
-                "label": "État enregistré · retour au joueur",
+                "label": "State saved · return to player",
                 "status": "ok",
             }
         )

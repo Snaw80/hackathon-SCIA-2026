@@ -28,18 +28,18 @@ def adjust(game, key, amount):
 
 def prepare_turn(original, request: TurnRequest):
     if original["version"] != request.expected_version:
-        raise ValueError("Cette partie a avancé. La dernière version a été rechargée.")
+        raise ValueError("This game has advanced. The latest version has been reloaded.")
     if original["status"] != "active":
-        raise ValueError("Cette partie est terminée.")
+        raise ValueError("This game is over.")
     for action in request.actions:
         if reason := action_reason(original, action):
             raise ValueError(reason)
     if sum(ACTIONS[a][2] for a in request.actions) > original["metrics"]["budget"]:
-        raise ValueError("Le budget ne couvre pas ces deux décisions.")
+        raise ValueError("The budget does not cover both decisions.")
     if {"prioritize_fix", "prioritize_core"} <= set(request.actions):
-        raise ValueError("Le développeur ne peut pas recevoir deux priorités concurrentes.")
+        raise ValueError("The developer cannot receive two competing priorities.")
     if {"reduce_scope", "accept_feature"} <= set(request.actions):
-        raise ValueError("Choisissez un seul engagement de périmètre.")
+        raise ValueError("Choose a single scope commitment.")
     game = deepcopy(original)
     game["actions"] = list(request.actions)
     game["action_event_ids"] = []
@@ -135,8 +135,8 @@ def resolve_intents(original, packets, round_number):
                 game,
                 actor,
                 "rejected",
-                "Intention non applicable",
-                "Les règles du projet ne permettent pas cette action dans l’état actuel.",
+                "Action cannot be applied",
+                "The project rules do not allow this action in the current state.",
                 causes=causes,
                 round_number=round_number,
             )
@@ -146,8 +146,8 @@ def resolve_intents(original, packets, round_number):
                 game,
                 actor,
                 "rejected",
-                "Information non vérifiable",
-                "Le message n’a pas été transmis car sa source n’est pas accessible au personnage.",
+                "Unverifiable information",
+                "The message was not delivered because its source is unavailable to this character.",
                 causes=causes,
                 round_number=round_number,
             )
@@ -156,7 +156,7 @@ def resolve_intents(original, packets, round_number):
         action = intent.action
         if action == "wait":
             continue
-        title, detail, effects = "Point de situation", intent.message, {}
+        title, detail, effects = "Status update", intent.message, {}
         audience = ["player"]
         if action == "audit":
             game["risk_known"] = True
@@ -164,85 +164,85 @@ def resolve_intents(original, packets, round_number):
                 data["knowledge"].append("critical")
             if "critical" not in game["player_knowledge"]:
                 game["player_knowledge"].append("critical")
-            title, detail = "L’audit confirme un risque critique", FACTS["critical"]
-            data["activity"] = "Correctif et validation requis avant livraison."
+            title, detail = "The audit confirms a critical risk", FACTS["critical"]
+            data["activity"] = "A fix and verification are required before release."
         elif action == "verify":
             game["verified"] = True
             title, detail = (
-                "La correction est validée",
-                "Les contrôles du scénario confirment la correction. Le périmètre convenu doit encore être prêt.",
+                "The fix is verified",
+                "The scenario checks confirm the fix. The agreed scope must also be ready.",
             )
-            data["activity"] = "Validation de sécurité obtenue."
+            data["activity"] = "Security approval obtained."
         elif action == "work":
-            title = "Priorité prise en compte"
-            detail = "Le développeur poursuit le travail affecté dans la capacité disponible."
+            title = "Priority acknowledged"
+            detail = "The developer continues the assigned work within available capacity."
             data["activity"] = (
-                "Travaille sur le correctif."
+                "Working on the fix."
                 if game["priority"] == "fix" and game["tasks"]["fix"]["remaining"]
-                else "Poursuit le périmètre de livraison."
+                else "Working on the delivery scope."
             )
         elif action == "refuse":
             game["work_blocked"] = True
             title, detail = (
-                "La surcharge bloque le travail",
-                "Le développeur suspend l’exécution ce tour et demande une charge tenable.",
+                "Overload blocks progress",
+                "The developer pauses work this turn and asks for a sustainable workload.",
             )
-            data["activity"] = "Demande une réduction de charge."
-            effects = {"moral": adjust(game, "morale", -5)}
+            data["activity"] = "Asking for a lighter workload."
+            effects = {"morale": adjust(game, "morale", -5)}
         elif action == "warn":
             title, detail = (
-                "Le développeur demande un arbitrage",
-                "Le correctif et le périmètre commercial se disputent la capacité disponible.",
+                "The developer asks for a decision",
+                "The fix and commercial commitments compete for the available capacity.",
             )
-            data["activity"] = "Alerte sur les priorités concurrentes."
+            data["activity"] = "Flagging competing priorities."
         elif action == "reveal_need":
             if "demo_acceptable" not in game["player_knowledge"]:
                 game["player_knowledge"].append("demo_acceptable")
-            title, detail = "L’échéance concerne une démonstration", FACTS["demo_acceptable"]
-            effects = {"confiance": adjust(game, "trust", 4)}
-            data["activity"] = "Ouverte à une démonstration de périmètre réduit."
+            title, detail = "The deadline is for a demonstration", FACTS["demo_acceptable"]
+            effects = {"trust": adjust(game, "trust", 4)}
+            data["activity"] = "Open to a demonstration with a smaller scope."
         elif action == "accept_scope":
             game["scope"] = "partial"
             game["feature_committed"] = False
             game["tasks"]["core"]["remaining"] = max(0, game["tasks"]["core"]["remaining"] - 2)
             title, detail = (
-                "Le périmètre réduit est accepté",
-                "Le client accepte une démonstration limitée. Deux unités du socle et la fonctionnalité supplémentaire sortent de cette livraison.",
+                "The reduced scope is accepted",
+                "The client accepts a limited demonstration. Two core work units and the extra feature are removed from this delivery.",
             )
-            effects = {"confiance": adjust(game, "trust", 4)}
-            data["activity"] = "Attend la démonstration convenue."
+            effects = {"trust": adjust(game, "trust", 4)}
+            data["activity"] = "Waiting for the agreed demonstration."
             game["proposals"].remove("reduce_scope")
         elif action == "accept_delay":
             game["delay_agreed"] = True
             title, detail = (
-                "Une nouvelle échéance est acceptée",
-                "Le client accepte de reporter la livraison. Le bilan aura lieu à la fin des six tours et précisera le travail restant.",
+                "A new deadline is accepted",
+                "The client agrees to postpone delivery. The review at the end of six turns will identify any remaining work.",
             )
-            data["activity"] = "A accepté une nouvelle échéance."
+            data["activity"] = "Agreed to a new deadline."
             game["proposals"].remove("request_delay")
         elif action == "acknowledge":
             title, detail = (
-                "Le client reçoit votre point de situation",
-                "Les faits que vous connaissez ont été partagés. Le client dispose d’une information plus claire sur l’avancement.",
+                "The client receives your update",
+                "Your known facts have been shared. The client now has a clearer picture of progress.",
             )
-            effects = {"confiance": adjust(game, "trust", 7)}
-            data["activity"] = "Prend connaissance du point de situation."
+            effects = {"trust": adjust(game, "trust", 7)}
+            data["activity"] = "Reviewing the status update."
         elif action in ("counter", "reject"):
             title, detail = (
-                "Le client demande des garanties",
-                "Le changement proposé n’est pas accepté. Un point de situation et une proposition étayée peuvent aider à rétablir la confiance.",
+                "The client asks for assurances",
+                "The proposed change is not accepted. A status update and an evidence-backed proposal may help rebuild trust.",
             )
-            data["activity"] = "Attend des garanties avant de renégocier."
+            data["activity"] = "Waiting for assurances before renegotiating."
         elif action == "clarify_promise":
             title, detail = (
-                "Le commercial clarifie son engagement",
-                "Le commercial confirme la promesse initiale et propose de réaligner la communication sur le périmètre accepté.",
+                "The sales lead clarifies the commitment",
+                "The sales lead confirms the original promise and proposes aligning communication with the agreed scope.",
             )
-            data["activity"] = "Aligne les engagements avec le client."
+            data["activity"] = "Aligning commitments with the client."
         elif action == "message":
             if not detail.strip():
                 continue
-            title = f"Message de {data['name']}"
+            title = f"Message from {data['name']}"
             audience = [actor, intent.recipient]
         e = event(
             game,
@@ -284,9 +284,9 @@ def finalize_turn(original):
                 game,
                 "engine",
                 "work_progress",
-                "Le travail avance",
-                f"{task['title']} : {units} unité(s) réalisée(s), {task['remaining']} restante(s).",
-                effects={"travail": units},
+                "Work progresses",
+                f"{task['title']} : {units} unit(s) completed, {task['remaining']} remaining.",
+                effects={"work": units},
                 causes=[
                     e["id"]
                     for e in game["events"]
@@ -312,16 +312,16 @@ def finalize_turn(original):
             game,
             "client",
             "uncertain_commitment",
-            "Le client attend un engagement clair",
-            "L’échéance approche sans accord explicite sur le périmètre.",
-            effects={"confiance": trust_effect},
+            "The client needs a clear commitment",
+            "The deadline is approaching without an explicit scope agreement.",
+            effects={"trust": trust_effect},
         )
     event(
         game,
         "engine",
         "period_end",
-        "La période se termine",
-        "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "The period ends",
+        "One work period has passed. Recurring costs are charged once.",
         effects={"budget": budget_effect},
     )
     game["metrics"]["progress"] = round(100 * (12 - game["tasks"]["core"]["remaining"]) / 12)
@@ -330,14 +330,14 @@ def finalize_turn(original):
     if game["released"] or game["turn"] >= 6 or game["metrics"]["trust"] <= 10:
         game["status"] = "finished"
         if game["released"]:
-            code, title = "delivered", "Livraison maîtrisée"
+            code, title = "delivered", "Delivery under control"
             if game["metrics"]["morale"] < 40:
-                title = "Livraison au prix fort"
+                title = "Delivery at a high cost"
         elif game["metrics"]["trust"] <= 10:
-            code, title = "contract_lost", "La relation client est rompue"
+            code, title = "contract_lost", "The client relationship has broken down"
         elif game["delay_agreed"]:
-            code, title = "delayed", "Report négocié"
+            code, title = "delayed", "Extension negotiated"
         else:
-            code, title = "blocked", "L’échéance n’est pas tenue"
+            code, title = "blocked", "The deadline is missed"
         game["outcome"] = {"code": code, "title": title}
     return game
