@@ -1,92 +1,130 @@
 # Project Meltdown — rapport de hackathon
 
-**Document de travail commencé le 3 septembre 2026.** Le dépôt contient actuellement le concept et les documents de cadrage. Aucune application, expérimentation ou mesure de performance n'a encore été réalisée dans ce dépôt.
+**Version de travail du 3 septembre 2026 — premier MVP local implémenté.** Ce rapport distingue les fonctionnalités réalisées, les essais effectués et les objectifs encore non évalués. Les consignes officielles du hackathon, l'équipe et la répartition des contributions restent à renseigner avec leurs données réelles.
 
-Ce rapport sera enrichi pendant le développement. Les choix proposés sont détaillés dans le [cadrage](cadrage.md) ; les réalisations et preuves sont suivies dans le [journal](journal.md).
+## 1. Résumé
 
-## 1. Résumé du projet
+Project Meltdown est un serious game de gestion de crise dans un projet numérique. Le joueur dispose de six tours pour arbitrer entre livraison, sécurité, demandes du client et capacité de l'équipe. Quatre personnages représentent le développement, le client, le commercial et la sécurité.
 
-Project Meltdown propose un serious game de gestion de crise dans un projet numérique. Le joueur doit arbitrer entre délai, sécurité, attentes du client et capacité de l'équipe. Des personnages aux objectifs et informations différents réagissent à ses décisions. Un débrief final vise à expliquer les conséquences de ces arbitrages.
+Le premier prototype comprend un tableau de commandement en français, un moteur de règles, un graphe LangGraph persistant, deux rondes d'interactions internes au maximum et un débrief lié aux événements enregistrés. Deux parcours complets ont été exécutés via l'API publique : une livraison négociée réussit, tandis qu'une partie sans intervention n'aboutit pas à une livraison.
 
-Le prototype envisagé se concentre sur un scénario : « La livraison impossible ». Son ambition est de rendre visibles les effets indirects d'une décision et de permettre au joueur d'analyser son parcours. L'apport pédagogique n'est pas encore démontré.
+Ces essais valident un premier fonctionnement technique. Ils ne démontrent ni l'efficacité pédagogique ni le réalisme des comportements d'un modèle de langage en conditions réelles.
 
-## 2. Problématique et objectifs
+## 2. Problématique et intention pédagogique
 
-Comment proposer une simulation interactive où des parties prenantes autonomes créent des arbitrages crédibles, tout en conservant des règles vérifiables et un débrief fondé sur ce qui s'est réellement passé ?
+Comment simuler des parties prenantes qui disposent d'informations et d'objectifs différents, tout en conservant des conséquences vérifiables et une explication fidèle au déroulement de la partie ?
 
-Les objectifs de conception sont les suivants :
+Les objectifs pédagogiques envisagés sont la priorisation sous pression, la recherche d'information, la négociation d'engagements et l'analyse des conséquences. Le joueur doit comprendre qu'un socle techniquement avancé ne constitue pas, à lui seul, une livraison acceptable : le périmètre doit être convenu et la sécurité validée.
 
-- Donner au joueur des décisions concrètes sous information incomplète.
-- Faire varier les réactions des personnages selon leurs objectifs et leurs connaissances.
-- Garder les conséquences de jeu contrôlées par un moteur explicite.
-- Relier les observations du débrief aux décisions et événements enregistrés.
+Le public envisagé est constitué d'étudiants en informatique et de futurs chefs de projet. Aucun test d'apprentissage avec des participants n'a encore été mené.
 
-Les critères officiels du hackathon ne sont pas encore disponibles dans le dépôt. Leur correspondance avec ces objectifs devra être ajoutée après réception.
+## 3. Scénario et périmètre livré
 
-## 3. Scénario et expérience visée
+Dans « La livraison impossible », une livraison est attendue dans trois jours. Le développeur a repéré un défaut, le client attend une fonctionnalité promise par le commercial et la capacité de l'équipe est limitée. Certaines informations sont connues d'un personnage mais pas encore du joueur.
 
-À trois jours d'une livraison, une faille de sécurité est découverte alors qu'une fonctionnalité supplémentaire a été promise au client. La capacité de l'équipe est limitée et la direction refuse initialement de reporter l'échéance.
+Le joueur peut notamment auditer le défaut, prioriser le correctif ou le socle, clarifier le besoin métier, communiquer, négocier un périmètre réduit ou un report, accepter la fonctionnalité, réduire la charge, mobiliser du renfort, valider la correction puis livrer.
 
-Le joueur consulte un tableau de commandement, enquête, délègue ou négocie, puis fait avancer le temps. Les personnages réagissent selon leur propre contexte. La proposition actuelle limite la partie à six tours avec quatre personnages actifs ; ce périmètre reste à valider selon les contraintes du hackathon.
+Les décisions sont sélectionnées dans des cartes, avec un maximum de deux par tour. La saisie libre d'instructions n'est pas implémentée. Le travail accepté continue sans demander au joueur de le réaffecter à chaque tour.
 
-## 4. Conception et arbitrages envisagés
+L'interface livre les éléments suivants :
 
-La séparation centrale est celle des intentions et des effets : le modèle propose une action, tandis que le moteur vérifie sa validité et applique ses conséquences. Cette séparation vise à concilier diversité des comportements et contrôle des règles.
+- Briefing de départ et création d'une partie.
+- Indicateurs du socle, du budget, de la confiance, du moral et de l'état de sécurité connu.
+- Quatre fiches de personnages avec activité observable et pression.
+- Actions avec coût, préconditions et état indisponible explicite.
+- Journal des événements et trace des activations du graphe par ronde.
+- Sauvegarde côté serveur, reprise de la dernière partie et export JSON public.
+- Débrief final avec liens vers les événements et pistes alternatives clairement présentées comme hypothèses.
 
-L'information privée est une partie du gameplay. Les contextes transmis aux agents et la vue transmise au joueur doivent être filtrés côté serveur. Le débrief doit tenir compte des informations accessibles au moment de la décision.
+Le bureau 3D n'est pas inclus dans ce premier MVP. La présentation actuelle est un tableau 2D adaptatif.
 
-Le Game Master est envisagé sous forme de règles de scénario pour le premier prototype. La 3D est prévue comme représentation de l'état du jeu après obtention d'un parcours jouable complet.
+## 4. Architecture réalisée
 
-Une première [proposition d'arbre décisionnel](arbre-decisionnel.md) explore les branches narratives. La demande a ensuite été précisée pour porter sur le [graphe technique d'orchestration](graphe-orchestration.md) : décision et état courant, organisateur, distribution des contextes privés, intentions des personnages, résolution déterministe et nouvel état. Une boucle interne permet une redistribution des réactions dans une limite proposée de deux rondes par tour ; la boucle externe attend ensuite la prochaine décision du joueur. Cette conception est en discussion et n'a pas encore été expérimentée.
+Le frontend utilise Next.js, React et TypeScript. Il appelle un proxy `/api` vers FastAPI. Python porte les règles, les personnages et l'orchestration. SQLite conserve les parties canoniques et les reçus de requêtes ; un second fichier SQLite conserve les checkpoints LangGraph.
 
-## 5. Architecture technique envisagée
+Le [graphe conceptuel](graphe-orchestration.md) possède deux boucles. La boucle externe attend le joueur avec `interrupt()` puis reprend avec une décision. La boucle interne prépare les observations privées, distribue les agents avec `Send`, collecte les intentions, applique les règles et redistribue les réactions autorisées.
 
-L'idée initiale propose Next.js et TypeScript pour l'interface, Python et FastAPI pour l'API, LangGraph pour l'orchestration des agents et SQLite pour la persistance. Ces choix ne sont pas encore implémentés ni évalués dans ce projet.
+L'implémentation utilise un nœud worker `agent` paramétré par personnage. La première ronde active les quatre personnages ; la seconde sélectionne les destinataires des nouveaux messages. Les sorties sont rassemblées avec des clés stables par tour, ronde et personnage. Le graphe effectif est exporté depuis LangGraph dans [langgraph.mmd](evidence/langgraph.mmd).
 
-LangGraph permet d'associer des étapes déterministes et des étapes pilotées par modèle dans un graphe avec état, ce qui motive son examen pour la résolution d'un tour. [Documentation officielle](https://docs.langchain.com/oss/python/langgraph/overview), consultée le 3 septembre 2026.
+La séparation entre workflow, état et agents s'appuie sur les primitives documentées par LangGraph. Les frontières métier, règles et budgets de rondes ont été conçus pour ce jeu. [Workflows et agents](https://docs.langchain.com/oss/python/langgraph/workflows-agents), [interruptions](https://docs.langchain.com/oss/python/langgraph/interrupts), consultés le 3 septembre 2026.
 
-React Three Fiber est un moteur de rendu React pour Three.js, envisagé pour représenter les personnages et leurs états dans un bureau. [Documentation officielle](https://r3f.docs.pmnd.rs/), consultée le 3 septembre 2026.
+### Contrôle des conséquences
 
-La version finale de cette section devra décrire l'architecture effectivement livrée, ses interfaces, les versions utilisées et les différences avec la proposition initiale.
+Un personnage propose une intention structurée. Le moteur vérifie l'action, les connaissances et les préconditions avant d'appliquer un effet. Les sorties concurrentes ne modifient pas directement les métriques. La progression du travail et les coûts périodiques sont calculés une seule fois à la clôture du tour.
 
-## 6. Méthode de réalisation et traçabilité
+Les intentions d'une ronde utilisent un instantané cohérent, filtré pour chaque personnage. Les messages validés deviennent utilisables à la ronde suivante. Les messages produits après consommation des deux rondes attendent le tour suivant. Une livraison autorisée termine le jeu sans déclencher de nouvelles activations de personnages.
 
-Le développement proposé avance par jalons : moteur jouable avec politiques à règles, interface complète, intégration des agents, débrief vérifiable, puis présentation visuelle et répétition de la démonstration.
+### Persistance et reprises
 
-Pour chaque jalon, le journal enregistrera le problème traité, la solution retenue, les raisons du choix, la vérification effectuée et un lien vers la preuve. Les incidents et limites seront consignés au même titre que les réussites.
+Chaque décision porte une version attendue et un identifiant de requête. L'état et le reçu public sont enregistrés dans une transaction. Une nouvelle tentative identique reçoit le résultat déjà enregistré ; réutiliser un identifiant pour une autre décision est refusé.
 
-Les usages d'assistance IA doivent également être documentés : tâche confiée, fichier ou résultat produit, vérification humaine ou technique et limites constatées. À ce stade, l'assistance a servi à analyser le concept et à rédiger une proposition de cadrage et cette base de rapport.
+Une reprise après un échec survenu juste après le commit canonique a été testée. Les checkpoints permettent de terminer l'exécution interrompue puis de reprendre une nouvelle décision sans consommer deux fois le tour.
 
-## 7. Protocole d'évaluation prévu
+La version actuelle sérialise les mutations dans un seul processus Python. Elle vise une démonstration locale et ne doit pas être présentée comme un service multi-utilisateur prêt à être exposé publiquement.
 
-| Question | Méthode prévue | État actuel |
-| --- | --- | --- |
-| Le jeu respecte-t-il ses règles ? | Tests des coûts, capacités, tours, conditions de fin et requêtes répétées | Non exécuté |
-| Les informations privées restent-elles isolées ? | Inspection et tests des observations d'agents et réponses API | Non exécuté |
-| Les décisions ont-elles un effet observable ? | Comparer deux stratégies documentées à partir du même état initial | Non exécuté |
-| Le débrief reste-t-il fidèle à la partie ? | Vérifier les faits cités et leurs liens vers les événements | Non exécuté |
-| L'expérience est-elle utilisable en démonstration ? | Partie complète, mesure des temps de réponse et essai en mode de secours | Non exécuté |
-| Le joueur comprend-il mieux ses arbitrages ? | Questions avant/après et retour qualitatif de testeurs, si le temps le permet | Non exécuté |
+## 5. Modes des agents et débrief
 
-Pour les comparaisons, conserver la version du scénario, des règles et des prompts, le modèle utilisé, les décisions, les intentions retenues et le mode de fonctionnement. Une graine aléatoire ne suffit pas à rendre les appels LLM reproductibles.
+Le mode par défaut utilise des politiques déterministes à l'intérieur du même graphe LangGraph. Il permet de jouer sans clé API et constitue le mode des essais enregistrés. Il est identifié comme « Simulation à règles » dans l'interface.
 
-Tout résultat futur indiquera le nombre d'essais, les conditions, la méthode et les limites. Un retour positif de quelques testeurs ne suffira pas à établir une efficacité pédagogique générale.
+Un adaptateur LangChain est disponible pour un modèle configuré via l'environnement. Les personnages reçoivent leur contexte filtré et choisissent une sortie structurée. Les appels ont un timeout de 12 secondes, sans relance automatique du fournisseur. Une erreur ou une intention invalide active la politique de secours et le signale dans la trace. Le budget est limité à huit activations de personnages par tour ; la clôture d'une livraison peut en utiliser zéro.
 
-## 8. Résultats obtenus
+Le coach LLM optionnel sélectionne et ordonne des moments parmi des événements déjà rédigés par le moteur. Les références sont validées ; le texte factuel reste celui des événements. Ce choix limite les affirmations causales inventées. Les relations enregistrées indiquent les décisions et messages pertinents ; elles ne prétendent pas révéler le raisonnement interne du modèle.
 
-Aucun résultat expérimental à ce stade. La réalisation actuelle comprend uniquement le concept fourni et les documents de cadrage, de rapport et de suivi. Les résultats chiffrés, captures et traces seront ajoutés après les vérifications correspondantes.
+**Aucun appel à un fournisseur LLM réel n'a été effectué pour valider cette version.** Les tests de panne et de sorties incorrectes utilisent des politiques de test à la frontière du fournisseur. Les coûts en tokens, la qualité de négociation et la latence réelle d'un modèle restent donc non mesurés.
 
-## 9. Limites identifiées dès la conception
+## 6. Vérification technique
 
-- Le comportement dépendra en partie du modèle, des prompts et de leur variabilité.
-- La crédibilité des arbitrages dépendra des règles et valeurs choisies pour la simulation.
-- Des personnalités simplifiées ne représentent pas la diversité des comportements professionnels réels.
-- Une explication générée peut inventer une causalité ; les liens vers les événements devront être contrôlés.
-- La latence, le coût des appels et la disponibilité du fournisseur restent à mesurer.
-- Le temps disponible peut limiter la 3D, le nombre d'essais et la validation pédagogique.
+La suite contient **18 tests backend**, tous passants lors de la vérification finale. Elle couvre notamment :
 
-## 10. Conclusion provisoire et éléments du rendu
+- Le nombre d'actions et les décisions impossibles.
+- L'isolation d'un fait privé dans les observations et les réponses publiques.
+- Le rejet d'une transmission de fait inconnu de son émetteur.
+- Les rondes bornées et l'avancement du temps une seule fois.
+- Les intentions de secours après échec d'un personnage.
+- La reprise SQLite, les requêtes répétées et la réutilisation conflictuelle d'un identifiant.
+- La reprise après un échec postérieur au commit canonique.
+- La fin d'une partie, la validation globale d'un lot de décisions et l'absence d'activations après livraison.
+- La non-répétition d'un gain de confiance ou d'une pénalité de suspension entre rondes.
+- L'absence d'attribution d'un audit à une décision client sans rapport.
+- Le refus d'un changement silencieux de mode d'agents.
+- Deux issues différentes et des références de débrief existantes.
 
-Le concept articule décisions de gestion, information incomplète et réactions de personnages. La prochaine étape consiste à fixer les contraintes du hackathon et un périmètre accepté avant de réaliser le premier parcours jouable.
+La sortie complète est conservée dans [pytest.txt](evidence/pytest.txt). Elle contient un avertissement de dépréciation provenant de l'intégration Starlette/AnyIO utilisée par le client de test ; aucun test ne manque à cause de cet avertissement.
 
-Le rendu final devra identifier l'équipe et ses contributions, présenter l'application effectivement livrée, expliquer les principaux arbitrages, montrer des preuves de fonctionnement et discuter les limites. Le format, la longueur, les exigences de citation et l'éventuel export PDF dépendront des consignes officielles.
+Le contrôle Ruff passe et le build de production Next.js réussit, y compris la vérification TypeScript. Le parcours HTTP a été exercé à travers le proxy Next.js vers FastAPI. La page locale renvoie HTTP 200. Les erreurs réseau du frontend ont été examinées en revue de code ; aucune injection de panne dans un navigateur ni revue visuelle par captures n'a été effectuée.
+
+Versions principales enregistrées : Python 3.12.13, Next.js 16.3.4, FastAPI 0.141.1, LangGraph 1.2.11, LangChain 1.3.18 et Pydantic 2.13.5. Les fichiers `uv.lock` et `web/package-lock.json` fixent les dépendances ; un relevé Python est disponible dans [versions.json](evidence/versions.json).
+
+## 7. Parcours expérimentés
+
+Les deux parcours utilisent le même scénario initial, le mode à règles et six tours. Ils sont exécutés par [scripts/demo.py](../scripts/demo.py), qui appelle les mêmes routes publiques que le navigateur et enregistre uniquement les états publics.
+
+| Parcours | Issue | Budget final | Confiance client | Moral | Activations des personnages |
+| --- | --- | --- | --- | --- | --- |
+| Audit, correctif, clarification, communication et périmètre réduit | Livraison maîtrisée | 22/100 | 66/100 | 68/100 | 22 |
+| Aucun nouvel ordre pendant six tours | Échéance non tenue | 28/100 | 30/100 | 51/100 | 25 |
+
+Aucun recours au secours n'a été nécessaire dans ces deux parcours à règles. Le socle atteint 100 % dans les deux cas, mais le second parcours ne dispose pas des conditions de livraison : avancement, accord commercial et validation technique sont des dimensions distinctes.
+
+Les fichiers [negotiated-delivery.json](evidence/negotiated-delivery.json) et [no-intervention.json](evidence/no-intervention.json) contiennent les décisions, métriques, rondes, événements et débriefs observés. Les durées internes de résolution y sont enregistrées ; ce petit échantillon local ne constitue pas un benchmark de performance.
+
+## 8. Méthode et retours de revue
+
+La réalisation a commencé par des tests de comportement et d'intégration, puis le moteur, le graphe persistant et l'interface ont été assemblés. Une revue de code indépendante a ensuite examiné les frontières d'état, la confidentialité, les reprises et la validation des intentions.
+
+La revue a notamment conduit à vérifier de nouveau une livraison après application de toutes les décisions du lot, à éviter les activations après une livraison, à empêcher une révélation récompensée deux fois et à préserver l'identifiant d'une requête lors d'une erreur HTTP ambiguë. Des tests de régression ont été ajoutés aux corrections backend. Les liens d'événements ont également été resserrés pour ne pas attribuer un résultat à toutes les décisions du tour par défaut.
+
+L'assistance IA a servi au cadrage, à la conception du graphe, à la rédaction du code et de la documentation, à la revue et à l'analyse des résultats. Les commandes et traces citées constituent les vérifications techniques réellement effectuées. Le [journal](journal.md) conserve les étapes et décisions.
+
+## 9. Limites et prochaines étapes
+
+- Les règles numériques constituent une première calibration de jeu, sans validation empirique du réalisme organisationnel.
+- Le scénario et les politiques à règles sont fixes ; la rejouabilité observée vient surtout des décisions du joueur.
+- Les agents LLM sont intégrés mais restent à tester avec des credentials, un modèle identifié et un protocole reproductible.
+- Le coût en tokens n'est pas instrumenté ; aucune estimation de coût monétaire n'est présentée.
+- Le débrief est volontairement contraint aux faits et à des alternatives proposées, sans simulation contrefactuelle automatique.
+- Le prototype possède un verrouillage de livraison et des issues commerciales ; il ne simule pas encore un incident de cybersécurité détaillé.
+- Le bureau 3D, l'authentification, l'hébergement multi-utilisateur, les conversations libres et les scénarios supplémentaires ne sont pas implémentés.
+- L'accessibilité, l'ergonomie et l'apprentissage doivent encore être évalués avec des utilisateurs.
+
+Le prochain jalon est un essai utilisateur du parcours, suivi d'un test de modèle réel. Le bureau 3D pourra ensuite représenter les mêmes événements validés, sans devenir une deuxième source de règles de simulation.

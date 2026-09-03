@@ -7,9 +7,9 @@ Ce journal alimente le [rapport](rapport.md). Le [cadrage](cadrage.md) contient 
 - [x] Lire le concept et examiner l'état du dépôt.
 - [x] Préparer une proposition de périmètre et une base de rapport.
 - [ ] Recueillir les contraintes du hackathon.
-- [ ] Arrêter le périmètre et documenter la conception approuvée.
-- [ ] Préparer le plan d'implémentation.
-- [ ] Réaliser et vérifier les jalons retenus.
+- [x] Arrêter le périmètre et documenter la conception approuvée.
+- [x] Préparer le plan d'implémentation.
+- [x] Réaliser et vérifier les jalons retenus.
 - [ ] Consolider les résultats, limites et preuves dans le rapport final.
 
 ## 3 septembre 2026 — cadrage initial
@@ -56,3 +56,17 @@ Ce journal alimente le [rapport](rapport.md). Le [cadrage](cadrage.md) contient 
 Ajouter une entrée datée après chaque jalon ou arbitrage significatif avec : objectif, changement réalisé, raison du choix, contributeurs et assistance IA, vérification effectuée, résultat observé, preuve consultable et limites restantes.
 
 Pour une mesure, préciser le protocole, le nombre d'essais et les versions. Pour une capture ou une trace, relier le fichier à la version du jeu concernée. Les traces partagées dans le rapport doivent exclure les secrets de configuration.
+
+## 3 septembre 2026 — premier MVP local
+
+**Autorisation.** L'utilisateur a validé le graphe et demandé de commencer l'implémentation. Travail sur la branche `codex/meltdown-mvp` dans le dépôt local.
+
+**Réalisé.** Moteur Python, FastAPI, checkpoints SQLite, boucle LangGraph avec interruption joueur, distribution dynamique des quatre personnages et seconde ronde ciblée ; dashboard Next.js en français, actions, fiches, journal, trace du graphe, reprise et export public. Politiques à règles par défaut et adaptateur LangChain configurable. Coach déterministe ou sélection LLM de faits déjà validés.
+
+**Vérifications.** 18 tests backend passants, Ruff sans erreur, build Next.js avec TypeScript réussi. Deux parcours complets via le proxy public : livraison négociée (budget 22, confiance 66, moral 68, 22 activations) et absence d'intervention (échéance non tenue, budget 28, confiance 30, moral 51, 25 activations). Preuves dans `docs/evidence/`.
+
+**Revue et corrections.** Une revue indépendante en lecture seule a vérifié la persistance, les sorties d'agents et les reprises. Corrections des lots contradictoires à la livraison, des appels après fin, des effets répétés, du mode affiché et de la conservation des requêtes après erreur HTTP ambiguë. Un test protège aussi les références causales d'un audit contre une attribution à une décision sans rapport.
+
+**Limites.** Le mode LLM n'a pas été exercé contre un fournisseur réel. Une alerte de dépréciation Starlette/AnyIO apparaît dans les tests. Pas de test avec participants, d'injection de panne navigateur, de 3D ou de déploiement public. Le rapport distingue ces limites des résultats observés.
+
+**Choix d'implémentation.** Le même nœud LangGraph `agent` est paramétré par personnage. La sélection LLM du coach conserve le texte factuel du moteur. La version publique est projetée explicitement ; les flux internes ne sont pas transmis au navigateur. Les parties sont conservées dans `.data/`, ignoré par Git.

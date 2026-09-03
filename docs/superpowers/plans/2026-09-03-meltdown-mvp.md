@@ -37,10 +37,10 @@
 
 ## Task 1: Rules and observations
 
-- [ ] Write behavior tests: rejecting three actions; hidden client fact absent from developer observation and public view; work advances once; safe and overloaded strategies differ.
-- [ ] Run `uv run pytest backend/tests/test_engine.py -q` and confirm absent behavior fails.
-- [ ] Implement models, scenario, engine and projection; use fixed scenario values and record event causes.
-- [ ] Rerun tests; inspect actual public snapshots.
+- [x] Write behavior tests: rejecting three actions; hidden client fact absent from developer observation and public view; work advances once; safe and overloaded strategies differ.
+- [x] Run `uv run pytest backend/tests/test_engine.py -q` and confirm absent behavior fails.
+- [x] Implement models, scenario, engine and projection; use fixed scenario values and record event causes.
+- [x] Rerun tests; inspect actual public snapshots.
 
 ```python
 request = TurnRequest(request_id="test-1", expected_version=0, actions=["audit", "prioritize_fix"])
@@ -49,10 +49,10 @@ assert len(request.actions) == 2
 
 ## Task 2: Persistent orchestration
 
-- [ ] Write integration tests for second-round routing, bounded calls, fallback, restart and duplicate request receipts using a temporary real SQLite database.
-- [ ] Run `uv run pytest backend/tests/test_graph.py -q` before implementation.
-- [ ] Implement graph, store, policies and service. Collect worker proposals with stable keys; filter by round before resolving. Only accepted messages authorize another round.
-- [ ] Verify restart resumes the same game and a conflicting request ID is rejected.
+- [x] Write integration tests for second-round routing, bounded calls, fallback, restart and duplicate request receipts using a temporary real SQLite database.
+- [x] Run `uv run pytest backend/tests/test_graph.py -q` before implementation.
+- [x] Implement graph, store, policies and service. Collect worker proposals with stable keys; filter by round before resolving. Only accepted messages authorize another round.
+- [x] Verify restart resumes the same game and a conflicting request ID is rejected.
 
 ```python
 service = GameService(db_path)
@@ -65,15 +65,19 @@ assert first["turn"] == 1
 
 ## Task 3: API and playable dashboard
 
-- [ ] Write FastAPI integration tests for create, invalid actions, stale versions, completed games and public export.
-- [ ] Implement local endpoints and the Next.js proxy; show briefing, queued decisions, metrics, character cards, messages, orchestration trace and end debrief.
-- [ ] Preserve a request ID across network retries, restore the last game from device-local storage and expose loading/error states.
-- [ ] Build with `npm --prefix web run build`; run all backend tests.
-- [ ] Start the local servers, request the page and open the working preview.
+- [x] Write FastAPI integration tests for create, invalid actions, stale versions, completed games and public export.
+- [x] Implement local endpoints and the Next.js proxy; show briefing, queued decisions, metrics, character cards, messages, orchestration trace and end debrief.
+- [x] Preserve a request ID across network retries, restore the last game from device-local storage and expose loading/error states.
+- [x] Build with `npm --prefix web run build`; run all backend tests.
+- [x] Start the local servers, request the page and open the working preview.
 
 ## Task 4: Evidence and handoff
 
-- [ ] Run a scripted full game and a contrasting strategy against the real API; save public JSON evidence in docs/evidence.
-- [ ] Update report and journal with delivered behavior, exact test results, dependency versions and remaining limitations.
-- [ ] Review boundaries, retries, terminal behavior and LLM output validation; fix concrete findings.
-- [ ] Commit the implementation on codex/meltdown-mvp and provide the local URL and run instructions.
+- [x] Run a scripted full game and a contrasting strategy against the real API; save public JSON evidence in docs/evidence.
+- [x] Update report and journal with delivered behavior, exact test results, dependency versions and remaining limitations.
+- [x] Review boundaries, retries, terminal behavior and LLM output validation; fix concrete findings.
+- [x] Commit the implementation on codex/meltdown-mvp and provide the local URL and run instructions.
+
+## Validation observée
+
+18 tests backend passent, Ruff passe et le build Next.js réussit. Deux parcours HTTP sont enregistrés dans docs/evidence. Le mode LLM reste intégré mais non exercé avec un fournisseur réel ; le bureau 3D reste le jalon suivant. Les identifiants de requêtes sont préservés après des réponses 5xx/408 ambiguës.

@@ -1,6 +1,6 @@
 # Project Meltdown — cadrage du prototype
 
-Date : 3 septembre 2026. Statut : **proposition à discuter**, pas une spécification approuvée ni une description de fonctionnalités réalisées.
+**État au 3 septembre 2026 :** le graphe et le périmètre de la première boucle ont été approuvés pour implémentation. Le MVP local 2D est réalisé ; ce document conserve le cadrage et les pistes suivantes. Le [rapport](rapport.md) décrit précisément ce qui est livré et vérifié.
 
 Source du concept : [brainstorm.md](../brainstorm.md). Documents associés : [rapport](rapport.md), [journal](journal.md).
 

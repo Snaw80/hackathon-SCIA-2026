@@ -36,3 +36,27 @@ def test_finalize_advances_one_period_and_work_once():
     assert finished["version"] == 1
     assert finished["tasks"]["fix"]["remaining"] == 1
     assert finished["metrics"]["budget"] == 88
+
+
+def test_same_work_suspension_does_not_apply_morale_penalty_twice():
+    from meltdown.engine import resolve_intents
+
+    game = new_game("test")
+    game["agents"]["developer"]["stress"] = 90
+    packet = {"developer": {"intent": {"action": "refuse"}, "causes": []}}
+    first = resolve_intents(game, packet, 1)
+    second = resolve_intents(first, packet, 2)
+    assert first["work_blocked"]
+    assert second["metrics"]["morale"] == first["metrics"]["morale"]
+
+
+def test_audit_does_not_attribute_its_result_to_an_unrelated_client_decision():
+    from meltdown.engine import resolve_intents
+
+    game = prepare_turn(
+        new_game("test"), TurnRequest(request_id="causes", expected_version=0, actions=["audit", "clarify"])
+    )
+    audit_id = next(e["id"] for e in game["events"] if e["actor"] == "player" and e["type"] == "audit")
+    result = resolve_intents(game, {"security": {"intent": {"action": "audit"}, "causes": []}}, 1)
+    audit_result = next(e for e in result["events"] if e["actor"] == "security" and e["type"] == "audit")
+    assert audit_result["causes"] == [audit_id]

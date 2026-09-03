@@ -1,0 +1,1115 @@
+{
+  "recorded_at": "2026-09-03T13:11:00.981958+00:00",
+  "strategy": "negotiated-delivery",
+  "mode": "rules",
+  "turns": [
+    {
+      "turn": 1,
+      "actions": [
+        "audit",
+        "prioritize_fix"
+      ],
+      "metrics": {
+        "budget": 82,
+        "trust": 58,
+        "morale": 66,
+        "progress": 50
+      },
+      "run": {
+        "rounds": 2,
+        "agent_calls": 5,
+        "fallbacks": 0,
+        "duration_ms": 3,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Décisions validées",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 1,
+            "label": "Distribution à 4 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "developer",
+            "round": 1,
+            "label": "Alex · Lead developer",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "client",
+            "round": 1,
+            "label": "Camille · Cliente",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "sales",
+            "round": 1,
+            "label": "Sam · Commercial",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "security",
+            "round": 1,
+            "label": "Morgan · Responsable sécurité",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 1,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 2,
+            "label": "Distribution à 1 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "developer",
+            "round": 2,
+            "label": "Alex · Lead developer",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 2,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "Une période de travail écoulée",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "État enregistré · retour au joueur",
+            "status": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "actions": [
+        "clarify",
+        "communicate"
+      ],
+      "metrics": {
+        "budget": 70,
+        "trust": 62,
+        "morale": 64,
+        "progress": 50
+      },
+      "run": {
+        "rounds": 2,
+        "agent_calls": 5,
+        "fallbacks": 0,
+        "duration_ms": 2,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Décisions validées",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 1,
+            "label": "Distribution à 4 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "developer",
+            "round": 1,
+            "label": "Alex · Lead developer",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "client",
+            "round": 1,
+            "label": "Camille · Cliente",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "sales",
+            "round": 1,
+            "label": "Sam · Commercial",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "security",
+            "round": 1,
+            "label": "Morgan · Responsable sécurité",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 1,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 2,
+            "label": "Distribution à 1 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "sales",
+            "round": 2,
+            "label": "Sam · Commercial",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 2,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "Une période de travail écoulée",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "État enregistré · retour au joueur",
+            "status": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "actions": [
+        "reduce_scope",
+        "rest"
+      ],
+      "metrics": {
+        "budget": 58,
+        "trust": 66,
+        "morale": 72,
+        "progress": 75
+      },
+      "run": {
+        "rounds": 1,
+        "agent_calls": 4,
+        "fallbacks": 0,
+        "duration_ms": 2,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Décisions validées",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 1,
+            "label": "Distribution à 4 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "developer",
+            "round": 1,
+            "label": "Alex · Lead developer",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "client",
+            "round": 1,
+            "label": "Camille · Cliente",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "sales",
+            "round": 1,
+            "label": "Sam · Commercial",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "security",
+            "round": 1,
+            "label": "Morgan · Responsable sécurité",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 1,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "Une période de travail écoulée",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "État enregistré · retour au joueur",
+            "status": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "actions": [],
+      "metrics": {
+        "budget": 46,
+        "trust": 66,
+        "morale": 70,
+        "progress": 92
+      },
+      "run": {
+        "rounds": 1,
+        "agent_calls": 4,
+        "fallbacks": 0,
+        "duration_ms": 2,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Décisions validées",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 1,
+            "label": "Distribution à 4 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "developer",
+            "round": 1,
+            "label": "Alex · Lead developer",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "client",
+            "round": 1,
+            "label": "Camille · Cliente",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "sales",
+            "round": 1,
+            "label": "Sam · Commercial",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "security",
+            "round": 1,
+            "label": "Morgan · Responsable sécurité",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 1,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "Une période de travail écoulée",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "État enregistré · retour au joueur",
+            "status": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "actions": [],
+      "metrics": {
+        "budget": 34,
+        "trust": 66,
+        "morale": 68,
+        "progress": 100
+      },
+      "run": {
+        "rounds": 1,
+        "agent_calls": 4,
+        "fallbacks": 0,
+        "duration_ms": 2,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Décisions validées",
+            "status": "ok"
+          },
+          {
+            "node": "organizer",
+            "round": 1,
+            "label": "Distribution à 4 personnage(s)",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "developer",
+            "round": 1,
+            "label": "Alex · Lead developer",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "client",
+            "round": 1,
+            "label": "Camille · Cliente",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "sales",
+            "round": 1,
+            "label": "Sam · Commercial",
+            "status": "ok"
+          },
+          {
+            "node": "agent",
+            "agent": "security",
+            "round": 1,
+            "label": "Morgan · Responsable sécurité",
+            "status": "ok"
+          },
+          {
+            "node": "resolve_round",
+            "round": 1,
+            "label": "Intentions vérifiées et effets appliqués",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "Une période de travail écoulée",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "État enregistré · retour au joueur",
+            "status": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "actions": [
+        "release"
+      ],
+      "metrics": {
+        "budget": 22,
+        "trust": 66,
+        "morale": 68,
+        "progress": 100
+      },
+      "run": {
+        "rounds": 0,
+        "agent_calls": 0,
+        "fallbacks": 0,
+        "duration_ms": 0,
+        "steps": [
+          {
+            "node": "validate_decision",
+            "round": 0,
+            "label": "Décisions validées",
+            "status": "ok"
+          },
+          {
+            "node": "finalize_turn",
+            "round": 0,
+            "label": "Une période de travail écoulée",
+            "status": "ok"
+          },
+          {
+            "node": "commit_state",
+            "round": 0,
+            "label": "État enregistré · retour au joueur",
+            "status": "ok"
+          }
+        ]
+      }
+    }
+  ],
+  "final_public_state": {
+    "id": "7e636375-340e-4fba-956a-fab2399d493d",
+    "version": 6,
+    "turn": 6,
+    "max_turns": 6,
+    "status": "finished",
+    "mode": "rules",
+    "metrics": {
+      "budget": 22,
+      "trust": 66,
+      "morale": 68,
+      "progress": 100
+    },
+    "security": {
+      "status": "safe",
+      "label": "Validée",
+      "detail": "Correction vérifiée dans le scénario"
+    },
+    "agents": [
+      {
+        "id": "developer",
+        "name": "Alex",
+        "role": "Lead developer",
+        "initials": "AL",
+        "color": "#79d5e9",
+        "stress": 43,
+        "trust": 55,
+        "activity": "Poursuit le périmètre de livraison.",
+        "status": "En poste"
+      },
+      {
+        "id": "client",
+        "name": "Camille",
+        "role": "Cliente",
+        "initials": "CM",
+        "color": "#bb9bf7",
+        "stress": 37,
+        "trust": 55,
+        "activity": "Attend la démonstration convenue.",
+        "status": "En poste"
+      },
+      {
+        "id": "sales",
+        "name": "Sam",
+        "role": "Commercial",
+        "initials": "SM",
+        "color": "#ffc77d",
+        "stress": 40,
+        "trust": 55,
+        "activity": "Aligne les engagements avec le client.",
+        "status": "En poste"
+      },
+      {
+        "id": "security",
+        "name": "Morgan",
+        "role": "Responsable sécurité",
+        "initials": "MG",
+        "color": "#84d8b8",
+        "stress": 28,
+        "trust": 55,
+        "activity": "Validation de sécurité obtenue.",
+        "status": "En poste"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "core",
+        "title": "Socle de la livraison",
+        "remaining": 0,
+        "total": 12,
+        "status": "Terminé"
+      },
+      {
+        "id": "fix",
+        "title": "Correctif de sécurité",
+        "remaining": 0,
+        "total": 2,
+        "status": "Terminé"
+      }
+    ],
+    "actions": [
+      {
+        "id": "audit",
+        "title": "Auditer le défaut",
+        "description": "Qualifier le risque et obtenir une preuve technique.",
+        "cost": 6,
+        "category": "Technique",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "prioritize_fix",
+        "title": "Prioriser le correctif",
+        "description": "Affecter le développeur à la correction. Le socle attendra.",
+        "cost": 0,
+        "category": "Technique",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "clarify",
+        "title": "Clarifier le besoin client",
+        "description": "Comprendre ce qui est réellement attendu à l’échéance.",
+        "cost": 0,
+        "category": "Relation client",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "communicate",
+        "title": "Partager un point de situation",
+        "description": "Communiquer les faits connus et l’avancement au client.",
+        "cost": 0,
+        "category": "Relation client",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "reduce_scope",
+        "title": "Négocier un périmètre réduit",
+        "description": "Proposer une démonstration limitée. L’accord reste à obtenir.",
+        "cost": 0,
+        "category": "Relation client",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "request_delay",
+        "title": "Demander un report",
+        "description": "Demander une nouvelle échéance, avec les faits disponibles.",
+        "cost": 0,
+        "category": "Relation client",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "accept_feature",
+        "title": "Accepter la fonctionnalité",
+        "description": "Engager le projet sur la demande supplémentaire (+4 unités).",
+        "cost": 0,
+        "category": "Relation client",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "prioritize_core",
+        "title": "Prioriser la livraison",
+        "description": "Reprendre le socle, puis la fonctionnalité si elle est engagée.",
+        "cost": 0,
+        "category": "Technique",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "rest",
+        "title": "Réduire la charge",
+        "description": "Protéger l’équipe ce tour ; la progression du socle est réduite.",
+        "cost": 0,
+        "category": "Équipe",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "reinforce",
+        "title": "Mobiliser du renfort",
+        "description": "Acheter une unité de capacité supplémentaire pour ce tour.",
+        "cost": 12,
+        "category": "Équipe",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "validate_release",
+        "title": "Valider la correction",
+        "description": "Faire vérifier un correctif terminé avant la livraison.",
+        "cost": 0,
+        "category": "Technique",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      },
+      {
+        "id": "release",
+        "title": "Livrer la version",
+        "description": "Livrer le périmètre convenu après les validations nécessaires.",
+        "cost": 0,
+        "category": "Technique",
+        "disabled": true,
+        "reason": "La partie est terminée."
+      }
+    ],
+    "events": [
+      {
+        "id": "e0",
+        "turn": 0,
+        "round": 0,
+        "actor": "director",
+        "type": "briefing",
+        "title": "Vous prenez les commandes",
+        "detail": "La livraison est attendue dans trois jours. Une alerte technique reste à qualifier et une fonctionnalité a été promise. La direction souhaite maintenir l’échéance.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e1",
+        "turn": 1,
+        "round": 0,
+        "actor": "player",
+        "type": "audit",
+        "title": "Auditer le défaut",
+        "detail": "Qualifier le risque et obtenir une preuve technique.",
+        "effects": {
+          "budget": -6
+        },
+        "causes": []
+      },
+      {
+        "id": "e2",
+        "turn": 1,
+        "round": 0,
+        "actor": "player",
+        "type": "prioritize_fix",
+        "title": "Prioriser le correctif",
+        "detail": "Affecter le développeur à la correction. Le socle attendra.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e3",
+        "turn": 1,
+        "round": 1,
+        "actor": "security",
+        "type": "audit",
+        "title": "L’audit confirme un risque critique",
+        "detail": "L’audit confirme une faille critique dans le module d’export. La correction et sa validation sont nécessaires avant livraison.",
+        "effects": {},
+        "causes": [
+          "e1"
+        ]
+      },
+      {
+        "id": "e4",
+        "turn": 1,
+        "round": 1,
+        "actor": "developer",
+        "type": "work",
+        "title": "Priorité prise en compte",
+        "detail": "Le développeur poursuit le travail affecté dans la capacité disponible.",
+        "effects": {},
+        "causes": [
+          "e2"
+        ]
+      },
+      {
+        "id": "e5",
+        "turn": 1,
+        "round": 2,
+        "actor": "developer",
+        "type": "work",
+        "title": "Priorité prise en compte",
+        "detail": "Le développeur poursuit le travail affecté dans la capacité disponible.",
+        "effects": {},
+        "causes": [
+          "e2",
+          "e3"
+        ]
+      },
+      {
+        "id": "e6",
+        "turn": 1,
+        "round": 0,
+        "actor": "engine",
+        "type": "work_progress",
+        "title": "Le travail avance",
+        "detail": "Correctif de sécurité : 1 unité(s) réalisée(s), 1 restante(s).",
+        "effects": {
+          "travail": 1
+        },
+        "causes": [
+          "e2",
+          "e4",
+          "e5"
+        ]
+      },
+      {
+        "id": "e7",
+        "turn": 1,
+        "round": 0,
+        "actor": "engine",
+        "type": "period_end",
+        "title": "La période se termine",
+        "detail": "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "effects": {
+          "budget": -12
+        },
+        "causes": []
+      },
+      {
+        "id": "e8",
+        "turn": 2,
+        "round": 0,
+        "actor": "player",
+        "type": "clarify",
+        "title": "Clarifier le besoin client",
+        "detail": "Comprendre ce qui est réellement attendu à l’échéance.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e9",
+        "turn": 2,
+        "round": 0,
+        "actor": "player",
+        "type": "communicate",
+        "title": "Partager un point de situation",
+        "detail": "Communiquer les faits connus et l’avancement au client.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e10",
+        "turn": 2,
+        "round": 1,
+        "actor": "developer",
+        "type": "work",
+        "title": "Priorité prise en compte",
+        "detail": "Le développeur poursuit le travail affecté dans la capacité disponible.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e11",
+        "turn": 2,
+        "round": 1,
+        "actor": "client",
+        "type": "reveal_need",
+        "title": "L’échéance concerne une démonstration",
+        "detail": "L’échéance du client concerne une démonstration. Un périmètre réduit peut convenir s’il est explicitement négocié.",
+        "effects": {
+          "confiance": 4
+        },
+        "causes": [
+          "e8"
+        ]
+      },
+      {
+        "id": "e12",
+        "turn": 2,
+        "round": 2,
+        "actor": "sales",
+        "type": "clarify_promise",
+        "title": "Le commercial clarifie son engagement",
+        "detail": "Le commercial confirme la promesse initiale et propose de réaligner la communication sur le périmètre accepté.",
+        "effects": {},
+        "causes": [
+          "e11"
+        ]
+      },
+      {
+        "id": "e13",
+        "turn": 2,
+        "round": 0,
+        "actor": "engine",
+        "type": "work_progress",
+        "title": "Le travail avance",
+        "detail": "Correctif de sécurité : 1 unité(s) réalisée(s), 0 restante(s).",
+        "effects": {
+          "travail": 1
+        },
+        "causes": [
+          "e10"
+        ]
+      },
+      {
+        "id": "e14",
+        "turn": 2,
+        "round": 0,
+        "actor": "engine",
+        "type": "period_end",
+        "title": "La période se termine",
+        "detail": "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "effects": {
+          "budget": -12
+        },
+        "causes": []
+      },
+      {
+        "id": "e15",
+        "turn": 3,
+        "round": 0,
+        "actor": "player",
+        "type": "reduce_scope",
+        "title": "Négocier un périmètre réduit",
+        "detail": "Proposer une démonstration limitée. L’accord reste à obtenir.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e16",
+        "turn": 3,
+        "round": 0,
+        "actor": "player",
+        "type": "rest",
+        "title": "Réduire la charge",
+        "detail": "Protéger l’équipe ce tour ; la progression du socle est réduite.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e17",
+        "turn": 3,
+        "round": 1,
+        "actor": "security",
+        "type": "verify",
+        "title": "La correction est validée",
+        "detail": "Les contrôles du scénario confirment la correction. Le périmètre convenu doit encore être prêt.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e18",
+        "turn": 3,
+        "round": 1,
+        "actor": "developer",
+        "type": "work",
+        "title": "Priorité prise en compte",
+        "detail": "Le développeur poursuit le travail affecté dans la capacité disponible.",
+        "effects": {},
+        "causes": [
+          "e16"
+        ]
+      },
+      {
+        "id": "e19",
+        "turn": 3,
+        "round": 1,
+        "actor": "client",
+        "type": "accept_scope",
+        "title": "Le périmètre réduit est accepté",
+        "detail": "Le client accepte une démonstration limitée. Deux unités du socle et la fonctionnalité supplémentaire sortent de cette livraison.",
+        "effects": {
+          "confiance": 4
+        },
+        "causes": [
+          "e15",
+          "e12"
+        ]
+      },
+      {
+        "id": "e20",
+        "turn": 3,
+        "round": 0,
+        "actor": "engine",
+        "type": "work_progress",
+        "title": "Le travail avance",
+        "detail": "Socle de la livraison : 1 unité(s) réalisée(s), 3 restante(s).",
+        "effects": {
+          "travail": 1
+        },
+        "causes": [
+          "e16",
+          "e18"
+        ]
+      },
+      {
+        "id": "e21",
+        "turn": 3,
+        "round": 0,
+        "actor": "engine",
+        "type": "period_end",
+        "title": "La période se termine",
+        "detail": "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "effects": {
+          "budget": -12
+        },
+        "causes": []
+      },
+      {
+        "id": "e22",
+        "turn": 4,
+        "round": 1,
+        "actor": "developer",
+        "type": "work",
+        "title": "Priorité prise en compte",
+        "detail": "Le développeur poursuit le travail affecté dans la capacité disponible.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e23",
+        "turn": 4,
+        "round": 0,
+        "actor": "engine",
+        "type": "work_progress",
+        "title": "Le travail avance",
+        "detail": "Socle de la livraison : 2 unité(s) réalisée(s), 1 restante(s).",
+        "effects": {
+          "travail": 2
+        },
+        "causes": [
+          "e22"
+        ]
+      },
+      {
+        "id": "e24",
+        "turn": 4,
+        "round": 0,
+        "actor": "engine",
+        "type": "period_end",
+        "title": "La période se termine",
+        "detail": "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "effects": {
+          "budget": -12
+        },
+        "causes": []
+      },
+      {
+        "id": "e25",
+        "turn": 5,
+        "round": 1,
+        "actor": "developer",
+        "type": "work",
+        "title": "Priorité prise en compte",
+        "detail": "Le développeur poursuit le travail affecté dans la capacité disponible.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e26",
+        "turn": 5,
+        "round": 0,
+        "actor": "engine",
+        "type": "work_progress",
+        "title": "Le travail avance",
+        "detail": "Socle de la livraison : 1 unité(s) réalisée(s), 0 restante(s).",
+        "effects": {
+          "travail": 1
+        },
+        "causes": [
+          "e25"
+        ]
+      },
+      {
+        "id": "e27",
+        "turn": 5,
+        "round": 0,
+        "actor": "engine",
+        "type": "period_end",
+        "title": "La période se termine",
+        "detail": "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "effects": {
+          "budget": -12
+        },
+        "causes": []
+      },
+      {
+        "id": "e28",
+        "turn": 6,
+        "round": 0,
+        "actor": "player",
+        "type": "release",
+        "title": "Livrer la version",
+        "detail": "Livrer le périmètre convenu après les validations nécessaires.",
+        "effects": {},
+        "causes": []
+      },
+      {
+        "id": "e29",
+        "turn": 6,
+        "round": 0,
+        "actor": "engine",
+        "type": "period_end",
+        "title": "La période se termine",
+        "detail": "Une période de travail s’est écoulée. Les coûts récurrents sont comptabilisés une seule fois.",
+        "effects": {
+          "budget": -12
+        },
+        "causes": []
+      }
+    ],
+    "last_run": {
+      "rounds": 0,
+      "agent_calls": 0,
+      "fallbacks": 0,
+      "duration_ms": 0,
+      "steps": [
+        {
+          "node": "validate_decision",
+          "round": 0,
+          "label": "Décisions validées",
+          "status": "ok"
+        },
+        {
+          "node": "finalize_turn",
+          "round": 0,
+          "label": "Une période de travail écoulée",
+          "status": "ok"
+        },
+        {
+          "node": "commit_state",
+          "round": 0,
+          "label": "État enregistré · retour au joueur",
+          "status": "ok"
+        }
+      ]
+    },
+    "outcome": {
+      "code": "delivered",
+      "title": "Livraison maîtrisée"
+    },
+    "debrief": {
+      "headline": "Livraison maîtrisée",
+      "summary": "Après 6 tours : avancement 100 %, budget 22/100, confiance client 66/100 et moral 68/100. Les moments ci-dessous proviennent des événements enregistrés. Les alternatives sont des pistes à tester, pas des résultats simulés.",
+      "moments": [
+        {
+          "title": "Auditer le défaut",
+          "analysis": "Qualifier le risque et obtenir une preuve technique.",
+          "event_ids": [
+            "e1"
+          ],
+          "alternative": "Comparer ce parcours à une partie où l’audit est demandé dès le premier tour."
+        },
+        {
+          "title": "Le périmètre réduit est accepté",
+          "analysis": "Le client accepte une démonstration limitée. Deux unités du socle et la fonctionnalité supplémentaire sortent de cette livraison.",
+          "event_ids": [
+            "e15",
+            "e12",
+            "e19"
+          ],
+          "alternative": "Explorer une clarification du besoin avant de confirmer un périmètre."
+        },
+        {
+          "title": "Livrer la version",
+          "analysis": "Livrer le périmètre convenu après les validations nécessaires.",
+          "event_ids": [
+            "e28"
+          ],
+          "alternative": "Tester une autre répartition de la capacité entre correction, socle et repos."
+        }
+      ],
+      "source": "rules"
+    }
+  }
+}

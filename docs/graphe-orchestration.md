@@ -1,6 +1,6 @@
 # Project Meltdown — graphe LangGraph d'un tour
 
-**Brouillon technique, 3 septembre 2026.** Ce document répond à la demande de graphe d'orchestration : décision du joueur et état → organisateur → agents → interactions → nouvel état → décision suivante. Il ne décrit pas les embranchements narratifs. Aucun code applicatif n'est implémenté.
+**État au 3 septembre 2026 :** ce graphe a été approuvé et une première implémentation locale existe dans `backend/meltdown/graph.py`. Le [graphe exporté](evidence/langgraph.mmd) montre les nœuds effectifs ; le [rapport](rapport.md) précise les adaptations et vérifications.
 
 ## 1. Deux boucles
 
