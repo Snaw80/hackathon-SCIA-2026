@@ -65,3 +65,9 @@ test("a missed deadline does not animate a successful delivery", () => {
   assert.equal(room.delivered, false);
   assert.ok(room.characters.every((a) => a.pose === "idle"));
 });
+test("live run agents are visibly active before canonical events are committed", () => {
+  const game = fixture();
+  const room = projectOffice(game, ["security"]);
+  assert.equal(room.characters.find((a) => a.id === "security").pose, "working");
+  assert.equal(room.characters.find((a) => a.id === "client").pose, "idle");
+});

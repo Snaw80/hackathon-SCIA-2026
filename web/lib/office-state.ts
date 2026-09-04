@@ -25,8 +25,9 @@ const negotiations = new Set([
 ]);
 
 /** Presentation only: no writes, hidden state, inferred message recipients, or new rules. */
-export function projectOffice(game: Game) {
+export function projectOffice(game: Game, activeAgents: string[] = []) {
   const delivered = game.outcome?.code === "delivered";
+  const active = new Set(activeAgents);
   const characters: OfficeCharacter[] = game.agents.map((agent) => {
     const event =
       game.events.findLast(
@@ -43,6 +44,10 @@ export function projectOffice(game: Game) {
         ? "idle"
         : event?.type === "refuse"
           ? "blocked"
+          : active.has(agent.id)
+            ? ["client", "sales"].includes(agent.id)
+              ? "talking"
+              : "working"
           : atTable || ["message", "warn"].includes(event?.type ?? "")
             ? "talking"
             : ["work", "audit", "verify"].includes(event?.type ?? "")

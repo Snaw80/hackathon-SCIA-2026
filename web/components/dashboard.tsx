@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Activity,
   ArrowDown,
@@ -14,7 +14,6 @@ import {
   LoaderCircle,
   MessageSquare,
   Play,
-  Plus,
   RotateCcw,
   ShieldAlert,
   ShieldCheck,
@@ -25,8 +24,9 @@ import {
   Zap,
 } from "lucide-react";
 import OfficeView from "./office/office-view";
+import CommandPanel from "./command-panel";
 import { api, ApiError } from "@/lib/api";
-import type { Game, GameEvent, TurnRequest } from "@/lib/types";
+import type { Game, GameEvent } from "@/lib/types";
 
 const storageKey = "meltdown-game-id-en";
 const actorLabels: Record<string, string> = {
@@ -38,7 +38,7 @@ const actorLabels: Record<string, string> = {
   director: "Management",
   engine: "Project",
 };
-const categories = ["All", "Technical", "Team", "Client relations"];
+const pollingPhases = new Set(["interpreting", "round_active", "resolving"]);
 
 function EventCard({
   event,
@@ -81,12 +81,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState<string[]>([]);
-  const [category, setCategory] = useState("All");
   const [tab, setTab] = useState<"events" | "graph">("events");
   const [focused, setFocused] = useState<string[]>([]);
-  const [retryPending, setRetryPending] = useState(false);
-  const pending = useRef<TurnRequest | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -117,6 +113,28 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    const gameId = game?.id;
+    const phase = game?.active_run?.phase;
+    if (!gameId || !phase || !pollingPhases.has(phase)) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      try {
+        const updated = await api.get(gameId);
+        if (!cancelled) setGame(updated);
+      } catch {
+        // A transient polling failure is retried without losing the submitted command.
+      }
+      if (!cancelled) timer = setTimeout(poll, 750);
+    };
+    timer = setTimeout(poll, 450);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [game?.id, game?.active_run?.phase]);
+
   async function createGame() {
     setBusy(true);
     setError("");
@@ -124,9 +142,6 @@ export default function Dashboard() {
       const created = await api.create();
       localStorage.setItem(storageKey, created.id);
       setGame(created);
-      setSelected([]);
-      pending.current = null;
-      setRetryPending(false);
       setFocused([]);
     } catch {
       setError(
@@ -137,55 +152,92 @@ export default function Dashboard() {
     }
   }
 
-  async function advance() {
-    if (!game || busy) return;
-    pending.current ??= {
-      request_id: crypto.randomUUID(),
-      expected_version: game.version,
-      actions: selected,
-    };
+  async function submitCommand(command: string) {
+    if (!game || busy) return false;
     setBusy(true);
     setError("");
     try {
-      const updated = await api.advance(game.id, pending.current);
+      const updated = await api.command(game.id, {
+        request_id: crypto.randomUUID(),
+        expected_version: game.version,
+        command,
+      });
       setGame(updated);
-      setSelected([]);
       setFocused([]);
-      setRetryPending(false);
-      pending.current = null;
+      return true;
     } catch (err) {
-      if (err instanceof ApiError && err.status < 500 && err.status !== 408) {
-        setError(err.message);
-        pending.current = null;
-        setRetryPending(false);
-        if (err.status === 409) {
-          try {
-            setGame(await api.get(game.id));
-            setSelected([]);
-          } catch {
-            /* Original error remains visible. */
-          }
-        }
-      } else {
-        setError(
-          "No response received. Retry to resume the same request without playing the turn twice.",
-        );
-        setRetryPending(true);
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "No response received. Your command is preserved while the game reconnects.",
+      );
+      try {
+        setGame(await api.get(game.id));
+      } catch {
+        // Keep the local state and command draft.
       }
+      return false;
     } finally {
       setBusy(false);
     }
   }
 
-  function select(id: string) {
-    if (busy || retryPending) return;
-    setSelected((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : current.length < 2
-          ? [...current, id]
-          : current,
-    );
+  async function confirmCommand(replacement: string | null) {
+    if (!game?.active_run || busy) return false;
+    setBusy(true);
+    setError("");
+    try {
+      setGame(
+        await api.confirm(game.id, game.active_run.id, {
+          request_id: crypto.randomUUID(),
+          ...(replacement ? { command: replacement } : { confirm: true }),
+        }),
+      );
+      return true;
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "The instruction could not be confirmed.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitAnswers(answers: Record<string, string>) {
+    if (!game?.active_run || busy) return false;
+    setBusy(true);
+    setError("");
+    try {
+      setGame(
+        await api.answer(game.id, game.active_run.id, {
+          request_id: crypto.randomUUID(),
+          answers: game.active_run.questions.map((question) => ({
+            question_id: question.id,
+            text: answers[question.id],
+          })),
+        }),
+      );
+      return true;
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "The answers could not be submitted.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function retryRun() {
+    if (!game?.active_run || busy) return false;
+    setBusy(true);
+    setError("");
+    try {
+      setGame(await api.retry(game.id, game.active_run.id));
+      return true;
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "The round could not be resumed.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
   }
   function showEvidence(ids: string[]) {
     setFocused(ids);
@@ -200,7 +252,7 @@ export default function Dashboard() {
   const finished = game?.status === "finished";
   const activeTurn = game ? Math.min(game.turn + 1, game.max_turns) : 1;
   const day = Math.ceil(activeTurn / 2);
-  const latest = game?.events.slice().reverse() || [];
+  const runActive = !!game?.active_run && pollingPhases.has(game.active_run.phase);
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -269,7 +321,7 @@ export default function Dashboard() {
                   <Users size={17} /> 4 characters
                 </span>
                 <span>
-                  <Target size={17} /> 2 decisions per turn
+                  <MessageSquare size={17} /> Natural-language commands
                 </span>
               </div>
               <button
@@ -333,7 +385,7 @@ export default function Dashboard() {
           </div>
         </main>
       ) : (
-        <main className="game-layout" aria-busy={busy}>
+        <main className="game-layout" aria-busy={busy || runActive}>
           <section className="mission-heading">
             <div>
               <div className="eyebrow">
@@ -451,7 +503,8 @@ export default function Dashboard() {
               <OfficeView
                 key={game.id}
                 game={game}
-                busy={busy}
+                busy={busy || runActive}
+                activeAgents={game.active_run?.active_agents ?? []}
                 onShowEvent={showEvidence}
               />
 
@@ -491,7 +544,7 @@ export default function Dashboard() {
                 </div>
                 {tab === "events" ? (
                   <div className="events-list" role="tabpanel">
-                    {latest.map((event) => (
+                    {game.events.slice().reverse().map((event) => (
                       <EventCard
                         key={event.id}
                         event={event}
@@ -576,117 +629,14 @@ export default function Dashboard() {
               </section>
             </section>
             <aside className="decision-column">
-              <section className="decision-panel">
-                <div className="section-heading">
-                  <h2>
-                    <Target size={18} /> Your decisions
-                  </h2>
-                  <span className="action-count">{selected.length} / 2</span>
-                </div>
-                <p className="panel-description">
-                  {finished
-                    ? "The crisis is over. Explore the consequences of your decisions in the debrief."
-                    : "Choose up to two actions, then let the characters react."}
-                </p>
-                {!finished && (
-                  <>
-                    <div
-                      className="category-filters"
-                      aria-label="Filter decisions"
-                    >
-                      {categories.map((item) => (
-                        <button
-                          key={item}
-                          aria-pressed={category === item}
-                          onClick={() => setCategory(item)}
-                          className={category === item ? "selected" : ""}
-                        >
-                          {item}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="action-list">
-                      {game.actions
-                        .filter(
-                          (action) =>
-                            category === "All" || action.category === category,
-                        )
-                        .map((action) => (
-                          <button
-                            key={action.id}
-                            className={`action-card ${selected.includes(action.id) ? "chosen" : ""}`}
-                            disabled={
-                              action.disabled ||
-                              busy ||
-                              retryPending ||
-                              (selected.length >= 2 &&
-                                !selected.includes(action.id))
-                            }
-                            onClick={() => select(action.id)}
-                            aria-pressed={selected.includes(action.id)}
-                            title={action.reason || undefined}
-                          >
-                            <div className="action-title">
-                              <strong>{action.title}</strong>
-                              <span className="action-check">
-                                {selected.includes(action.id) ? (
-                                  <Check size={14} />
-                                ) : (
-                                  <Plus size={14} />
-                                )}
-                              </span>
-                            </div>
-                            <p>{action.description}</p>
-                            <div className="action-meta">
-                              <span>{action.category}</span>
-                              <span>
-                                {action.cost
-                                  ? `${action.cost} budget`
-                                  : "1 decision"}
-                              </span>
-                            </div>
-                            {action.disabled && <small>{action.reason}</small>}
-                          </button>
-                        ))}
-                    </div>
-                    <div className="decision-footer">
-                      {!!selected.length && (
-                        <div className="selection-summary">
-                          {selected.map((id) => (
-                            <span key={id}>
-                              {game.actions.find((a) => a.id === id)?.title}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <button
-                        className="primary-button advance-button"
-                        onClick={advance}
-                        disabled={busy}
-                      >
-                        {busy ? (
-                          <LoaderCircle className="spin" size={18} />
-                        ) : (
-                          <Play size={16} fill="currentColor" />
-                        )}
-                        {busy
-                          ? "The characters are reacting…"
-                          : retryPending
-                            ? "Resume request"
-                            : selected.length
-                              ? "Resolve turn"
-                              : "Continue without a new action"}
-                        {!busy && <ChevronRight size={18} />}
-                      </button>
-                      <span className="turn-hint">
-                        {busy
-                          ? "Up to two rounds. Your game stays saved."
-                          : "Assigned work continues each turn."}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </section>
+              <CommandPanel
+                game={game}
+                busy={busy}
+                onCommand={submitCommand}
+                onConfirm={confirmCommand}
+                onAnswers={submitAnswers}
+                onRetry={retryRun}
+              />
               <section className="task-panel">
                 <div className="section-heading">
                   <h2>Work in progress</h2>

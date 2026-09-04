@@ -55,13 +55,18 @@ class SceneBoundary extends Component<
 export default function OfficeView({
   game,
   busy,
+  activeAgents,
   onShowEvent,
 }: {
   game: Game;
   busy: boolean;
+  activeAgents: string[];
   onShowEvent: (ids: string[]) => void;
 }) {
-  const room = useMemo(() => projectOffice(game), [game]);
+  const room = useMemo(
+    () => projectOffice(game, activeAgents),
+    [activeAgents, game],
+  );
   const [selected, setSelected] = useState("developer");
   const [motion, setMotion] = useState(true);
   const [reduced, setReduced] = useState(true);

@@ -30,7 +30,8 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 button {
@@ -44,7 +45,8 @@ a {
   text-decoration: none;
 }
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
 }
@@ -724,6 +726,222 @@ h3 {
 }
 .decision-panel .section-heading {
   margin-bottom: 9px;
+}
+.command-panel {
+  min-height: 310px;
+}
+.command-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+.command-field {
+  display: block;
+  margin-top: 19px;
+}
+.command-field > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #c5cfda;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.25px;
+}
+.command-field textarea,
+.question-card textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #344253;
+  border-radius: 7px;
+  background: #0f1620;
+  color: var(--text);
+  padding: 13px 14px;
+  line-height: 1.55;
+  font-size: 14px;
+}
+.command-field textarea::placeholder,
+.question-card textarea::placeholder {
+  color: #647183;
+}
+.command-field textarea:focus,
+.question-card textarea:focus {
+  border-color: #728e52;
+}
+.interpretation-receipt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 17px;
+  padding: 12px;
+  border: 1px solid #445637;
+  border-radius: 6px;
+  background: #1c281d;
+  color: #d8e9c0;
+  font-size: 13px;
+}
+.interpretation-receipt > svg {
+  color: var(--accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.interpretation-receipt span,
+.interpretation-receipt small {
+  display: block;
+}
+.interpretation-receipt small {
+  color: #90a27f;
+  font-size: 10px;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.interpretation-receipt.uncertain {
+  border-color: #76553f;
+  background: #2a201b;
+  color: #f0caa9;
+}
+.interpretation-receipt.uncertain > svg {
+  color: var(--orange);
+}
+.interpretation-receipt.complete {
+  opacity: 0.9;
+}
+.command-panel .advance-button {
+  margin-top: 13px;
+}
+.secondary-button {
+  border: 1px solid #485768;
+  background: #1a2330;
+  color: #d8e0e8;
+  border-radius: 6px;
+  padding: 11px 14px;
+  font-size: 13px;
+}
+.command-actions {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+  margin-top: 13px;
+}
+.clarification-reason {
+  color: #d5aa87;
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 12px;
+}
+.live-run {
+  position: relative;
+  overflow: hidden;
+}
+.live-run::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: live-scan 1.8s ease-in-out infinite;
+}
+@keyframes live-scan {
+  0%,
+  100% {
+    transform: translateX(-60%);
+  }
+  50% {
+    transform: translateX(60%);
+  }
+}
+.run-phase-icon {
+  float: right;
+  color: var(--accent);
+}
+.live-run h2 {
+  margin-top: 11px;
+  font-size: 20px;
+}
+.active-agent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.active-agent-list span {
+  border: 1px solid #3c4c59;
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #b8c6d3;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.run-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 19px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.run-progress > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a8b5c2;
+  font-size: 12px;
+}
+.run-progress > div > svg {
+  color: #95bb6b;
+}
+.run-progress .current,
+.run-progress .current > svg {
+  color: var(--orange);
+}
+.saved-note {
+  color: #718091;
+  font-size: 11px;
+  margin-top: 17px;
+}
+.question-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 17px;
+}
+.question-card {
+  display: block;
+  padding: 14px;
+  border: 1px solid #394757;
+  border-radius: 7px;
+  background: #101720;
+}
+.question-card > span,
+.question-card > strong,
+.question-card > small {
+  display: block;
+}
+.question-actor {
+  color: var(--cyan);
+  font: 10px var(--font-display);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.question-card > strong {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.question-card > small {
+  color: var(--muted);
+  margin: 5px 0 11px;
+  line-height: 1.45;
+}
+.failed-panel > svg {
+  color: var(--orange);
+}
+.failed-panel h2 {
+  margin-top: 10px;
+}
+.failed-panel p {
+  color: var(--muted);
+  margin: 8px 0 17px;
+  font-size: 13px;
 }
 .action-count {
   background: #c9f66a14;

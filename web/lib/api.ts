@@ -1,4 +1,9 @@
-import type { Game, TurnRequest } from "./types";
+import type {
+  AnswersRequest,
+  ConfirmationRequest,
+  Game,
+  TurnRequest,
+} from "./types";
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -27,9 +32,27 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   create: () => request<Game>("/games", { method: "POST" }),
   get: (id: string) => request<Game>(`/games/${encodeURIComponent(id)}`),
-  advance: (id: string, input: TurnRequest) =>
+  command: (id: string, input: TurnRequest) =>
     request<Game>(`/games/${encodeURIComponent(id)}/turns`, {
       method: "POST",
       body: JSON.stringify(input),
     }),
+  confirm: (id: string, runId: string, input: ConfirmationRequest) =>
+    request<Game>(
+      `/games/${encodeURIComponent(id)}/runs/${encodeURIComponent(runId)}/confirmation`,
+      { method: "POST", body: JSON.stringify(input) },
+    ),
+  answer: (id: string, runId: string, input: AnswersRequest) =>
+    request<Game>(
+      `/games/${encodeURIComponent(id)}/runs/${encodeURIComponent(runId)}/answers`,
+      { method: "POST", body: JSON.stringify(input) },
+    ),
+  retry: (id: string, runId: string) =>
+    request<Game>(
+      `/games/${encodeURIComponent(id)}/runs/${encodeURIComponent(runId)}/retry`,
+      {
+        method: "POST",
+        body: JSON.stringify({ request_id: crypto.randomUUID() }),
+      },
+    ),
 };
