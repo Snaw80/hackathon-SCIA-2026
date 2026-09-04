@@ -1,6 +1,6 @@
 # Project Meltdown — rapport de hackathon
 
-**Version de travail du 3 septembre 2026 — MVP local en anglais et premiers essais OpenAI réalisés.** Ce rapport distingue les fonctionnalités réalisées, les essais effectués et les objectifs encore non évalués. Les consignes officielles du hackathon, l'équipe et la répartition des contributions restent à renseigner avec leurs données réelles.
+**Version de travail du 4 septembre 2026 — MVP local en anglais, bureau Three.js intégré et premiers essais OpenAI réalisés.** Ce rapport distingue les fonctionnalités réalisées, les essais effectués et les objectifs encore non évalués. Les consignes officielles du hackathon, l'équipe et la répartition des contributions restent à renseigner avec leurs données réelles.
 
 ## 1. Résumé
 
@@ -36,11 +36,15 @@ L'interface livre les éléments suivants :
 - Sauvegarde côté serveur, reprise de la dernière partie et export JSON public.
 - Débrief final avec liens vers les événements et pistes alternatives clairement présentées comme hypothèses.
 
-Le bureau 3D n'est pas inclus dans ce premier MVP. La présentation actuelle est un tableau 2D adaptatif.
+Le bureau 3D est désormais intégré au tableau de commandement. Il est construit avec Three.js via React Three Fiber et Drei : géométrie low-poly procédurale, quatre personnages sélectionnables, bureaux, table de réunion, plantes, écran d'avancement et signal de sécurité. Aucun modèle externe n'est téléchargé.
+
+La représentation utilise exclusivement la projection publique de la partie. Les négociations publiques du tour courant peuvent rapprocher le client ou le commercial de la table. Le niveau de pression influence la posture et le désordre du bureau. Le correctif vérifié change le signal de sécurité ; une livraison réussie produit une pose et un bandeau de fin. Ces positions et animations illustrent les événements, sans ajouter de conséquences métier ni révéler les messages privés.
+
+Des boutons HTML permettent d’inspecter les personnages, de consulter leur événement source, de suspendre les animations, de réinitialiser la caméra et d’utiliser une vue 2D. Les pointeurs tactiles conservent le défilement vertical par défaut et exigent l’activation explicite du mode caméra. Les préférences de mouvement réduit et la visibilité de la scène contrôlent l'animation. L'absence ou la perte du contexte WebGL laisse les contrôles du jeu accessibles en 2D.
 
 ## 4. Architecture réalisée
 
-Le frontend utilise Next.js, React et TypeScript. Il appelle un proxy `/api` vers FastAPI. Python porte les règles, les personnages et l'orchestration. SQLite conserve les parties canoniques et les reçus de requêtes ; un second fichier SQLite conserve les checkpoints LangGraph.
+Le frontend utilise Next.js, React et TypeScript, avec un module Three.js chargé à la demande côté client. Il appelle un proxy `/api` vers FastAPI. Python porte les règles, les personnages et l'orchestration. SQLite conserve les parties canoniques et les reçus de requêtes ; un second fichier SQLite conserve les checkpoints LangGraph.
 
 Le [graphe conceptuel](graphe-orchestration.md) possède deux boucles. La boucle externe attend le joueur avec `interrupt()` puis reprend avec une décision. La boucle interne prépare les observations privées, distribue les agents avec `Send`, collecte les intentions, applique les règles et redistribue les réactions autorisées.
 
@@ -94,7 +98,7 @@ La suite contient **26 tests backend**, tous passants lors de la vérification f
 
 La sortie complète est conservée dans [pytest.txt](evidence/pytest.txt). Elle contient un avertissement de dépréciation provenant de l'intégration Starlette/AnyIO utilisée par le client de test ; aucun test ne manque à cause de cet avertissement.
 
-Le contrôle Ruff passe et le build de production Next.js réussit, y compris la vérification TypeScript. Le parcours HTTP a été exercé à travers le proxy Next.js vers FastAPI. La page locale renvoie HTTP 200. Les erreurs réseau du frontend ont été examinées en revue de code ; aucune injection de panne dans un navigateur ni revue visuelle par captures n'a été effectuée.
+Le contrôle Ruff passe et le build de production Next.js réussit, y compris la vérification TypeScript. Cinq tests frontend vérifient la projection du bureau : absence de mutation, état de sécurité public, événements limités au tour courant, surcharge/refus et distinction entre livraison réussie et échéance manquée. Le parcours HTTP a été exercé à travers le proxy Next.js vers FastAPI. La page locale renvoie HTTP 200. Les erreurs réseau du frontend ont été examinées en revue de code ; aucune injection de panne dans un navigateur ni revue visuelle par captures n'a été effectuée.
 
 Versions principales enregistrées : Python 3.12.13, Next.js 16.3.4, FastAPI 0.141.1, LangGraph 1.2.11, LangChain 1.3.18 et Pydantic 2.13.5. Les fichiers `uv.lock` et `web/package-lock.json` fixent les dépendances ; un relevé Python est disponible dans [versions.json](evidence/versions.json).
 
@@ -136,7 +140,14 @@ L'assistance IA a servi au cadrage, à la conception du graphe, à la rédaction
 - Les messages libres peuvent contenir des affirmations inexactes malgré des intentions et références structurellement valides.
 - Le débrief est volontairement contraint aux faits et à des alternatives proposées, sans simulation contrefactuelle automatique.
 - Le prototype possède un verrouillage de livraison et des issues commerciales ; il ne simule pas encore un incident de cybersécurité détaillé.
-- Le bureau 3D, l'authentification, l'hébergement multi-utilisateur, les conversations libres et les scénarios supplémentaires ne sont pas implémentés.
+- L’authentification, l’hébergement multi-utilisateur, les conversations libres et les scénarios supplémentaires ne sont pas implémentés.
+- Le bureau utilise des objets procéduraux ; il ne comprend pas encore de personnages GLTF animés, de déplacements simulés par le moteur ou de scènes de départ d’entreprise.
+- La fluidité, les interactions tactiles et le fallback WebGL ne sont pas encore mesurés dans un navigateur réel ; compilation et tests de projection ne remplacent pas cette vérification.
 - L'accessibilité, l'ergonomie et l'apprentissage doivent encore être évalués avec des utilisateurs.
 
-Le prochain jalon est un essai utilisateur du parcours et une évaluation répétée des comportements. Le bureau 3D pourra ensuite représenter les mêmes événements validés, sans devenir une deuxième source de règles de simulation.
+Le prochain jalon est un essai utilisateur du parcours et une évaluation répétée des comportements. Le bureau 3D représente les mêmes événements validés ; ses performances et sa lisibilité devront être vérifiées sur les appareils utilisés pour la démonstration.
+
+
+## Références du rendu 3D
+
+[React Three Fiber — compatibilité React 19 et introduction](https://r3f.docs.pmnd.rs/), [Canvas et fallbacks](https://r3f.docs.pmnd.rs/api/canvas), [rendu à la demande](https://r3f.docs.pmnd.rs/advanced/scaling-performance), [contrôles Drei](https://drei.docs.pmnd.rs/controls/introduction), consultés le 4 septembre 2026. Dépendances verrouillées : Three.js 0.185.1, React Three Fiber 9.7.0, Drei 10.7.8.

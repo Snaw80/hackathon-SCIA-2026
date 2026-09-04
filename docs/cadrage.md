@@ -1,6 +1,6 @@
 # Project Meltdown — cadrage du prototype
 
-**État au 3 septembre 2026 :** le graphe et le périmètre de la première boucle ont été approuvés pour implémentation. Le MVP local 2D est réalisé ; ce document conserve le cadrage et les pistes suivantes. Le [rapport](rapport.md) décrit précisément ce qui est livré et vérifié.
+**État au 3 septembre 2026 :** le graphe et le périmètre de la première boucle ont été approuvés pour implémentation. Le MVP local avec bureau 3D est réalisé ; ce document conserve le cadrage et les pistes suivantes. Le [rapport](rapport.md) décrit précisément ce qui est livré et vérifié.
 
 Source du concept : [brainstorm.md](../brainstorm.md). Documents associés : [rapport](rapport.md), [journal](journal.md).
 
@@ -20,7 +20,7 @@ Public proposé : étudiants en informatique et futurs chefs de projet. Objectif
 | **MVP recommandé** | Même base, quatre personnages pilotés par LLM, informations privées, historique causal, coach | Concentre l'effort sur la proposition agentique et une partie complète |
 | Vision étendue | MVP et bureau 3D animé, conversations libres, plusieurs crises | Plus spectaculaire, mais davantage de travail sur les assets, l'intégration et les cas limites |
 
-Le bureau 3D reste une cible de présentation après validation du parcours complet. Son importance dans le livrable dépendra du temps disponible et des critères du jury.
+Le bureau 3D a été demandé explicitement et intégré après validation du parcours complet. Il conserve les règles de simulation existantes ; la vérification visuelle et les mesures de fluidité restent à effectuer sur le matériel de démonstration.
 
 ## 3. Partie proposée
 

@@ -1,0 +1,21 @@
+Project Meltdown — Three.js milestone checks
+Recorded: 2026-09-04 Asia/Seoul
+
+npm --prefix web test
+PASS: 5 projection tests, 0 failures (106 ms)
+Checks: immutable input; public security; current-turn negotiation; overload/refusal; delivered vs missed outcome.
+
+npm --prefix web run build
+PASS: Next.js 16.3.4 production compilation and TypeScript, 3 static routes generated.
+
+uv run pytest -q
+PASS: 26 backend tests, 1 external Starlette/AnyIO deprecation warning (0.64 s).
+
+uv run ruff check backend
+PASS: All checks passed.
+
+Independent static review
+FIXED: Canvas fallback side effect that forced 2D on capable devices.
+FIXED: WebGL initialization failure escaping the scene error boundary; capability is now checked before mount.
+FIXED: OrbitControls intercepting touch page scrolling; any coarse pointer requires explicit camera mode.
+No browser visual inspection, screenshot, touch-device test, GPU measurement, deployment, or model call in this milestone.

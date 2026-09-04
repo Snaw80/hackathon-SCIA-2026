@@ -85,3 +85,18 @@ Pour une mesure, préciser le protocole, le nombre d'essais et les versions. Pou
 **Résultats.** 156 appels instrumentés, environ 0,0268247 USD estimé pour ces appels. Une suite de tests a également effectué des appels non instrumentés en héritant du mode live ; son coût est inconnu et exclu de ce montant. La dernière partie livre avec budget 22, confiance 66 et moral 68 pour 0,00583 USD estimé ; elle comporte un secours de personnage et un coach LLM valide. 26 tests backend passants après isolation de la configuration locale et blocage des transports HTTP externes, Ruff et build Next.js vérifiés. HTTP 200 sur la page anglaise, état `llm` sur health et création de partie HTTP 201 via le proxy.
 
 **Preuves et limites.** [Calibration détaillée](model-calibration.md), [trace finale](evidence/model-evaluation-final.json), essais intermédiaires conservés. Le coût est une estimation issue des tokens, pas une facture. Les sorties libres restent susceptibles d'erreur et les petits échantillons ne démontrent pas une supériorité générale ni une efficacité pédagogique. Pas de nouvelle revue visuelle navigateur ou de déploiement public.
+
+
+## 4 septembre 2026 — bureau Three.js
+
+**Demande.** Implémenter Three.js pour finaliser la présentation du jeu.
+
+**Réalisé.** Scène isométrique React Three Fiber/Drei chargée à la demande, quatre personnages low-poly, bureaux et table de négociation, sélection des personnages et lien vers leur événement public, signaux de pression/sécurité/livraison et écran d'avancement. La géométrie est produite localement en code. Les anciennes fiches sont remplacées par une sélection compacte et une fiche détaillée sous la scène.
+
+**Frontières.** Le bureau consomme uniquement le type public `Game`, sans appel API propre, mutation ou nouvel appel de modèle. Les négociations visibles du tour courant déterminent le rapprochement de la table ; les messages privés ne sont pas représentés. Les contrôles du jeu restent dans le tableau 2D.
+
+**Accessibilité et coût graphique.** Sélection via boutons HTML, contrôle de caméra, pause, vue 2D, respect du mouvement réduit, arrêt de l'animation hors écran/onglet masqué, limite de ratio de pixels à 1,5 et gestion des échecs WebGL. La revue a détecté puis fait corriger un fallback qui basculait toujours en 2D et le blocage du défilement tactile par OrbitControls ; le mode caméra tactile est maintenant explicite.
+
+**Vérification.** Cinq tests de projection frontend et les 26 tests backend isolés passent. Build Next.js/TypeScript et Ruff sans erreur. Revue indépendante du code. Aucun nouvel appel LLM pendant ce jalon ; `.env` est conservé. Le fichier `docs/evidence/threejs-checks.txt` conserve les contrôles.
+
+**Limites.** Aucune capture, inspection DOM, interaction tactile ou mesure GPU dans un navigateur pendant ce jalon. Le fallback et les animations doivent encore être vérifiés visuellement sur le matériel de démonstration. Ni nouveaux scénarios, ni GLTF externe, ni déploiement public. Assistance IA utilisée pour l'implémentation, la revue et la documentation.

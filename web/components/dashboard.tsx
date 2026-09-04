@@ -24,6 +24,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import OfficeView from "./office/office-view";
 import { api, ApiError } from "@/lib/api";
 import type { Game, GameEvent, TurnRequest } from "@/lib/types";
 
@@ -447,62 +448,12 @@ export default function Dashboard() {
 
           <div className="workspace-grid">
             <section className="main-column">
-              <div className="section-heading">
-                <h2>
-                  <Users size={18} /> The stakeholders
-                </h2>
-                <span className="quiet-label">4 ACTIVE CHARACTERS</span>
-              </div>
-              <div className="agents-grid">
-                {game.agents.map((agent) => (
-                  <article
-                    className="agent-card"
-                    key={agent.id}
-                    style={
-                      { "--agent-color": agent.color } as React.CSSProperties
-                    }
-                  >
-                    <div className="agent-top">
-                      <div className="avatar">{agent.initials}</div>
-                      <div>
-                        <h3>{agent.name}</h3>
-                        <span className="agent-role">{agent.role}</span>
-                      </div>
-                      <span
-                        className={`agent-status ${agent.stress > 70 ? "strained" : ""}`}
-                      >
-                        {agent.status}
-                      </span>
-                    </div>
-                    <p className="agent-activity">{agent.activity}</p>
-                    <div className="agent-bottom">
-                      <span>
-                        Pressure{" "}
-                        <strong>
-                          {agent.stress > 70
-                            ? "High"
-                            : agent.stress > 40
-                              ? "Moderate"
-                              : "Low"}
-                        </strong>
-                      </span>
-                      <div
-                        className="stress-bars"
-                        aria-label={`Pressure ${agent.stress} of 100`}
-                      >
-                        {Array.from({ length: 8 }, (_, i) => (
-                          <i
-                            key={i}
-                            className={
-                              i < Math.ceil(agent.stress / 12.5) ? "filled" : ""
-                            }
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
+              <OfficeView
+                key={game.id}
+                game={game}
+                busy={busy}
+                onShowEvent={showEvidence}
+              />
 
               <section className="activity-panel">
                 <div className="activity-toolbar">

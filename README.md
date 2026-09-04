@@ -4,7 +4,7 @@ Un serious game de gestion de crise : six tours, quatre personnages, deux décis
 
 ## Lancer l'application
 
-Prérequis : Node.js 20.9+ avec npm et [uv](https://docs.astral.sh/uv/). `uv` installe Python 3.12 si nécessaire.
+Prérequis : Node.js 22.18+ avec npm et [uv](https://docs.astral.sh/uv/). `uv` installe Python 3.12 si nécessaire.
 
 ```bash
 test -f .env || cp .env.example .env
@@ -54,6 +54,14 @@ Le coach LLM sélectionne et ordonne des moments parmi des faits déjà rédigé
 
 Le modèle a été testé avec des appels OpenAI réels. Les tests automatisés imposent le mode à règles et bloquent les appels HTTP externes, indépendamment du `.env` local. Le [protocole, les résultats et le coût estimé](docs/model-calibration.md) sont documentés. La clé reste dans `.env`, ignoré par Git. Le plafond de sortie comprend les éventuels tokens de raisonnement ; aucune relance automatique n'est effectuée.
 
+## Bureau 3D
+
+Le bureau apparaît après création ou reprise d'une partie. Avec une souris, faire glisser la scène pour orienter la caméra ; sélectionner un personnage ou son bouton sous la scène pour consulter son état et rejoindre son événement dans le journal. Les touches Tab et Entrée permettent la sélection sans utiliser le canvas.
+
+La scène montre les quatre personnages, la pression, les négociations publiques, l'avancement et l'état de sécurité connu. Elle représente le dernier état enregistré, même pendant la résolution suivante. Les contrôles permettent de suspendre les animations, réinitialiser la caméra et passer en vue 2D. Sur écran tactile, le défilement vertical reste actif ; le bouton « Orbit » active explicitement la manipulation de caméra et devient « Scroll » pour la quitter. Les animations respectent la préférence système de mouvement réduit et s'arrêtent hors écran ou dans un onglet masqué. Une indisponibilité de WebGL bascule vers la vue 2D.
+
+Le rendu ne déclenche aucun appel LLM. Les objets low-poly sont construits localement en code, sans modèle 3D ni texture externe. La scène utilise React Three Fiber et Drei au-dessus de Three.js. Node 22.18+ est requis pour exécuter les tests TypeScript avec le lanceur natif.
+
 ## Architecture
 
 - `web/` : Next.js, React et TypeScript ; tableau de commandement en anglais et proxy `/api` vers FastAPI.
@@ -74,6 +82,7 @@ Les parties et checkpoints sont dans `.data/`, ignoré par Git. Les mutations so
 uv run pytest -q
 uv run ruff check backend
 npm --prefix web run build
+npm --prefix web test
 ```
 
 Avec les serveurs lancés, enregistrer deux parcours complets via le proxy public :
@@ -101,4 +110,4 @@ Les JSON publics sont enregistrés dans `docs/evidence/`. Ce script crée deux n
 - [Rapport](docs/rapport.md)
 - [Journal](docs/journal.md)
 
-Le premier MVP livré est le tableau 2D jouable en anglais, avec agents OpenAI évalués. Le rapport reste en français. Les anciennes parties françaises restent en base ; l'interface anglaise mémorise séparément sa dernière partie. Le bureau 3D, les essais pédagogiques avec des participants et l'hébergement restent les prochains jalons.
+Le MVP comprend un tableau de commandement en anglais, un bureau Three.js interactif et des agents OpenAI évalués. Le rapport reste en français. Les anciennes parties françaises restent en base ; l'interface anglaise mémorise séparément sa dernière partie. Les essais pédagogiques avec des participants et l'hébergement restent les prochains jalons.
