@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 from dotenv import load_dotenv
-from .models import TurnRequest
+from .models import AnswerRequest, CommandRequest, ConfirmationRequest, RetryRequest
 from .service import GameService
 
 load_dotenv()
@@ -37,12 +37,39 @@ def create_app(db_path=None, policy=None):
         except KeyError:
             raise HTTPException(404, "This game could not be found.") from None
 
-    @app.post("/api/games/{game_id}/turns")
-    def advance(game_id: str, request: TurnRequest):
+    @app.post("/api/games/{game_id}/turns", status_code=202)
+    def advance(game_id: str, request: CommandRequest):
         try:
-            return app.state.service.advance(game_id, request)
+            return app.state.service.start_turn(game_id, request)
         except KeyError:
             raise HTTPException(404, "This game could not be found.") from None
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from None
+
+    @app.post("/api/games/{game_id}/runs/{run_id}/confirmation", status_code=202)
+    def confirm(game_id: str, run_id: str, request: ConfirmationRequest):
+        try:
+            return app.state.service.confirm(game_id, run_id, request)
+        except KeyError:
+            raise HTTPException(404, "This round could not be found.") from None
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from None
+
+    @app.post("/api/games/{game_id}/runs/{run_id}/answers", status_code=202)
+    def answer(game_id: str, run_id: str, request: AnswerRequest):
+        try:
+            return app.state.service.answer(game_id, run_id, request)
+        except KeyError:
+            raise HTTPException(404, "This round could not be found.") from None
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from None
+
+    @app.post("/api/games/{game_id}/runs/{run_id}/retry", status_code=202)
+    def retry(game_id: str, run_id: str, request: RetryRequest):
+        try:
+            return app.state.service.retry(game_id, run_id, request)
+        except KeyError:
+            raise HTTPException(404, "This round could not be found.") from None
         except ValueError as exc:
             raise HTTPException(409, str(exc)) from None
 

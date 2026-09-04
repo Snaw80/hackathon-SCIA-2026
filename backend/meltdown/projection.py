@@ -136,3 +136,23 @@ def public_view(game):
         "outcome": deepcopy(game["outcome"]),
         "debrief": deepcopy(game["debrief"]),
     }
+
+
+def public_run(run):
+    if run is None:
+        return None
+    return {
+        key: deepcopy(run.get(key))
+        for key in (
+            "id",
+            "phase",
+            "command",
+            "interpretation",
+            "active_agents",
+            "progress",
+            "questions",
+            "error",
+            "created_at",
+            "updated_at",
+        )
+    }

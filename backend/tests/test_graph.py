@@ -1,6 +1,7 @@
 import json
+import time
 import pytest
-from meltdown.models import AgentIntent, TurnRequest
+from meltdown.models import AgentIntent, CommandRequest, ConfirmationRequest, TurnRequest
 from meltdown.service import GameService
 from meltdown.agents import RulesPolicy
 
@@ -12,6 +13,16 @@ def turn(service, game, actions, request_id=None):
             request_id=request_id or f"r{game['version']}", expected_version=game["version"], actions=actions
         ),
     )
+
+
+def wait_service_phase(service, game_id, phase):
+    deadline = time.monotonic() + 2
+    while time.monotonic() < deadline:
+        game = service.get(game_id)
+        if game["active_run"] and game["active_run"]["phase"] == phase:
+            return game
+        time.sleep(0.01)
+    raise AssertionError(f"Game did not reach {phase}")
 
 
 def test_rounds_are_bounded_and_time_advances_once(tmp_path):
@@ -259,3 +270,44 @@ def test_graph_pauses_for_collected_questions_then_resumes_once(tmp_path):
     assert store.load(game["id"])["version"] == 1
     checkpoint.close()
     store.close()
+
+
+def test_ambiguous_async_run_survives_service_restart(tmp_path):
+    path = tmp_path / "restart-run.sqlite"
+    service = GameService(path)
+    game = service.create()
+    accepted = service.start_turn(
+        game["id"],
+        CommandRequest(request_id="ambiguous", expected_version=0, command="Handle it"),
+    )
+    waiting = wait_service_phase(service, game["id"], "needs_confirmation")
+    assert waiting["active_run"]["id"] == accepted["active_run"]["id"]
+    service.close()
+
+    restarted = GameService(path)
+    waiting = restarted.get(game["id"])
+    assert waiting["active_run"]["phase"] == "needs_confirmation"
+    restarted.confirm(
+        game["id"],
+        waiting["active_run"]["id"],
+        ConfirmationRequest(request_id="replace", command="Audit the defect"),
+    )
+    assert wait_service_phase(restarted, game["id"], "complete")["turn"] == 1
+    restarted.close()
+
+
+def test_async_run_cannot_silently_switch_agent_mode(tmp_path):
+    class AnotherMode(RulesPolicy):
+        mode = "llm"
+
+    path = tmp_path / "async-mode.sqlite"
+    service = GameService(path)
+    game = service.create()
+    service.close()
+    restarted = GameService(path, policy=AnotherMode())
+    with pytest.raises(ValueError, match="mode"):
+        restarted.start_turn(
+            game["id"],
+            CommandRequest(request_id="mode", expected_version=0, command="Audit the defect"),
+        )
+    restarted.close()

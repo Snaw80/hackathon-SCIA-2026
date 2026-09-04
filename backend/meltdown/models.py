@@ -92,3 +92,23 @@ class AnswerRequest(BaseModel):
         if len(set(ids)) != len(ids):
             raise ValueError("A question cannot be answered twice.")
         return value
+
+
+class ConfirmationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    request_id: str = Field(min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
+    confirm: bool = False
+    command: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def confirmation_or_replacement(self):
+        if self.command is not None:
+            self.command = self.command.strip()
+        if self.confirm == bool(self.command):
+            raise ValueError("Confirm the interpretation or provide a replacement command.")
+        return self
+
+
+class RetryRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    request_id: str = Field(min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
