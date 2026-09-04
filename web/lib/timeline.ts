@@ -10,22 +10,21 @@ export type PresentationKind =
   | "agent";
 
 export function groupTimeline(events: GameEvent[]): TimelineTurn[] {
-  const turns = new Map<number, Map<number, GameEvent[]>>();
+  const turns: TimelineTurn[] = [];
   for (const event of events) {
-    const rounds = turns.get(event.turn) ?? new Map<number, GameEvent[]>();
-    const items = rounds.get(event.round) ?? [];
-    items.push(event);
-    rounds.set(event.round, items);
-    turns.set(event.turn, rounds);
+    let turn = turns.at(-1);
+    if (!turn || turn.turn !== event.turn) {
+      turn = { turn: event.turn, rounds: [] };
+      turns.push(turn);
+    }
+    let round = turn.rounds.at(-1);
+    if (!round || round.round !== event.round) {
+      round = { round: event.round, events: [] };
+      turn.rounds.push(round);
+    }
+    round.events.push(event);
   }
-  return [...turns.entries()]
-    .sort(([left], [right]) => left - right)
-    .map(([turn, rounds]) => ({
-      turn,
-      rounds: [...rounds.entries()]
-        .sort(([left], [right]) => left - right)
-        .map(([round, items]) => ({ round, events: items })),
-    }));
+  return turns;
 }
 
 export function presentationKind(

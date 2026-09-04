@@ -636,17 +636,67 @@ h3 {
 .events-list {
   max-height: 590px;
   overflow: auto;
-  padding: 6px 23px;
+  padding: 14px 23px 24px;
   scrollbar-width: thin;
   scrollbar-color: #344358 transparent;
 }
+.timeline-turn {
+  margin-top: 12px;
+}
+.timeline-turn:first-child {
+  margin-top: 0;
+}
+.timeline-turn > header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 8px 0;
+  background: var(--surface);
+  color: var(--accent);
+  font: 11px var(--font-display);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.timeline-turn > header i {
+  height: 1px;
+  flex: 1;
+  background: #354133;
+}
+.timeline-round {
+  margin-left: 8px;
+  padding-left: 17px;
+  border-left: 1px solid #2c3948;
+}
+.round-label {
+  padding: 8px 0 2px;
+  color: #728194;
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
 .event-card {
-  padding: 18px 0 20px;
+  margin: 9px 0;
+  padding: 14px 15px 15px;
   border-bottom: 1px solid #242e3c;
+  border: 1px solid #283442;
+  border-radius: 7px;
+  background: #101720;
   scroll-margin: 20px;
 }
-.event-card:last-child {
-  border: 0;
+.event-card.event-player,
+.event-card.event-answer {
+  border-color: #485938;
+  background: #182018;
+}
+.event-card.event-question {
+  border-color: #5d4f6f;
+  background: #1d1925;
+}
+.event-card.event-engine {
+  background: #111923;
 }
 .event-heading {
   display: flex;
@@ -716,6 +766,26 @@ h3 {
   outline-offset: -1px;
   padding-left: 10px;
   padding-right: 10px;
+}
+.event-causes {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #293542;
+}
+.event-causes summary {
+  cursor: pointer;
+  color: #8fa0b2;
+  font-size: 11px;
+}
+.event-causes a {
+  display: block;
+  margin-top: 8px;
+  color: #bac7d2;
+  font-size: 12px;
+}
+.event-causes a span {
+  color: var(--cyan);
+  margin-right: 7px;
 }
 .decision-panel,
 .task-panel {
@@ -1181,6 +1251,17 @@ h3 {
   font-size: 13px;
   color: var(--muted);
   margin-top: 5px;
+}
+.live-orchestration {
+  margin-top: 20px;
+  padding: 16px 16px 4px;
+  border: 1px solid #485b39;
+  border-radius: 7px;
+  background: #172018;
+}
+.live-orchestration .eyebrow {
+  margin-bottom: 14px;
+  font-size: 10px;
 }
 .run-stats {
   display: flex;

@@ -6,7 +6,6 @@ import {
   ArrowDown,
   ArrowRight,
   Check,
-  ChevronRight,
   Clock3,
   Download,
   Flag,
@@ -27,6 +26,7 @@ import OfficeView from "./office/office-view";
 import CommandPanel from "./command-panel";
 import { api, ApiError } from "@/lib/api";
 import type { Game, GameEvent } from "@/lib/types";
+import { groupTimeline, presentationKind } from "@/lib/timeline";
 
 const storageKey = "meltdown-game-id-en";
 const actorLabels: Record<string, string> = {
@@ -43,14 +43,19 @@ const pollingPhases = new Set(["interpreting", "round_active", "resolving"]);
 function EventCard({
   event,
   focused,
+  eventById,
 }: {
   event: GameEvent;
   focused?: boolean;
+  eventById: Map<string, GameEvent>;
 }) {
+  const causes = event.causes
+    .map((id) => eventById.get(id))
+    .filter((cause): cause is GameEvent => !!cause);
   return (
     <article
       id={`event-${event.id}`}
-      className={`event-card ${focused ? "event-focused" : ""}`}
+      className={`event-card event-${presentationKind(event)} ${focused ? "event-focused" : ""}`}
     >
       <div className="event-heading">
         <span className={`event-dot ${event.actor}`} />
@@ -71,6 +76,17 @@ function EventCard({
             </span>
           ))}
         </div>
+      )}
+      {!!causes.length && (
+        <details className="event-causes">
+          <summary>Why this happened</summary>
+          {causes.map((cause) => (
+            <a key={cause.id} href={`#event-${cause.id}`}>
+              <span>{actorLabels[cause.actor] || cause.actor}</span>
+              {cause.title}
+            </a>
+          ))}
+        </details>
       )}
     </article>
   );
@@ -253,6 +269,8 @@ export default function Dashboard() {
   const activeTurn = game ? Math.min(game.turn + 1, game.max_turns) : 1;
   const day = Math.ceil(activeTurn / 2);
   const runActive = !!game?.active_run && pollingPhases.has(game.active_run.phase);
+  const timeline = game ? groupTimeline(game.events) : [];
+  const eventById = new Map(game?.events.map((event) => [event.id, event]) ?? []);
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -544,12 +562,39 @@ export default function Dashboard() {
                 </div>
                 {tab === "events" ? (
                   <div className="events-list" role="tabpanel">
-                    {game.events.slice().reverse().map((event) => (
-                      <EventCard
-                        key={event.id}
-                        event={event}
-                        focused={focused.includes(event.id)}
-                      />
+                    {timeline.map((turnGroup) => (
+                      <section className="timeline-turn" key={turnGroup.turn}>
+                        <header>
+                          <span>{turnGroup.turn ? `Turn ${turnGroup.turn}` : "Briefing"}</span>
+                          <i />
+                        </header>
+                        {turnGroup.rounds.map((roundGroup, roundIndex) => (
+                          <div
+                            className="timeline-round"
+                            key={`${roundGroup.round}-${roundIndex}`}
+                          >
+                            <div className="round-label">
+                              {roundGroup.round
+                                ? `Agent round ${roundGroup.round}`
+                                : turnGroup.turn
+                                  ? roundGroup.events.some(
+                                      (event) => event.actor === "player",
+                                    )
+                                    ? "Your direction"
+                                    : "Turn outcome"
+                                  : "Starting situation"}
+                            </div>
+                            {roundGroup.events.map((event) => (
+                              <EventCard
+                                key={event.id}
+                                event={event}
+                                eventById={eventById}
+                                focused={focused.includes(event.id)}
+                              />
+                            ))}
+                          </div>
+                        ))}
+                      </section>
                     ))}
                   </div>
                 ) : (
@@ -566,6 +611,26 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
+                    {game.active_run && game.active_run.phase !== "complete" && (
+                      <div className="live-orchestration" role="status">
+                        <div className="eyebrow">LIVE RUN · {game.active_run.phase.replaceAll("_", " ")}</div>
+                        <div className="graph-steps">
+                          {game.active_run.progress.map((step, index) => (
+                            <div className="graph-step" key={`${step.label}-${index}`}>
+                              <span className="step-track">
+                                <span />
+                                {index < game.active_run!.progress.length - 1 && <i />}
+                              </span>
+                              <div>
+                                <strong>{step.label}</strong>
+                                <span>Saved progress</span>
+                              </div>
+                              <Check size={15} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {game.last_run.steps.length ? (
                       <>
                         <div className="run-stats">

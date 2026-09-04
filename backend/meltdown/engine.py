@@ -48,6 +48,26 @@ def prepare_turn(original, request: TurnRequest):
     game["pending_questions"] = []
     game["answer_followup"] = False
     game["last_run"] = {"rounds": 0, "agent_calls": 0, "fallbacks": 0, "duration_ms": 0, "steps": []}
+    command_causes = []
+    if request.command:
+        command_event = event(
+            game,
+            "player",
+            "player_command",
+            "Your instruction",
+            request.command,
+        )
+        command_causes = [command_event["id"]]
+        if request.interpretation:
+            interpretation_event = event(
+                game,
+                "engine",
+                "command_interpretation",
+                "Instruction understood",
+                request.interpretation,
+                causes=command_causes,
+            )
+            command_causes = [interpretation_event["id"]]
     for action in request.actions:
         title, description, cost, _, recipients = ACTIONS[action]
         effects = {"budget": adjust(game, "budget", -cost)} if cost else {}
@@ -58,7 +78,7 @@ def prepare_turn(original, request: TurnRequest):
             title,
             description,
             effects=effects,
-            causes=[],
+            causes=command_causes,
             audience=["player", *recipients],
         )
         game["action_event_ids"].append(e["id"])

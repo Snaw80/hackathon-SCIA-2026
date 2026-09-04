@@ -30,12 +30,13 @@ npm --prefix web run dev
 ## Jouer
 
 1. Prendre les commandes depuis le briefing.
-2. Choisir zéro, une ou deux actions, puis résoudre le tour.
-3. Lire les réactions, consulter les indicateurs et, si utile, l'onglet Orchestration.
-4. Obtenir un accord de périmètre ou de report, terminer et valider le travail avant de livrer.
-5. Consulter le débrief et ses événements sources ; exporter la trace publique avec le bouton de téléchargement du journal.
+2. Écrire librement ce que l'on veut demander à l'équipe. L'interpréteur traduit la consigne en zéro, une ou deux décisions validées par les règles du jeu.
+3. Suivre la résolution réelle dans le panneau de tour actif. Si des personnages ont besoin d'une précision, répondre à leurs questions groupées pour reprendre le même tour.
+4. Lire la chronologie regroupée par tour et ronde, consulter les indicateurs et, si utile, l'onglet Orchestration.
+5. Obtenir un accord de périmètre ou de report, terminer et valider le travail avant de livrer.
+6. Consulter le débrief et ses événements sources ; exporter la trace publique avec le bouton de téléchargement du journal.
 
-Les tâches acceptées continuent d'un tour à l'autre. Les personnages agissent aussi sans sollicitation directe. Une partie se termine à la livraison, au sixième tour ou si la confiance client entraîne une rupture du contrat. Le navigateur mémorise seulement l'identifiant de la dernière partie ; le serveur garde l'état.
+Une consigne claire démarre immédiatement et affiche un reçu « I understood this as ». Une consigne ambiguë attend une reformulation ou une confirmation sans consommer le tour. Les tâches acceptées continuent d'un tour à l'autre. Les personnages agissent aussi sans sollicitation directe. Une partie se termine à la livraison, au sixième tour ou si la confiance client entraîne une rupture du contrat. Le navigateur mémorise seulement l'identifiant de la dernière partie ; le serveur garde l'état, y compris une ronde en attente de réponse.
 
 ## Agents et modèles
 
@@ -64,15 +65,15 @@ Le rendu ne déclenche aucun appel LLM. Les objets low-poly sont construits loca
 
 ## Architecture
 
-- `web/` : Next.js, React et TypeScript ; tableau de commandement en anglais et proxy `/api` vers FastAPI.
-- `backend/meltdown/graph.py` : pause joueur avec `interrupt`, reprise par `Command`, distribution avec `Send`, collecte des intentions et deux rondes maximum.
+- `web/` : Next.js, React et TypeScript ; consigne libre, suivi de ronde par polling, chronologie en anglais et proxy `/api` vers FastAPI.
+- `backend/meltdown/graph.py` : pauses joueur avec `interrupt`, reprise par `Command`, distribution avec `Send`, collecte des intentions et suivi ciblé après les questions.
 - `scenario.py` : faits, personnages, actions et observations privées.
 - `engine.py` : règles, validations, conséquences et progression du temps.
 - `agents.py` : politiques à règles, adaptateur LangChain et sélection du coach.
-- `store.py` et `service.py` : SQLite canonique, reçus idempotents, checkpoints et sérialisation locale des mutations.
+- `store.py` et `service.py` : SQLite canonique, rondes persistées, reçus idempotents, exécution locale en arrière-plan et checkpoints.
 - `projection.py` : vue publique et débrief lié aux événements.
 
-Les agents d'une ronde voient le même instantané filtré pour chacun. Les messages validés sont transmis à la ronde suivante ; ceux qui dépassent le budget de deux rondes attendent le prochain tour. Le travail et le temps avancent une seule fois. Les LLM ne modifient jamais directement les métriques.
+Les agents d'une ronde voient le même instantané filtré pour chacun. Leurs questions sont groupées à la barrière de ronde ; les réponses du joueur sont transmises uniquement aux demandeurs dans une phase de suivi bornée. Le travail et le temps avancent une seule fois. Les LLM ne modifient jamais directement les métriques.
 
 Les parties et checkpoints sont dans `.data/`, ignoré par Git. Les mutations sont sérialisées par le service : utiliser **un seul processus Uvicorn**, sans `--workers`. Cette version vise une démonstration locale ; elle n'inclut pas l'authentification ou l'isolation d'utilisateurs d'un hébergement public.
 
@@ -85,7 +86,7 @@ npm --prefix web run build
 npm --prefix web test
 ```
 
-Avec les serveurs lancés, enregistrer deux parcours complets via le proxy public :
+Avec les serveurs lancés, enregistrer trois parcours complets via le proxy public, dont un avec une question de personnage :
 
 ```bash
 python3 scripts/demo.py

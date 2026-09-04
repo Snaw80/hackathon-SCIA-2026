@@ -12,7 +12,7 @@ test("groups events by turn and round without reversing narrative order", () => 
     { ...base, id: "e0", turn: 0, round: 0, actor: "director", type: "briefing" },
     { ...base, id: "e1", turn: 1, round: 0, actor: "player", type: "player_command" },
     { ...base, id: "e2", turn: 1, round: 1, actor: "client", type: "message" },
-    { ...base, id: "e3", turn: 1, round: 2, actor: "engine", type: "period_end" },
+    { ...base, id: "e3", turn: 1, round: 0, actor: "engine", type: "period_end" },
   ];
 
   assert.deepEqual(
@@ -30,7 +30,7 @@ test("groups events by turn and round without reversing narrative order", () => 
         rounds: [
           { round: 0, ids: ["e1"] },
           { round: 1, ids: ["e2"] },
-          { round: 2, ids: ["e3"] },
+          { round: 0, ids: ["e3"] },
         ],
       },
     ],

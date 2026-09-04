@@ -123,3 +123,20 @@ def test_automated_tests_default_to_rules_and_block_provider_http():
     assert isinstance(configured_policy(), RulesPolicy)
     with pytest.raises(AssertionError, match="External HTTP"):
         httpx.get("https://api.openai.com/v1/models")
+
+
+def test_rules_client_asks_for_assurance_before_deciding_on_a_low_trust_offer():
+    from meltdown.agents import RulesPolicy
+    from meltdown.scenario import new_game, observation
+
+    game = new_game("question")
+    game["actions"] = ["request_delay"]
+    game["proposals"] = ["request_delay"]
+    game["metrics"]["trust"] = 40
+    context = observation(game, "client", 1)
+
+    intent = RulesPolicy().decide(context)
+
+    assert intent.action == "ask_player"
+    assert intent.question
+    assert intent.question_reason

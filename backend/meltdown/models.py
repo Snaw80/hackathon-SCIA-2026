@@ -9,6 +9,8 @@ class TurnRequest(BaseModel):
     request_id: str = Field(min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
     expected_version: int = Field(ge=0, le=6)
     actions: list[str] = Field(default_factory=list, max_length=2)
+    command: str | None = Field(default=None, max_length=1000)
+    interpretation: str | None = Field(default=None, max_length=300)
 
     @field_validator("actions")
     @classmethod

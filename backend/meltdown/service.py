@@ -13,7 +13,7 @@ from .interpreter import interpret_command
 from .models import AnswerRequest, ConfirmationRequest, RetryRequest
 from .projection import public_run, public_view
 from .scenario import new_game
-from .store import Store
+from .store import Store, fingerprint
 
 
 class GameService:
@@ -91,6 +91,7 @@ class GameService:
                     "progress": [],
                     "questions": [],
                     "answers": None,
+                    "boundary_requests": {},
                     "error": None,
                 },
                 data,
@@ -105,6 +106,9 @@ class GameService:
             run = self.store.load_run(run_id)
             if run["game_id"] != game_id:
                 raise KeyError(run_id)
+            data = request.model_dump()
+            if self._boundary_duplicate(run, data):
+                return self._view(self.store.load(game_id))
             if run["phase"] != "needs_confirmation":
                 raise ValueError("This round is not waiting for command confirmation.")
             if request.command:
@@ -119,6 +123,7 @@ class GameService:
                 run["phase"] = "round_active"
                 run["resume_phase"] = "round_active"
             run["error"] = None
+            self._remember_boundary(run, data)
             run = self.store.save_run(run)
             response = self._view(self.store.load(game_id))
             response["active_run"] = public_run(run)
@@ -130,6 +135,9 @@ class GameService:
             run = self.store.load_run(run_id)
             if run["game_id"] != game_id:
                 raise KeyError(run_id)
+            data = request.model_dump()
+            if self._boundary_duplicate(run, data):
+                return self._view(self.store.load(game_id))
             if run["phase"] != "awaiting_answers":
                 raise ValueError("This round is not waiting for agent answers.")
             pending_ids = {question["id"] for question in run["questions"]}
@@ -140,6 +148,7 @@ class GameService:
             run["phase"] = "resolving"
             run["resume_phase"] = "resolving"
             run["error"] = None
+            self._remember_boundary(run, data)
             run = self.store.save_run(run)
             response = self._view(self.store.load(game_id))
             response["active_run"] = public_run(run)
@@ -151,15 +160,30 @@ class GameService:
             run = self.store.load_run(run_id)
             if run["game_id"] != game_id:
                 raise KeyError(run_id)
+            data = request.model_dump()
+            if self._boundary_duplicate(run, data):
+                return self._view(self.store.load(game_id))
             if run["phase"] != "failed":
                 raise ValueError("Only a failed round can be retried.")
             run["phase"] = run["resume_phase"]
             run["error"] = None
+            self._remember_boundary(run, data)
             run = self.store.save_run(run)
             response = self._view(self.store.load(game_id))
             response["active_run"] = public_run(run)
         self._schedule(run_id)
         return response
+
+    def _boundary_duplicate(self, run, data):
+        previous = run.get("boundary_requests", {}).get(data["request_id"])
+        if previous is None:
+            return False
+        if previous != fingerprint(data):
+            raise ValueError("This request ID has already been used for another round response.")
+        return True
+
+    def _remember_boundary(self, run, data):
+        run.setdefault("boundary_requests", {})[data["request_id"]] = fingerprint(data)
 
     def _save_progress(self, run, label, *, phase=None, active_agents=None):
         run = deepcopy(run)
@@ -192,6 +216,8 @@ class GameService:
                     "request_id": run["request"]["request_id"],
                     "expected_version": run["request"]["expected_version"],
                     "actions": actions,
+                    "command": run["command"],
+                    "interpretation": run["interpretation"]["summary"],
                 }
                 run = self._save_progress(
                     run,
@@ -212,6 +238,8 @@ class GameService:
                 "request_id": run["request"]["request_id"],
                 "expected_version": run["request"]["expected_version"],
                 "actions": run["interpretation"]["actions"],
+                "command": run["command"],
+                "interpretation": run["interpretation"]["summary"],
             }
             if self.store.receipt(run["game_id"], canonical_request) is not None:
                 run = self._save_progress(run, "Round complete", phase="complete", active_agents=[])

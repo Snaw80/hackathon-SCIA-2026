@@ -3,6 +3,7 @@ import os
 import time
 from pydantic import BaseModel, Field
 from .models import AgentIntent, CommandInterpretation
+from .projection import public_view
 
 
 class RulesPolicy:
@@ -31,6 +32,12 @@ class RulesPolicy:
         elif actor == "client":
             if "reveal_need" in allowed and context["round"] == 1:
                 action = "reveal_need"
+            elif "ask_player" in allowed and context["client_trust"] < 45:
+                return AgentIntent(
+                    action="ask_player",
+                    question="What concrete assurance can you give me before I accept this change?",
+                    question_reason="Trust is low and I need a clear commitment before changing the agreement.",
+                )
             elif "accept_scope" in allowed:
                 action = "accept_scope" if context["client_trust"] >= 35 else "counter"
             elif "accept_delay" in allowed:
@@ -136,8 +143,7 @@ class LangChainPolicy:
     def interpret(self, game, command):
         available = [
             {"id": action["id"], "title": action["title"], "description": action["description"]}
-            for action in __import__("meltdown.projection", fromlist=["public_view"])
-            .public_view(game)["actions"]
+            for action in public_view(game)["actions"]
             if not action["disabled"]
         ]
         return self._invoke(

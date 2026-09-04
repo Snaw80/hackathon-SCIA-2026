@@ -32,6 +32,12 @@ def test_public_api_rejects_stale_turn_and_exports_no_private_data(tmp_path):
         completed = poll_phase(client, game["id"], "complete")
         assert completed["turn"] == 1
         assert completed["active_run"]["interpretation"]["actions"] == ["audit"]
+        command_event = next(event for event in completed["events"] if event["type"] == "player_command")
+        interpretation_event = next(
+            event for event in completed["events"] if event["type"] == "command_interpretation"
+        )
+        assert command_event["detail"] == "Audit the defect"
+        assert interpretation_event["causes"] == [command_event["id"]]
         stale = client.post(url + "/turns", json={**request, "request_id": "api-2"})
         assert stale.status_code == 409
         exported = client.get(url + "/export")
@@ -98,19 +104,24 @@ def test_agent_questions_are_answered_through_the_active_run(tmp_path):
         assert waiting["turn"] == 1
         assert [question["actor"] for question in run["questions"]] == ["client"]
 
-        answered = client.post(
-            f"/api/games/{game['id']}/runs/{run['id']}/answers",
-            json={
-                "request_id": "answer-1",
-                "answers": [
-                    {
-                        "question_id": run["questions"][0]["id"],
-                        "text": "The secure core workflow.",
-                    }
-                ],
-            },
-        )
+        answer_payload = {
+            "request_id": "answer-1",
+            "answers": [
+                {
+                    "question_id": run["questions"][0]["id"],
+                    "text": "The secure core workflow.",
+                }
+            ],
+        }
+        answer_url = f"/api/games/{game['id']}/runs/{run['id']}/answers"
+        answered = client.post(answer_url, json=answer_payload)
         assert answered.status_code == 202
+        assert client.post(answer_url, json=answer_payload).status_code == 202
+        conflicting = {
+            **answer_payload,
+            "answers": [{**answer_payload["answers"][0], "text": "A different answer."}],
+        }
+        assert client.post(answer_url, json=conflicting).status_code == 409
         completed = poll_phase(client, game["id"], "complete")
         assert completed["turn"] == 2
         assert any(event["type"] == "player_answer" for event in completed["events"])

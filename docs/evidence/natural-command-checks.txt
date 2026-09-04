@@ -1,0 +1,32 @@
+Project Meltdown natural-command verification
+Recorded: 2026-09-04
+
+uv run pytest -q
+39 passed, 1 third-party Starlette/AnyIO deprecation warning in 0.65s
+
+uv run ruff check backend scripts/demo.py
+All checks passed.
+
+npm --prefix web test
+8 tests passed, 0 failed.
+Node reported the existing MODULE_TYPELESS_PACKAGE_JSON performance warning for TypeScript test imports.
+
+npm --prefix web run typecheck
+TypeScript completed with exit code 0.
+
+npm --prefix web run build
+Next.js 16.3.4 production build compiled successfully.
+Static routes generated: / and /_not-found.
+
+git diff --check
+Exit code 0; no whitespace errors.
+
+Isolated public-API demonstration
+Command: python3 scripts/demo.py --url http://127.0.0.1:8100/api --output /tmp/meltdown-natural-command-evidence
+Mode: rules, temporary SQLite database, alternate local port.
+
+- negotiated-delivery: delivered, 6 turns, 22 agent calls, 0 fallbacks
+- no-intervention: deadline missed, 6 turns, 25 agent calls, 0 fallbacks
+- interactive-delay: deadline missed, 6 turns, one agent-question pause answered, 26 agent calls, 0 fallbacks
+
+The interactive path resumed the same persisted run after the answer and completed all six turns.
