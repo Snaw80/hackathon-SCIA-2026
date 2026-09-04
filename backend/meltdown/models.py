@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 Actor = Literal["developer", "client", "sales", "security"]
 
@@ -54,3 +54,41 @@ class AgentIntent(BaseModel):
     message: str = Field(default="", max_length=500)
     recipient: Literal["player", "developer", "client", "sales", "security"] = "player"
     fact_ids: list[str] = Field(default_factory=list, max_length=4)
+    question: str = Field(default="", max_length=300)
+    question_reason: str = Field(default="", max_length=300)
+
+    @model_validator(mode="after")
+    def question_fields_match_action(self):
+        if self.action == "ask_player" and (not self.question.strip() or not self.question_reason.strip()):
+            raise ValueError("A player question and its reason are required.")
+        if self.action != "ask_player" and (self.question or self.question_reason):
+            raise ValueError("Question fields are only valid for ask_player.")
+        return self
+
+
+class PlayerAnswer(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    question_id: str = Field(min_length=1, max_length=100)
+    text: str = Field(min_length=1, max_length=1000)
+
+    @field_validator("text")
+    @classmethod
+    def answer_is_not_whitespace(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("Answer the agent before resuming the round.")
+        return value
+
+
+class AnswerRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    request_id: str = Field(min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
+    answers: list[PlayerAnswer] = Field(min_length=1, max_length=3)
+
+    @field_validator("answers")
+    @classmethod
+    def unique_questions(cls, value):
+        ids = [answer.question_id for answer in value]
+        if len(set(ids)) != len(ids):
+            raise ValueError("A question cannot be answered twice.")
+        return value

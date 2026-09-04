@@ -187,6 +187,8 @@ def new_game(game_id, mode="rules"):
         "delay_agreed": False,
         "released": False,
         "pending_messages": [],
+        "pending_questions": [],
+        "answer_followup": False,
         "proposals": [],
         "actions": [],
         "events": [
@@ -248,7 +250,7 @@ def action_reason(game, action):
     return None
 
 
-def allowed_intents(game, actor, round_number):
+def allowed_intents(game, actor, round_number, *, allow_questions=True):
     allowed = ["wait", "message"]
     if actor == "developer":
         allowed.append("warn")
@@ -270,6 +272,8 @@ def allowed_intents(game, actor, round_number):
             allowed += ["accept_delay", "counter", "reject"]
         if "communicate" in game["actions"] and round_number == 1:
             allowed.append("acknowledge")
+        if allow_questions and game["proposals"]:
+            allowed.append("ask_player")
     elif actor == "sales":
         allowed.append("clarify_promise")
     return allowed
@@ -290,10 +294,11 @@ INTENT_DESCRIPTIONS = {
     "reject": "Reject the proposed scope or deadline change.",
     "acknowledge": "Acknowledge the status update and improve trust through transparency.",
     "clarify_promise": "Explain your earlier extra-feature promise and align commitments with the client.",
+    "ask_player": "Ask the player one concise question when their answer is needed before deciding.",
 }
 
 
-def observation(game, actor, round_number, inbox=None):
+def observation(game, actor, round_number, inbox=None, *, allow_questions=True):
     agent = game["agents"][actor]
     context = {
         "actor": actor,
@@ -307,7 +312,9 @@ def observation(game, actor, round_number, inbox=None):
         "facts": {key: FACTS[key] for key in agent["knowledge"]},
         "memory": [event["title"] for event in game["events"] if actor in event["audience"]][-8:],
         "inbox": deepcopy(inbox or []),
-        "allowed_actions": allowed_intents(game, actor, round_number),
+        "allowed_actions": allowed_intents(
+            game, actor, round_number, allow_questions=allow_questions
+        ),
         "directives": [action for action in game["actions"] if actor in ACTIONS[action][4]],
         "progress": game["metrics"]["progress"],
     }

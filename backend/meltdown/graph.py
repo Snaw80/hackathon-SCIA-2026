@@ -4,8 +4,8 @@ from typing import Annotated, TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send, interrupt
 from .agents import RulesPolicy
-from .engine import prepare_turn, resolve_intents, finalize_turn
-from .models import AgentIntent, TurnRequest
+from .engine import apply_player_answers, prepare_turn, resolve_intents, finalize_turn
+from .models import AgentIntent, AnswerRequest, TurnRequest
 from .projection import public_view, build_debrief
 from .scenario import ROLES, observation
 
@@ -128,11 +128,24 @@ def build_graph(store, policy, checkpointer):
         return {"game": game, "round": state["round"] + 1}
 
     def next_step(state):
+        if state["game"]["pending_questions"] and not state["game"]["answer_followup"]:
+            return "await_answers"
+        if state["game"]["answer_followup"]:
+            return "finalize"
         return (
             "organize"
             if state["round"] <= 2 and state["game"]["pending_messages"] and not state["game"]["released"]
             else "finalize"
         )
+
+    def await_answers(state):
+        response = interrupt(
+            {"kind": "questions", "questions": deepcopy(state["game"]["pending_questions"])}
+        )
+        game, dispatch = apply_player_answers(
+            state["game"], AnswerRequest.model_validate(response), state["round"]
+        )
+        return {"game": game, "dispatch": dispatch}
 
     def finalize(state):
         game = finalize_turn(state["game"])
@@ -172,6 +185,7 @@ def build_graph(store, policy, checkpointer):
         ("organize", organize),
         ("agent", agent),
         ("resolve", resolve),
+        ("await_answers", await_answers),
         ("finalize", finalize),
         ("coach", coach),
         ("commit", commit),
@@ -185,6 +199,7 @@ def build_graph(store, policy, checkpointer):
     graph.add_conditional_edges("organize", distribute, ["agent", "finalize"])
     graph.add_edge("agent", "resolve")
     graph.add_conditional_edges("resolve", next_step)
+    graph.add_conditional_edges("await_answers", distribute, ["agent", "finalize"])
     graph.add_conditional_edges(
         "finalize", lambda state: "coach" if state["game"]["status"] == "finished" else "commit"
     )

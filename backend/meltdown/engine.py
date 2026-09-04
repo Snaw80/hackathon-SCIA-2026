@@ -1,6 +1,6 @@
 from copy import deepcopy
-from .models import AgentIntent, TurnRequest
-from .scenario import ACTIONS, FACTS, action_reason, allowed_intents
+from .models import AgentIntent, AnswerRequest, TurnRequest
+from .scenario import ACTIONS, FACTS, action_reason, allowed_intents, observation
 
 
 def event(game, actor, kind, title, detail, *, effects=None, causes=None, audience=None, round_number=0):
@@ -45,6 +45,8 @@ def prepare_turn(original, request: TurnRequest):
     game["action_event_ids"] = []
     game["proposals"] = [a for a in request.actions if a in ("reduce_scope", "request_delay")]
     game["work_blocked"] = False
+    game["pending_questions"] = []
+    game["answer_followup"] = False
     game["last_run"] = {"rounds": 0, "agent_calls": 0, "fallbacks": 0, "duration_ms": 0, "steps": []}
     for action in request.actions:
         title, description, cost, _, recipients = ACTIONS[action]
@@ -156,6 +158,34 @@ def resolve_intents(original, packets, round_number):
         action = intent.action
         if action == "wait":
             continue
+        if action == "ask_player":
+            duplicate = any(
+                question["actor"] == actor
+                and question["question"].strip().casefold() == intent.question.strip().casefold()
+                for question in game["pending_questions"]
+            )
+            if duplicate or len(game["pending_questions"]) >= 3:
+                continue
+            question = {
+                "id": f"q-{game['turn'] + 1}-{round_number}-{actor}",
+                "actor": actor,
+                "question": intent.question.strip(),
+                "reason": intent.question_reason.strip(),
+                "turn": game["turn"] + 1,
+                "round": round_number,
+            }
+            game["pending_questions"].append(question)
+            event(
+                game,
+                actor,
+                "agent_question",
+                f"Question from {data['name']}",
+                question["question"],
+                causes=causes,
+                round_number=round_number,
+            )
+            data["activity"] = "Waiting for your answer."
+            continue
         title, detail, effects = "Status update", intent.message, {}
         audience = ["player"]
         if action == "audit":
@@ -264,6 +294,60 @@ def resolve_intents(original, packets, round_number):
         elif action == "message":
             queue_message(game, actor, intent.recipient, detail, intent.fact_ids, e, round_number)
     return game
+
+
+def apply_player_answers(original, request: AnswerRequest, round_number):
+    game = deepcopy(original)
+    pending = {question["id"]: question for question in game["pending_questions"]}
+    supplied = {answer.question_id: answer for answer in request.answers}
+    if set(supplied) != set(pending):
+        raise ValueError("Submit one answer for every pending agent question.")
+    dispatch = []
+    for question in game["pending_questions"]:
+        answer = supplied[question["id"]]
+        answer_event = event(
+            game,
+            "player",
+            "player_answer",
+            f"Your answer to {game['agents'][question['actor']]['name']}",
+            answer.text,
+            causes=[
+                item["id"]
+                for item in game["events"]
+                if item["type"] == "agent_question"
+                and item["actor"] == question["actor"]
+                and item["turn"] == question["turn"]
+                and item["round"] == question["round"]
+            ][-1:],
+            audience=["player", question["actor"]],
+            round_number=round_number,
+        )
+        inbox = [
+            {
+                "id": f"answer-{question['id']}",
+                "from": "player",
+                "to": question["actor"],
+                "text": answer.text,
+                "fact_ids": [],
+                "cause": answer_event["id"],
+                "turn": game["turn"] + 1,
+                "round": round_number,
+            }
+        ]
+        dispatch.append(
+            {
+                "context": observation(
+                    game,
+                    question["actor"],
+                    round_number,
+                    inbox,
+                    allow_questions=False,
+                )
+            }
+        )
+    game["pending_questions"] = []
+    game["answer_followup"] = True
+    return game, dispatch
 
 
 def finalize_turn(original):

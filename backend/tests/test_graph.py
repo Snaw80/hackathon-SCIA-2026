@@ -1,6 +1,6 @@
 import json
 import pytest
-from meltdown.models import TurnRequest
+from meltdown.models import AgentIntent, TurnRequest
 from meltdown.service import GameService
 from meltdown.agents import RulesPolicy
 
@@ -196,3 +196,66 @@ def test_agent_cannot_transmit_another_characters_private_fact(tmp_path):
     assert result["last_run"]["fallbacks"] == 1
     assert "unauthorized-disclosure" not in json.dumps(result)
     service.close()
+
+
+def test_graph_pauses_for_collected_questions_then_resumes_once(tmp_path):
+    from langgraph.checkpoint.sqlite import SqliteSaver
+    from langgraph.types import Command
+    import sqlite3
+
+    from meltdown.graph import build_graph
+    from meltdown.scenario import new_game
+    from meltdown.store import Store
+
+    class QuestionPolicy(RulesPolicy):
+        def decide(self, context):
+            if context["actor"] == "client" and "ask_player" in context["allowed_actions"]:
+                return AgentIntent(
+                    action="ask_player",
+                    question="What will the smaller demo contain?",
+                    question_reason="I need scope clarity.",
+                )
+            return super().decide(context)
+
+    store = Store(tmp_path / "question-graph.sqlite")
+    checkpoint = sqlite3.connect(tmp_path / "question-checkpoint.sqlite", check_same_thread=False)
+    graph = build_graph(store, QuestionPolicy(), SqliteSaver(checkpoint))
+    game = new_game("question-game")
+    game["player_knowledge"].append("demo_acceptable")
+    store.create(game)
+    config = {"configurable": {"thread_id": game["id"]}, "recursion_limit": 50}
+    graph.invoke(
+        {"game": game, "packets": {}, "request": {}, "round": 0, "dispatch": [], "started_at": 0},
+        config,
+    )
+
+    graph.invoke(
+        Command(
+            resume={
+                "request_id": "question-turn",
+                "expected_version": 0,
+                "actions": ["reduce_scope"],
+            }
+        ),
+        config,
+    )
+    paused = graph.get_state(config)
+
+    assert paused.next == ("await_answers",)
+    assert store.load(game["id"])["turn"] == 0
+    question = paused.values["game"]["pending_questions"][0]
+
+    graph.invoke(
+        Command(
+            resume={
+                "request_id": "question-answer",
+                "answers": [{"question_id": question["id"], "text": "The secure core workflow."}],
+            }
+        ),
+        config,
+    )
+
+    assert store.load(game["id"])["turn"] == 1
+    assert store.load(game["id"])["version"] == 1
+    checkpoint.close()
+    store.close()
