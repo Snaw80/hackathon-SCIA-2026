@@ -38,18 +38,20 @@ class Budget:
 
     def reserve(self, model, messages, max_output):
         # UTF-8 bytes upper-bound text tokens. Include both schemas plus generous
-        # provider framing overhead. Reserve even failed/timeout requests; no retries.
+        # provider framing overhead. LangChain can make one retry, so reserve both
+        # possible provider attempts even when the first one succeeds.
         size = len(json.dumps(messages, ensure_ascii=False).encode())
         size += len(json.dumps(AgentIntent.model_json_schema()).encode())
         size += len(json.dumps(CoachSelection.model_json_schema()).encode()) + 2048
         rate_in, _, rate_out = PRICES[model]
         # 1.25x also covers GPT-5.6 cache writes, without assuming cache discounts.
-        bound = (size * rate_in * 1.25 + max_output * rate_out) / 1_000_000
+        attempts = 2
+        bound = attempts * (size * rate_in * 1.25 + max_output * rate_out) / 1_000_000
         with self.lock:
-            if self.calls >= 80 or self.reserved + bound > self.limit:
+            if self.calls + attempts > 80 or self.reserved + bound > self.limit:
                 raise RuntimeError("Evaluation budget exhausted before request")
             self.reserved += bound
-            self.calls += 1
+            self.calls += attempts
 
 
 class MeasuredPolicy(LangChainPolicy):
@@ -90,7 +92,7 @@ class MeasuredPolicy(LangChainPolicy):
 
 
 def cases():
-    base = new_game("evaluation", "llm")
+    base = new_game("evaluation")
     audit = prepare_turn(
         base, TurnRequest(request_id="audit", expected_version=0, actions=["audit", "prioritize_fix"])
     )
@@ -218,10 +220,7 @@ def main():
                             "wall_ms": round((time.monotonic() - started) * 1000),
                         }
                     )
-                    print(
-                        json.dumps({"game_turn": game["turn"], "fallbacks": game["last_run"]["fallbacks"]}),
-                        flush=True,
-                    )
+                    print(json.dumps({"game_turn": game["turn"]}), flush=True)
                 evidence["game"] = {
                     "model": args.play,
                     "turns": turns,

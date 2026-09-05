@@ -125,14 +125,13 @@ ACTIONS = {
 }
 
 
-def new_game(game_id, mode="rules"):
+def new_game(game_id):
     return {
         "id": game_id,
         "version": 0,
         "turn": 0,
         "max_turns": 6,
         "status": "active",
-        "mode": mode,
         "metrics": {"budget": 100, "trust": 58, "morale": 68, "progress": 50},
         "tasks": {
             "core": {"title": "Core delivery", "remaining": 6, "total": 12},
@@ -205,7 +204,7 @@ def new_game(game_id, mode="rules"):
                 "audience": ["player"],
             }
         ],
-        "last_run": {"rounds": 0, "agent_calls": 0, "fallbacks": 0, "duration_ms": 0, "steps": []},
+        "last_run": {"rounds": 0, "agent_calls": 0, "duration_ms": 0, "steps": []},
         "outcome": None,
         "debrief": None,
         "action_event_ids": [],
@@ -304,12 +303,17 @@ def observation(game, actor, round_number, inbox=None, *, allow_questions=True):
         "actor": actor,
         "name": agent["name"],
         "role": agent["role"],
-        "private_goal": agent["private_goal"],
         "turn": game["turn"] + 1,
         "round": round_number,
         "stress": agent["stress"],
         "trust": agent["trust"],
-        "facts": {key: FACTS[key] for key in agent["knowledge"]},
+        # Only player-visible facts enter the generative expression boundary. Hidden
+        # facts still shape the engine's available actions and canonical outcomes.
+        "facts": {
+            key: FACTS[key]
+            for key in agent["knowledge"]
+            if key in game["player_knowledge"]
+        },
         "memory": [event["title"] for event in game["events"] if actor in event["audience"]][-8:],
         "inbox": deepcopy(inbox or []),
         "allowed_actions": allowed_intents(

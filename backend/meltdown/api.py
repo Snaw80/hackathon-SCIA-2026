@@ -24,7 +24,11 @@ def create_app(db_path=None, policy=None):
 
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "mode": app.state.service.policy.mode}
+        return {
+            "status": "ok",
+            "agent": "llm",
+            "model": getattr(app.state.service.policy, "name", type(app.state.service.policy).__name__),
+        }
 
     @app.post("/api/games", status_code=201)
     def create_game():

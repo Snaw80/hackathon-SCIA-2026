@@ -5,6 +5,7 @@ from meltdown.models import AnswerRequest, TurnRequest
 from meltdown.scenario import new_game, observation
 from meltdown.engine import apply_player_answers, prepare_turn, finalize_turn
 from meltdown.projection import public_view
+from tests.fakes import expressed
 
 
 def test_rejects_more_than_two_management_actions():
@@ -12,12 +13,19 @@ def test_rejects_more_than_two_management_actions():
         TurnRequest(request_id="r", expected_version=0, actions=["audit", "clarify", "rest"])
 
 
-def test_private_client_fact_never_enters_developer_context_or_public_snapshot():
+def test_private_client_fact_stays_engine_only_until_canonical_reveal():
     game = new_game("test")
     developer = observation(game, "developer", 1)
     assert "demo_acceptable" not in str(developer)
     assert "demo_acceptable" not in str(public_view(game))
-    assert "demo_acceptable" in str(observation(game, "client", 1))
+    assert "demo_acceptable" not in str(observation(game, "client", 1))
+
+    clarified = prepare_turn(
+        game, TurnRequest(request_id="clarify", expected_version=0, actions=["clarify"])
+    )
+    client = observation(clarified, "client", 1)
+    assert "reveal_need" in client["allowed_actions"]
+    assert "demo_acceptable" not in str(client)
 
 
 def test_invalid_action_does_not_mutate_committed_game():
@@ -43,7 +51,7 @@ def test_same_work_suspension_does_not_apply_morale_penalty_twice():
 
     game = new_game("test")
     game["agents"]["developer"]["stress"] = 90
-    packet = {"developer": {"intent": {"action": "refuse"}, "causes": []}}
+    packet = {"developer": {"intent": expressed("refuse").model_dump(), "causes": []}}
     first = resolve_intents(game, packet, 1)
     second = resolve_intents(first, packet, 2)
     assert first["work_blocked"]
@@ -57,7 +65,9 @@ def test_audit_does_not_attribute_its_result_to_an_unrelated_client_decision():
         new_game("test"), TurnRequest(request_id="causes", expected_version=0, actions=["audit", "clarify"])
     )
     audit_id = next(e["id"] for e in game["events"] if e["actor"] == "player" and e["type"] == "audit")
-    result = resolve_intents(game, {"security": {"intent": {"action": "audit"}, "causes": []}}, 1)
+    result = resolve_intents(
+        game, {"security": {"intent": expressed("audit").model_dump(), "causes": []}}, 1
+    )
     audit_result = next(e for e in result["events"] if e["actor"] == "security" and e["type"] == "audit")
     assert audit_result["causes"] == [audit_id]
 
@@ -70,11 +80,13 @@ def test_question_intent_is_collected_once_at_the_round_boundary():
     game["proposals"] = ["reduce_scope"]
     packet = {
         "client": {
-            "intent": {
-                "action": "ask_player",
-                "question": "What proof can you share for the smaller demo?",
-                "question_reason": "I need enough assurance to agree to the scope.",
-            },
+            "intent": expressed(
+                "ask_player",
+                speech="I need proof before I can agree.",
+                reason="The reduced scope needs a concrete assurance.",
+                question="What proof can you share for the smaller demo?",
+                question_reason="I need enough assurance to agree to the scope.",
+            ).model_dump(),
             "causes": [],
         }
     }

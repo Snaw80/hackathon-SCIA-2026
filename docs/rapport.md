@@ -1,12 +1,12 @@
 # Project Meltdown — rapport de hackathon
 
-**Version de travail du 4 septembre 2026 — MVP local en anglais, bureau Three.js intégré et premiers essais OpenAI réalisés.** Ce rapport distingue les fonctionnalités réalisées, les essais effectués et les objectifs encore non évalués. Les consignes officielles du hackathon, l'équipe et la répartition des contributions restent à renseigner avec leurs données réelles.
+**Version mise à jour du 5 septembre 2026 — MVP local en anglais, bureau Three.js intégré et parcours complet vérifié dans un navigateur avec le modèle OpenAI configuré.** Le rapport suit le produit depuis le briefing jusqu'au débrief, puis explique les choix d'architecture, de méthodologie et de technologies qui rendent ce parcours possible. Les consignes officielles du hackathon, l'équipe et la répartition des contributions restent à renseigner avec leurs données réelles.
 
 ## 1. Résumé
 
 Project Meltdown est un serious game de gestion de crise dans un projet numérique. Le joueur dispose de six tours pour arbitrer entre livraison, sécurité, demandes du client et capacité de l'équipe. Quatre personnages représentent le développement, le client, le commercial et la sécurité.
 
-Le premier prototype comprend un tableau de commandement en anglais, un moteur de règles, un graphe LangGraph persistant, deux rondes d'interactions internes au maximum et un débrief lié aux événements enregistrés. Deux parcours complets ont été exécutés via l'API publique : une livraison négociée réussit, tandis qu'une partie sans intervention n'aboutit pas à une livraison.
+Le prototype comprend un tableau de commandement en anglais, un moteur de règles, un graphe LangGraph persistant, deux rondes d'interactions internes au maximum et un débrief lié aux événements enregistrés. Une partie complète jouée dans l'interface le 5 septembre 2026 constitue le fil conducteur du rapport : la livraison négociée aboutit en cinq tours avec 100 % de progression, un budget de 34/100, une confiance client de 73/100, un moral de 60/100 et une sécurité vérifiée.
 
 Ces essais valident un premier fonctionnement technique. Ils ne démontrent ni l'efficacité pédagogique ni le réalisme des comportements d'un modèle de langage en conditions réelles.
 
@@ -24,7 +24,7 @@ Dans « La livraison impossible », une livraison est attendue dans trois jours.
 
 Le joueur peut notamment auditer le défaut, prioriser le correctif ou le socle, clarifier le besoin métier, communiquer, négocier un périmètre réduit ou un report, accepter la fonctionnalité, réduire la charge, mobiliser du renfort, valider la correction puis livrer.
 
-Les décisions sont sélectionnées dans des cartes, avec un maximum de deux par tour. La saisie libre d'instructions n'est pas implémentée. Le travail accepté continue sans demander au joueur de le réaffecter à chaque tour.
+Le joueur donne une instruction libre ; le modèle la traduit en zéro, une ou deux décisions canoniques validées par le moteur. En cas d'ambiguïté, l'interface demande une confirmation avant d'avancer. Le travail accepté continue sans demander au joueur de le réaffecter à chaque tour.
 
 L'interface livre les éléments suivants :
 
@@ -66,66 +66,76 @@ Une reprise après un échec survenu juste après le commit canonique a été te
 
 La version actuelle sérialise les mutations dans un seul processus Python. Elle vise une démonstration locale et ne doit pas être présentée comme un service multi-utilisateur prêt à être exposé publiquement.
 
-## 5. Modes des agents et débrief
+## 5. Agents LLM et débrief
 
-Le mode par défaut utilise des politiques déterministes à l'intérieur du même graphe LangGraph. Il permet de jouer sans clé API et constitue le mode des deux premiers parcours enregistrés. Il est identifié comme « Rules simulation » dans l'interface.
-
-Un adaptateur LangChain est disponible pour un modèle configuré via l'environnement. Les personnages reçoivent leur contexte filtré et choisissent une sortie structurée. Les appels ont un plafond de 384 tokens de sortie et un timeout de 20 secondes, sans relance automatique du fournisseur. Une erreur ou une intention invalide active la politique de secours et le signale dans la trace. Le budget est limité à huit activations de personnages par tour ; la clôture d'une livraison peut en utiliser zéro.
+Un modèle configuré via l'environnement est obligatoire. Les personnages reçoivent leur contexte filtré et choisissent une sortie structurée contenant une action, une réplique, une raison courte et une émotion. Le moteur reste seul responsable des effets factuels. Les appels ont un plafond de 384 tokens de sortie, un timeout de 20 secondes et une relance fournisseur. Une erreur persistante arrête la ronde dans un état sauvegardé ; le joueur peut alors la relancer explicitement. Le budget est limité à huit activations de personnages par tour ; la clôture d'une livraison peut en utiliser zéro.
 
 Le coach LLM optionnel sélectionne et ordonne des moments parmi des événements déjà rédigés par le moteur. Les références sont validées ; le texte factuel reste celui des événements. Ce choix limite les affirmations causales inventées. Les relations enregistrées indiquent les décisions et messages pertinents ; elles ne prétendent pas révéler le raisonnement interne du modèle.
 
-Des appels OpenAI réels ont maintenant été effectués. Le choix local est **GPT-5.6 Luna**, raisonnement `none`, après comparaison avec GPT-5.4 nano et un essai de raisonnement `low`. Les 156 appels d'évaluation instrumentés représentent environ **0,0268 USD estimé**. Une exécution de tests ayant hérité du mode live a produit des appels supplémentaires non mesurés ; ce montant n'est donc pas le total facturé de la session. L'isolation de la suite a été corrigée. Le [protocole détaillé](model-calibration.md) conserve les paramètres, résultats et sources de prix. Les tests automatisés de panne utilisent toujours des politiques locales pour ne pas consommer de crédit.
+Des appels OpenAI réels ont été effectués sur le contrat précédent. Le choix évalué était **GPT-5.6 Luna**, raisonnement `none`, après comparaison avec GPT-5.4 nano et un essai de raisonnement `low`. Les 156 appels d'évaluation instrumentés représentent environ **0,0268 USD estimé**. Le [protocole détaillé](model-calibration.md) conserve ces mesures comme archive et indique comment évaluer le nouveau contrat. Les tests automatisés injectent un faux modèle et bloquent le réseau externe.
 
-## 6. Vérification technique
+## 6. Validation du produit
 
-La suite contient **26 tests backend**, tous passants lors de la vérification finale. Elle couvre notamment :
+Le 5 septembre 2026, une partie a été jouée dans un navigateur depuis le briefing jusqu'au débrief final. Le bureau 3D, la saisie libre, l'interprétation visible, les réponses des personnages, le journal, la livraison et le débrief ont été observés dans le produit en fonctionnement. Les captures présentées dans ce rapport proviennent de ce prototype.
 
-- Le nombre d'actions et les décisions impossibles.
-- L'isolation d'un fait privé dans les observations et les réponses publiques.
-- Le rejet d'une transmission de fait inconnu de son émetteur.
-- Les rondes bornées et l'avancement du temps une seule fois.
-- Les intentions de secours après échec d'un personnage.
-- La reprise SQLite, les requêtes répétées et la réutilisation conflictuelle d'un identifiant.
-- La reprise après un échec postérieur au commit canonique.
-- La fin d'une partie, la validation globale d'un lot de décisions et l'absence d'activations après livraison.
-- La non-répétition d'un gain de confiance ou d'une pénalité de suspension entre rondes.
-- L'absence d'attribution d'un audit à une décision client sans rapport.
-- Le refus d'un changement silencieux de mode d'agents.
-- Deux issues différentes et des références de débrief existantes.
-- L’indépendance de la configuration locale et le blocage réseau externe pendant les tests.
-- Les plafonds de modèle, le comptage des sorties mal formées, les références privées et les messages à soi-même.
-- Les termes de négociation filtrés, les unités de travail explicites, la validation technique courante et les identifiants du coach.
-
-La sortie complète est conservée dans [pytest.txt](evidence/pytest.txt). Elle contient un avertissement de dépréciation provenant de l'intégration Starlette/AnyIO utilisée par le client de test ; aucun test ne manque à cause de cet avertissement.
-
-Le contrôle Ruff passe et le build de production Next.js réussit, y compris la vérification TypeScript. Cinq tests frontend vérifient la projection du bureau : absence de mutation, état de sécurité public, événements limités au tour courant, surcharge/refus et distinction entre livraison réussie et échéance manquée. Le parcours HTTP a été exercé à travers le proxy Next.js vers FastAPI. La page locale renvoie HTTP 200. Les erreurs réseau du frontend ont été examinées en revue de code ; aucune injection de panne dans un navigateur ni revue visuelle par captures n'a été effectuée.
+La validation technique reste une preuve de soutien : 43 tests backend et 10 tests frontend passent, Ruff ne signale aucune erreur et le build de production Next.js réussit. Les contrôles portent principalement sur les règles, la confidentialité des observations, la persistance, la reprise d'une ronde et la cohérence de la projection publique. Le fichier [pytest.txt](evidence/pytest.txt) conserve une campagne historique détaillée.
 
 Versions principales enregistrées : Python 3.12.13, Next.js 16.3.4, FastAPI 0.141.1, LangGraph 1.2.11, LangChain 1.3.18 et Pydantic 2.13.5. Les fichiers `uv.lock` et `web/package-lock.json` fixent les dépendances ; un relevé Python est disponible dans [versions.json](evidence/versions.json).
 
-## 7. Parcours expérimentés
+## 7. Parcours démontré et preuves visuelles
 
-Les deux parcours utilisent le même scénario initial, le mode à règles et six tours. Ils sont exécutés par [scripts/demo.py](../scripts/demo.py), qui appelle les mêmes routes publiques que le navigateur et enregistre uniquement les états publics.
+Les deux parcours ci-dessous ont été enregistrés avant le passage au runtime exclusivement LLM. Ils restent des preuves historiques du moteur déterministe, mais `scripts/demo.py` utilise désormais les personnages LLM configurés et n'étiquette plus de mode.
 
 | Parcours | Issue | Budget final | Confiance client | Moral | Activations des personnages |
 | --- | --- | --- | --- | --- | --- |
 | Audit, correctif, clarification, communication et périmètre réduit | Livraison maîtrisée | 22/100 | 66/100 | 68/100 | 22 |
 | Aucun nouvel ordre pendant six tours | Échéance non tenue | 28/100 | 30/100 | 51/100 | 25 |
 
-Aucun recours au secours n'a été nécessaire dans ces deux parcours à règles. Le socle atteint 100 % dans les deux cas, mais le second parcours ne dispose pas des conditions de livraison : avancement, accord commercial et validation technique sont des dimensions distinctes.
+Le socle atteint 100 % dans les deux parcours historiques, mais le second ne dispose pas des conditions de livraison : avancement, accord commercial et validation technique sont des dimensions distinctes.
 
 Les fichiers [negotiated-delivery.json](evidence/negotiated-delivery.json) et [no-intervention.json](evidence/no-intervention.json) contiennent les décisions, métriques, rondes, événements et débriefs observés. Les durées internes de résolution y sont enregistrées ; ce petit échantillon local ne constitue pas un benchmark de performance.
 
 ### Essai avec le modèle réel
 
-Le dernier parcours OpenAI atteint la livraison avec les mêmes métriques finales que le parcours négocié à règles : budget 22, confiance 66 et moral 68. Il utilise 31 activations de personnages et un coach, 21 284 tokens d'entrée et 1 311 de sortie, soit **0,00583 USD estimé**. Une intention du développeur est remplacée par le secours au cinquième tour ; le coach final utilise des références valides. Les tours actifs durent de 3,0 à 14,6 secondes dans cet essai.
+Le dernier parcours OpenAI enregistré avec l'ancien contrat atteint la livraison avec les mêmes métriques finales que le parcours négocié historique : budget 22, confiance 66 et moral 68. Il utilise 31 activations de personnages et un coach, 21 284 tokens d'entrée et 1 311 de sortie, soit **0,00583 USD estimé**. Une intention du développeur avait alors été remplacée par le secours désormais supprimé ; le coach final utilise des références valides. Les tours actifs durent de 3,0 à 14,6 secondes dans cet essai.
 
 Les premiers passages ont révélé une proposition insuffisamment décrite, des identifiants de coach ambigus et une confusion unités/périodes. Ces points ont été corrigés dans le contexte et protégés par des tests. La [trace finale](evidence/model-evaluation-final.json) et les [essais intermédiaires](model-calibration.md) restent disponibles, y compris les échecs observés.
 
 L'interface, les messages système des agents, les événements, erreurs et débriefs sont en anglais ; ce rapport reste en français. Les anciennes sauvegardes françaises sont conservées, avec un identifiant de reprise distinct pour les parties anglaises.
 
-## 8. Méthode et retours de revue
+### Validation navigateur du 5 septembre 2026
 
-La réalisation a commencé par des tests de comportement et d'intégration, puis le moteur, le graphe persistant et l'interface ont été assemblés. Une revue de code indépendante a ensuite examiné les frontières d'état, la confidentialité, les reprises et la validation des intentions.
+![Briefing de la partie dans le tableau de commandement](report-assets/jeu-briefing.png)
+
+*Figure 1 — Le briefing rend immédiatement visibles la crise, les indicateurs, les quatre personnages et la zone de consigne libre. Source : capture du prototype, `docs/report-assets/jeu-briefing.png`.*
+
+La partie a d'abord reçu la consigne volontairement vague « Handle the situation however you think is best. ». L'interpréteur n'a sélectionné aucune action, a demandé une reformulation et n'a pas consommé le tour. Une consigne explicite a ensuite été comprise comme l'audit du défaut et la clarification du besoin client.
+
+Le parcours a continué avec la négociation d'un périmètre réduit, la priorité donnée au correctif, la communication au client, la validation de sécurité, la reprise du socle puis la livraison. Au quatrième tour, une sortie d'agent non conforme au schéma Pydantic a produit une `ValidationError`. La ronde a été conservée en état d'échec récupérable ; le bouton « Retry safely » a repris la même ronde sans doubler le temps ni les coûts. La seconde tentative a abouti, puis la livraison a été validée au cinquième tour.
+
+![Décisions et réactions pendant le deuxième tour](report-assets/jeu-tour-2.png)
+
+*Figure 2 — Le deuxième tour relie la scène Three.js, la consigne interprétée, l'activité des personnages et les conséquences visibles. Source : capture du prototype, `docs/report-assets/jeu-tour-2.png`.*
+
+![Réponses contextualisées des quatre agents](report-assets/jeu-agents.png)
+
+*Figure 3 — La vue « Agent perspectives » isole les prises de position des quatre personnages. Chaque carte expose le rôle, l'émotion, la réponse en langage naturel et sa justification factuelle. Source : capture du prototype, `docs/report-assets/jeu-agents.png`.*
+
+Une partie de capture complémentaire a produit deux rondes et sept activations au premier tour. La vue d'orchestration permet de relier ces appels à la chaîne de traitement complète, sans exposer les connaissances privées injectées dans les contextes.
+
+![Orchestration d'un tour multi-agent](report-assets/jeu-orchestration.png)
+
+*Figure 4 — Le pipeline visible relie décision libre, interprétation, rondes d'agents, moteur de règles et sauvegarde. La trace affichée correspond à deux rondes, sept activations et 4,9 secondes de résolution. Source : capture du prototype, `docs/report-assets/jeu-orchestration.png`.*
+
+Le résultat observé est une livraison contrôlée avec 100 % de progression, un budget de 34/100, une confiance client de 73/100, un moral de 60/100 et une sécurité vérifiée. Cette partie confirme le fonctionnement de bout en bout et le mécanisme de reprise ; elle ne mesure pas la stabilité statistique du modèle.
+
+![Débrief final relié aux événements de la partie](report-assets/jeu-bilan.png)
+
+*Figure 5 — Le débrief rassemble les métriques finales, 46 événements enregistrés, 17 réponses contextualisées et trois moments reliés à leurs preuves. Source : capture du prototype, `docs/report-assets/jeu-bilan.png`.*
+
+## 8. Méthodologie de conception
+
+La réalisation a suivi des incréments fonctionnels : cadrage du scénario et de l'arbre de décision, moteur déterministe, API et persistance, graphe multi-agent, interprétation en langage naturel, interface puis bureau 3D. Chaque étape produisait une version jouable et observable avant l'ajout de la suivante. La validation finale a consisté à parcourir le produit complet dans un navigateur, du briefing au débrief.
 
 La revue a notamment conduit à vérifier de nouveau une livraison après application de toutes les décisions du lot, à éviter les activations après une livraison, à empêcher une révélation récompensée deux fois et à préserver l'identifiant d'une requête lors d'une erreur HTTP ambiguë. Des tests de régression ont été ajoutés aux corrections backend. Les liens d'événements ont également été resserrés pour ne pas attribuer un résultat à toutes les décisions du tour par défaut.
 
@@ -134,18 +144,18 @@ L'assistance IA a servi au cadrage, à la conception du graphe, à la rédaction
 ## 9. Limites et prochaines étapes
 
 - Les règles numériques constituent une première calibration de jeu, sans validation empirique du réalisme organisationnel.
-- Le scénario et les politiques à règles sont fixes ; la rejouabilité observée vient surtout des décisions du joueur.
+- Le scénario et ses mécaniques numériques sont fixes ; la rejouabilité vient des décisions du joueur et de la variabilité encadrée des personnages LLM.
 - Les agents LLM ont été testés sur un petit nombre de situations ; la variabilité sur des séries répétées et d’autres stratégies reste à mesurer.
 - Le coût est instrumenté dans le script d’évaluation, sans tableau de facturation dans le produit ni plafond monétaire global des parties.
 - Les messages libres peuvent contenir des affirmations inexactes malgré des intentions et références structurellement valides.
 - Le débrief est volontairement contraint aux faits et à des alternatives proposées, sans simulation contrefactuelle automatique.
 - Le prototype possède un verrouillage de livraison et des issues commerciales ; il ne simule pas encore un incident de cybersécurité détaillé.
-- L’authentification, l’hébergement multi-utilisateur, les conversations libres et les scénarios supplémentaires ne sont pas implémentés.
+- L’authentification, l’hébergement multi-utilisateur, les dialogues ouverts hors décisions canoniques et les scénarios supplémentaires ne sont pas implémentés.
 - Le bureau utilise des objets procéduraux ; il ne comprend pas encore de personnages GLTF animés, de déplacements simulés par le moteur ou de scènes de départ d’entreprise.
-- La fluidité, les interactions tactiles et le fallback WebGL ne sont pas encore mesurés dans un navigateur réel ; compilation et tests de projection ne remplacent pas cette vérification.
+- La validation navigateur porte sur un seul poste de bureau. La fluidité sur appareils moins puissants, les interactions tactiles et la perte réelle d'un contexte WebGL restent à mesurer séparément.
 - L'accessibilité, l'ergonomie et l'apprentissage doivent encore être évalués avec des utilisateurs.
 
-Le prochain jalon est un essai utilisateur du parcours et une évaluation répétée des comportements. Le bureau 3D représente les mêmes événements validés ; ses performances et sa lisibilité devront être vérifiées sur les appareils utilisés pour la démonstration.
+Pour faciliter de futurs rapports, l'évolution la plus utile serait un mode de capture : caméra et animations stabilisées, écran de synthèse imprimable et export d'un parcours avec ses métriques, décisions et événements sources. Cette évolution améliorerait la production de preuves sans modifier les règles du jeu.
 
 
 ## Références du rendu 3D

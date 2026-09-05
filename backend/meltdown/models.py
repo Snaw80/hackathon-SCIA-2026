@@ -53,7 +53,9 @@ class CommandInterpretation(BaseModel):
 class AgentIntent(BaseModel):
     model_config = ConfigDict(extra="forbid")
     action: str = Field(min_length=1, max_length=40)
-    message: str = Field(default="", max_length=500)
+    speech: str = Field(default="", max_length=500)
+    reason: str = Field(default="", max_length=300)
+    emotion: Literal["calm", "concerned", "confident", "frustrated", "urgent"] = "calm"
     recipient: Literal["player", "developer", "client", "sales", "security"] = "player"
     fact_ids: list[str] = Field(default_factory=list, max_length=4)
     question: str = Field(default="", max_length=300)
@@ -61,6 +63,8 @@ class AgentIntent(BaseModel):
 
     @model_validator(mode="after")
     def question_fields_match_action(self):
+        if self.action != "wait" and (not self.speech.strip() or not self.reason.strip()):
+            raise ValueError("Visible speech and a concise reason are required for agent actions.")
         if self.action == "ask_player" and (not self.question.strip() or not self.question_reason.strip()):
             raise ValueError("A player question and its reason are required.")
         if self.action != "ask_player" and (self.question or self.question_reason):

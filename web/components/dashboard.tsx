@@ -26,7 +26,12 @@ import OfficeView from "./office/office-view";
 import CommandPanel from "./command-panel";
 import { api, ApiError } from "@/lib/api";
 import type { Game, GameEvent } from "@/lib/types";
-import { groupTimeline, presentationKind } from "@/lib/timeline";
+import {
+  agentExpression,
+  groupTimeline,
+  latestAgentResponses,
+  presentationKind,
+} from "@/lib/timeline";
 
 const storageKey = "meltdown-game-id-en";
 const actorLabels: Record<string, string> = {
@@ -52,6 +57,7 @@ function EventCard({
   const causes = event.causes
     .map((id) => eventById.get(id))
     .filter((cause): cause is GameEvent => !!cause);
+  const expression = agentExpression(event);
   return (
     <article
       id={`event-${event.id}`}
@@ -66,7 +72,18 @@ function EventCard({
         </span>
       </div>
       <h4>{event.title}</h4>
-      <p>{event.detail}</p>
+      {(event.type !== "message" || event.detail !== expression?.speech) && <p>{event.detail}</p>}
+      {expression && (
+        <div className="agent-expression" data-emotion={expression.emotion}>
+          <div>
+            <span>{expression.emotion}</span>
+            <q>{expression.speech}</q>
+          </div>
+          <small>
+            <strong>Why</strong> {expression.reason}
+          </small>
+        </div>
+      )}
       {!!Object.keys(event.effects).length && (
         <div className="effects">
           {Object.entries(event.effects).map(([key, value]) => (
@@ -270,6 +287,14 @@ export default function Dashboard() {
   const day = Math.ceil(activeTurn / 2);
   const runActive = !!game?.active_run && pollingPhases.has(game.active_run.phase);
   const timeline = game ? groupTimeline(game.events) : [];
+  const agentResponses = game ? latestAgentResponses(game.events) : [];
+  const groundedResponseCount = game
+    ? game.events.filter(
+        (event) =>
+          ["developer", "client", "sales", "security"].includes(event.actor) &&
+          !!agentExpression(event),
+      ).length
+    : 0;
   const eventById = new Map(game?.events.map((event) => [event.id, event]) ?? []);
   return (
     <div className="app-shell">
@@ -287,11 +312,7 @@ export default function Dashboard() {
         <div className="topbar-right">
           <span className="local-badge">
             <span />
-            {!game
-              ? "Ready to play"
-              : game.mode === "llm"
-                ? "AI agents"
-                : "Rules simulation"}
+            {!game ? "Ready to play" : "AI agents"}
           </span>
           <span className="edition">SCIA / 2026</span>
         </div>
@@ -481,6 +502,24 @@ export default function Dashboard() {
                 <Flag size={25} />
               </div>
               <p className="debrief-summary">{game.debrief.summary}</p>
+              <div className="debrief-proof-strip" aria-label="Final simulation evidence">
+                <div>
+                  <span>Turns played</span>
+                  <strong>{game.turn}</strong>
+                </div>
+                <div>
+                  <span>Recorded events</span>
+                  <strong>{game.events.length}</strong>
+                </div>
+                <div>
+                  <span>Grounded responses</span>
+                  <strong>{groundedResponseCount}</strong>
+                </div>
+                <div>
+                  <span>Final public risk</span>
+                  <strong>{game.security.label}</strong>
+                </div>
+              </div>
               <div className="debrief-moments">
                 {game.debrief.moments.map((moment, i) => (
                   <article key={i}>
@@ -525,6 +564,66 @@ export default function Dashboard() {
                 activeAgents={game.active_run?.active_agents ?? []}
                 onShowEvent={showEvidence}
               />
+
+              {!!agentResponses.length && (
+                <section className="agent-council" aria-labelledby="agent-council-title">
+                  <div className="agent-council-heading">
+                    <div>
+                      <div className="eyebrow">LATEST AGENT ROUND</div>
+                      <h2 id="agent-council-title">
+                        <Users size={20} /> Agent perspectives on your decision
+                      </h2>
+                      <p>
+                        Each character reacts from a distinct role, emotional state,
+                        and private context.
+                      </p>
+                    </div>
+                    <span className="council-count">
+                      {agentResponses.length} grounded response{agentResponses.length === 1 ? "" : "s"}
+                    </span>
+                  </div>
+                  <div className="decision-flow" aria-label="Decision processing flow">
+                    <span>Your direction</span>
+                    <ArrowRight size={15} />
+                    <span>AI agent perspectives</span>
+                    <ArrowRight size={15} />
+                    <span>Rule-based consequences</span>
+                  </div>
+                  <div className="agent-response-grid">
+                    {agentResponses.map((event) => {
+                      const expression = agentExpression(event)!;
+                      return (
+                        <article
+                          className={`agent-response-card ${event.actor}`}
+                          key={event.id}
+                        >
+                          <header>
+                            <span className={`event-dot ${event.actor}`} />
+                            <div>
+                              <strong>{actorLabels[event.actor] || event.actor}</strong>
+                              <small>Turn {event.turn} · Round {event.round}</small>
+                            </div>
+                            <span className="emotion-badge">{expression.emotion}</span>
+                          </header>
+                          <q>{expression.speech}</q>
+                          <p>
+                            <strong>Why</strong> {expression.reason}
+                          </p>
+                          {!!Object.keys(event.effects).length && (
+                            <div className="effects" aria-label="Response effects">
+                              {Object.entries(event.effects).map(([key, value]) => (
+                                <span key={key} className={value > 0 ? "positive" : "negative"}>
+                                  {key} {value > 0 ? "+" : ""}{value}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
 
               <section className="activity-panel">
                 <div className="activity-toolbar">
@@ -606,10 +705,21 @@ export default function Dashboard() {
                       <div>
                         <h3>Behind the turn</h3>
                         <p>
-                          This view shows the graph steps. Private knowledge
-                          stays inside the simulation.
+                          Trace how a natural-language direction becomes agent
+                          dialogue, deterministic consequences, and an auditable state.
                         </p>
                       </div>
+                    </div>
+                    <div className="orchestration-map" aria-label="Simulation architecture">
+                      <span>Natural-language decision</span>
+                      <ArrowRight size={15} />
+                      <span>Interpreter</span>
+                      <ArrowRight size={15} />
+                      <span>Agent rounds</span>
+                      <ArrowRight size={15} />
+                      <span>Rule engine</span>
+                      <ArrowRight size={15} />
+                      <span>Saved game state</span>
                     </div>
                     {game.active_run && game.active_run.phase !== "complete" && (
                       <div className="live-orchestration" role="status">
@@ -652,7 +762,7 @@ export default function Dashboard() {
                           {game.last_run.steps.map((step, index) => (
                             <div
                               key={index}
-                              className={`graph-step ${step.status === "fallback" ? "fallback" : ""}`}
+                              className="graph-step"
                             >
                               <span className="step-track">
                                 <span />
@@ -664,21 +774,13 @@ export default function Dashboard() {
                                 <strong>{step.label}</strong>
                                 <span>
                                   {step.round ? `Round ${step.round} · ` : ""}
-                                  {step.status === "fallback"
-                                    ? "Rules fallback used"
-                                    : step.node}
+                                  {step.node}
                                 </span>
                               </div>
                               <Check size={15} />
                             </div>
                           ))}
                         </div>
-                        {!!game.last_run.fallbacks && (
-                          <p className="fallback-notice">
-                            {game.last_run.fallbacks} activation(s) used the
-                            rules fallback.
-                          </p>
-                        )}
                       </>
                     ) : (
                       <div className="graph-empty">

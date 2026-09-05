@@ -1,9 +1,9 @@
 import json
 import time
 import pytest
-from meltdown.models import AgentIntent, CommandRequest, ConfirmationRequest, TurnRequest
+from meltdown.models import CommandRequest, ConfirmationRequest, RetryRequest, TurnRequest
 from meltdown.service import GameService
-from meltdown.agents import RulesPolicy
+from tests.fakes import TestPolicy, expressed
 
 
 def turn(service, game, actions, request_id=None):
@@ -59,16 +59,111 @@ def test_sqlite_restart_preserves_game_and_interrupt(tmp_path):
     restarted.close()
 
 
-class BrokenPolicy(RulesPolicy):
+class BrokenPolicy(TestPolicy):
     def decide(self, context):
         raise TimeoutError("provider unavailable")
 
 
-def test_failed_agent_uses_visible_fallback_without_losing_turn(tmp_path):
+class ExpressiveAuditPolicy(TestPolicy):
+    def decide(self, context):
+        if context["actor"] == "security" and "audit" in context["allowed_actions"]:
+            return expressed(
+                "audit",
+                speech="I found a critical export vulnerability; release must wait for a verified fix.",
+                reason="The defect was unassessed and release safety was unknown.",
+                emotion="urgent",
+            )
+        return super().decide(context)
+
+
+class PrivateFactEchoPolicy(TestPolicy):
+    def __init__(self):
+        self.client_context = None
+
+    def decide(self, context):
+        if context["actor"] == "client" and "counter" in context["allowed_actions"]:
+            self.client_context = context
+            private_fact = context["facts"].get("demo_acceptable")
+            if private_fact:
+                return expressed(
+                    "counter",
+                    speech=private_fact,
+                    reason=context.get("private_goal", "The proposal needs more evidence."),
+                    fact_ids=["demo_acceptable"],
+                )
+            return expressed("counter", speech="I need stronger assurances before agreeing.")
+        return super().decide(context)
+
+
+def test_agent_expression_is_published_without_replacing_engine_facts(tmp_path):
+    service = GameService(tmp_path / "expression.sqlite", policy=ExpressiveAuditPolicy())
+    result = turn(service, service.create(), ["audit"])
+    audit = next(
+        event for event in result["events"] if event["type"] == "audit" and event["actor"] == "security"
+    )
+
+    assert audit["detail"].startswith("The audit confirms a critical vulnerability")
+    assert audit["speech"].startswith("I found a critical export vulnerability")
+    assert audit["reason"] == "The defect was unassessed and release safety was unknown."
+    assert audit["emotion"] == "urgent"
+    service.close()
+
+
+def test_ordinary_agent_expression_cannot_read_or_disclose_private_context(tmp_path):
+    policy = PrivateFactEchoPolicy()
+    service = GameService(tmp_path / "private-expression.sqlite", policy=policy)
+
+    result = turn(service, service.create(), ["request_delay"])
+    counter = next(
+        event for event in result["events"] if event["type"] == "counter" and event["actor"] == "client"
+    )
+
+    assert "private_goal" not in policy.client_context
+    assert "demo_acceptable" not in policy.client_context["facts"]
+    assert "reduced scope" not in counter["speech"].lower()
+    assert "demonstration to management" not in json.dumps(result).lower()
+    service.close()
+
+
+def test_failed_agent_does_not_fabricate_a_rules_response(tmp_path):
     service = GameService(tmp_path / "game.sqlite", policy=BrokenPolicy())
-    game = turn(service, service.create(), ["audit"])
-    assert game["turn"] == 1
-    assert game["last_run"]["fallbacks"] >= 4
+    game = service.create()
+    with pytest.raises(TimeoutError, match="provider unavailable"):
+        turn(service, game, ["audit"])
+    assert service.get(game["id"])["turn"] == 0
+    service.close()
+
+
+class FailOncePolicy(TestPolicy):
+    def __init__(self):
+        self.failed = False
+
+    def decide(self, context):
+        if context["actor"] == "security" and not self.failed:
+            self.failed = True
+            raise TimeoutError("temporary provider failure")
+        return super().decide(context)
+
+
+def test_failed_async_agent_round_resumes_with_the_llm_on_explicit_retry(tmp_path):
+    service = GameService(tmp_path / "agent-retry.sqlite", policy=FailOncePolicy())
+    game = service.create()
+    accepted = service.start_turn(
+        game["id"],
+        CommandRequest(request_id="agent-retry", expected_version=0, command="Audit the defect"),
+    )
+    failed = wait_service_phase(service, game["id"], "failed")
+
+    assert failed["turn"] == 0
+    service.retry(
+        game["id"],
+        accepted["active_run"]["id"],
+        RetryRequest(request_id="retry-agent-round"),
+    )
+    completed = wait_service_phase(service, game["id"], "complete")
+
+    assert completed["turn"] == 1
+    assert any(event["actor"] == "security" and event["type"] == "audit" for event in completed["events"])
     service.close()
 
 
@@ -132,14 +227,12 @@ def test_delivery_finishes_without_new_agent_activations(tmp_path):
     service.close()
 
 
-class RepeatingDisclosurePolicy(RulesPolicy):
+class RepeatingDisclosurePolicy(TestPolicy):
     def decide(self, context):
-        from meltdown.models import AgentIntent
-
         if context["actor"] == "client" and "reveal_need" in context["allowed_actions"]:
-            return AgentIntent(action="reveal_need")
+            return expressed("reveal_need")
         if context["actor"] == "sales":
-            return AgentIntent(action="clarify_promise")
+            return expressed("clarify_promise")
         return super().decide(context)
 
 
@@ -152,19 +245,11 @@ def test_second_round_cannot_reward_an_already_disclosed_fact(tmp_path):
     service.close()
 
 
-def test_game_cannot_silently_switch_agent_mode_on_restart(tmp_path):
-    class AnotherMode(RulesPolicy):
-        mode = "llm"
-
-    path = tmp_path / "mode.sqlite"
-    service = GameService(path)
+def test_public_game_has_no_non_llm_mode_switch(tmp_path):
+    service = GameService(tmp_path / "mode.sqlite")
     game = service.create()
+    assert "mode" not in game
     service.close()
-    restarted = GameService(path, policy=AnotherMode())
-    with pytest.raises(ValueError, match="mode"):
-        turn(restarted, game, [])
-    assert restarted.get(game["id"])["turn"] == 0
-    restarted.close()
 
 
 def test_resume_after_commit_failure_keeps_receipt_and_next_turn(tmp_path, monkeypatch):
@@ -189,23 +274,20 @@ def test_resume_after_commit_failure_keeps_receipt_and_next_turn(tmp_path, monke
 
 
 def test_agent_cannot_transmit_another_characters_private_fact(tmp_path):
-    class FabricatedDisclosure(RulesPolicy):
+    class FabricatedDisclosure(TestPolicy):
         def decide(self, context):
-            from meltdown.models import AgentIntent
-
             if context["actor"] == "developer":
-                return AgentIntent(
-                    action="message",
+                return expressed(
+                    "message",
                     recipient="client",
-                    message="unauthorized-disclosure",
+                    speech="unauthorized-disclosure",
                     fact_ids=["demo_acceptable"],
                 )
             return super().decide(context)
 
     service = GameService(tmp_path / "private.sqlite", policy=FabricatedDisclosure())
-    result = turn(service, service.create(), [])
-    assert result["last_run"]["fallbacks"] == 1
-    assert "unauthorized-disclosure" not in json.dumps(result)
+    with pytest.raises(ValueError, match="knowledge"):
+        turn(service, service.create(), [])
     service.close()
 
 
@@ -218,11 +300,13 @@ def test_graph_pauses_for_collected_questions_then_resumes_once(tmp_path):
     from meltdown.scenario import new_game
     from meltdown.store import Store
 
-    class QuestionPolicy(RulesPolicy):
+    class QuestionPolicy(TestPolicy):
         def decide(self, context):
             if context["actor"] == "client" and "ask_player" in context["allowed_actions"]:
-                return AgentIntent(
-                    action="ask_player",
+                return expressed(
+                    "ask_player",
+                    speech="I need the proposed demonstration scope.",
+                    reason="The offer is not concrete enough to accept.",
                     question="What will the smaller demo contain?",
                     question_reason="I need scope clarity.",
                 )
@@ -293,21 +377,4 @@ def test_ambiguous_async_run_survives_service_restart(tmp_path):
         ConfirmationRequest(request_id="replace", command="Audit the defect"),
     )
     assert wait_service_phase(restarted, game["id"], "complete")["turn"] == 1
-    restarted.close()
-
-
-def test_async_run_cannot_silently_switch_agent_mode(tmp_path):
-    class AnotherMode(RulesPolicy):
-        mode = "llm"
-
-    path = tmp_path / "async-mode.sqlite"
-    service = GameService(path)
-    game = service.create()
-    service.close()
-    restarted = GameService(path, policy=AnotherMode())
-    with pytest.raises(ValueError, match="mode"):
-        restarted.start_turn(
-            game["id"],
-            CommandRequest(request_id="mode", expected_version=0, command="Audit the defect"),
-        )
     restarted.close()

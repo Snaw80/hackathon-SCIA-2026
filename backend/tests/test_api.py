@@ -2,8 +2,7 @@ import time
 
 from fastapi.testclient import TestClient
 from meltdown.api import create_app
-from meltdown.agents import RulesPolicy
-from meltdown.models import AgentIntent
+from tests.fakes import TestPolicy, expressed
 
 
 def poll_phase(client, game_id, *phases):
@@ -19,6 +18,11 @@ def poll_phase(client, game_id, *phases):
 
 def test_public_api_rejects_stale_turn_and_exports_no_private_data(tmp_path):
     with TestClient(create_app(tmp_path / "api.sqlite")) as client:
+        assert client.get("/api/health").json() == {
+            "status": "ok",
+            "agent": "llm",
+            "model": "test:scripted-llm",
+        }
         response = client.post("/api/games")
         assert response.status_code == 201
         game = response.json()
@@ -69,11 +73,13 @@ def test_ambiguous_command_waits_for_confirmation_without_advancing(tmp_path):
         assert completed["turn"] == 1
 
 
-class QuestionPolicy(RulesPolicy):
+class QuestionPolicy(TestPolicy):
     def decide(self, context):
         if context["actor"] == "client" and "ask_player" in context["allowed_actions"]:
-            return AgentIntent(
-                action="ask_player",
+            return expressed(
+                "ask_player",
+                speech="I need the proposed demonstration scope.",
+                reason="The offer is not concrete enough to accept.",
                 question="What will the smaller demo contain?",
                 question_reason="I need scope clarity.",
             )

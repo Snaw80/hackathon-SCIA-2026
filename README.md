@@ -40,20 +40,17 @@ Une consigne claire démarre immédiatement et affiche un reçu « I understood 
 
 ## Agents et modèles
 
-Le mode par défaut, `MELTDOWN_AGENT_MODE=rules`, fonctionne sans clé ni appel externe. Ce sont des politiques déterministes dans le **vrai graphe LangGraph**, et l'interface les identifie comme telles.
+Chaque personnage est piloté par un modèle via LangChain. Il n'existe plus de mode de personnages à règles ni de secours silencieux : une clé fournisseur et un modèle sont obligatoires. Configurer dans `.env` :
 
-Pour utiliser des modèles via LangChain, configurer dans `.env` :
-
-- `MELTDOWN_AGENT_MODE=llm`
 - `MELTDOWN_MODEL` : `openai:gpt-5.6-luna`, retenu après les essais locaux.
 - `MELTDOWN_REASONING_EFFORT=none`, `MELTDOWN_MAX_OUTPUT_TOKENS=384`, `MELTDOWN_TIMEOUT_SECONDS=20`.
 - La clé du fournisseur correspondant ; les intégrations OpenAI et Anthropic sont installées.
 
-Redémarrer le serveur et démarrer une nouvelle partie. Le mode d'une partie est fixé à sa création ; une reprise avec un mode différent est refusée pour éviter d'étiqueter incorrectement les résultats. Les appels utilisent une sortie structurée, un plafond de 384 tokens de sortie, un timeout de 20 secondes et aucune relance automatique du fournisseur. Une erreur ou une intention invalide active la politique de secours ; la trace l'indique. Au maximum huit appels aux personnages par tour, puis un appel de sélection pédagogique en fin de partie en mode LLM.
+Les appels utilisent une sortie structurée, un plafond de 384 tokens de sortie, un timeout de 20 secondes et une relance fournisseur. Chaque action non passive inclut maintenant une réplique, une raison courte et une émotion, affichées séparément des faits écrits par le moteur. Une erreur persistante interrompt la ronde dans un état sauvegardé et propose une relance explicite. Au maximum huit appels aux personnages ont lieu par tour, puis un appel de sélection pédagogique en fin de partie.
 
-Le coach LLM sélectionne et ordonne des moments parmi des faits déjà rédigés par le moteur. Il ne produit pas de nouvelles affirmations factuelles libres. Un bilan à règles reste disponible si le coach échoue.
+Le coach LLM sélectionne et ordonne des moments parmi des faits déjà rédigés par le moteur. Il ne produit pas de nouvelles affirmations factuelles libres.
 
-Le modèle a été testé avec des appels OpenAI réels. Les tests automatisés imposent le mode à règles et bloquent les appels HTTP externes, indépendamment du `.env` local. Le [protocole, les résultats et le coût estimé](docs/model-calibration.md) sont documentés. La clé reste dans `.env`, ignoré par Git. Le plafond de sortie comprend les éventuels tokens de raisonnement ; aucune relance automatique n'est effectuée.
+Le modèle a été testé avec des appels OpenAI réels. Les tests automatisés injectent un faux modèle déterministe et bloquent les appels HTTP externes, indépendamment du `.env` local. Le [protocole, les résultats et le coût estimé](docs/model-calibration.md) est documenté. La clé reste dans `.env`, ignoré par Git. Le plafond de sortie comprend les éventuels tokens de raisonnement.
 
 ## Bureau 3D
 
@@ -69,7 +66,7 @@ Le rendu ne déclenche aucun appel LLM. Les objets low-poly sont construits loca
 - `backend/meltdown/graph.py` : pauses joueur avec `interrupt`, reprise par `Command`, distribution avec `Send`, collecte des intentions et suivi ciblé après les questions.
 - `scenario.py` : faits, personnages, actions et observations privées.
 - `engine.py` : règles, validations, conséquences et progression du temps.
-- `agents.py` : politiques à règles, adaptateur LangChain et sélection du coach.
+- `agents.py` : adaptateur LangChain, contrat d'expression structuré et sélection du coach.
 - `store.py` et `service.py` : SQLite canonique, rondes persistées, reçus idempotents, exécution locale en arrière-plan et checkpoints.
 - `projection.py` : vue publique et débrief lié aux événements.
 
@@ -100,7 +97,7 @@ uv run python scripts/evaluate_models.py --models gpt-5.6-luna --play gpt-5.6-lu
 
 Cet essai utilise une base temporaire et sauvegarde les résultats dans `docs/evidence/model-evaluation.json`. Le plafond couvre cet essai seulement ; les parties jouées dans l'application consomment leur propre budget API.
 
-Les JSON publics sont enregistrés dans `docs/evidence/`. Ce script crée deux nouvelles parties et ne modifie pas la partie affichée dans le navigateur.
+Les JSON publics sont enregistrés dans `docs/evidence/`. Ce script crée trois nouvelles parties et ne modifie pas la partie affichée dans le navigateur.
 
 ## Documentation du hackathon
 

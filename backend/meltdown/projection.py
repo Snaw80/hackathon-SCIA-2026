@@ -114,7 +114,6 @@ def public_view(game):
         "turn": game["turn"],
         "max_turns": 6,
         "status": game["status"],
-        "mode": game["mode"],
         "metrics": deepcopy(game["metrics"]),
         "security": security,
         "agents": characters,

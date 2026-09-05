@@ -35,7 +35,7 @@ class GameService:
 
     def create(self):
         with self.lock:
-            game = new_game(str(uuid4()), self.policy.mode)
+            game = new_game(str(uuid4()))
             self.store.create(game)
             self.graph.invoke(
                 {"game": game, "packets": {}, "request": {}, "round": 0, "dispatch": [], "started_at": 0},
@@ -69,8 +69,6 @@ class GameService:
             game = self.store.load(game_id)
             if self.store.run_for_request(game_id, data):
                 return self._view(game)
-            if game["mode"] != self.policy.mode:
-                raise ValueError("The agent mode has changed. Start a new game to use this mode.")
             latest = self.store.latest_run(game_id)
             if latest and latest["phase"] != "complete":
                 raise ValueError("This game already has an active round.")
@@ -271,8 +269,6 @@ class GameService:
             if (receipt := self.store.receipt(game_id, data)) is not None:
                 receipt["active_run"] = public_run(self.store.latest_run(game_id))
                 return receipt
-            if current["mode"] != self.policy.mode:
-                raise ValueError("The agent mode has changed. Start a new game to use this mode.")
             config = self.config(game_id)
             snapshot = self.graph.get_state(config)
             # Resume interrupted infrastructure work before accepting a new decision.

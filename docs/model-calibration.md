@@ -1,8 +1,10 @@
 # Calibration des modèles — 3 septembre 2026
 
+> Archive de calibration : ces mesures précèdent le contrat d'expression du 4 septembre 2026. Le runtime actuel est exclusivement LLM, exige une réplique, une raison et une émotion pour chaque action non passive, effectue une relance fournisseur et ne remplace plus une erreur par une politique de personnage à règles. Relancer `scripts/evaluate_models.py` pour mesurer ce nouveau contrat avec un fournisseur réel.
+
 ## Choix retenu
 
-Configuration locale : `openai:gpt-5.6-luna`, raisonnement `none`, plafond de **384 tokens de sortie**, timeout de **20 secondes**, aucune relance automatique du fournisseur. Le même modèle joue les personnages et sélectionne les événements du coach. `.env.example` contient ces paramètres, mais conserve le mode `rules` par défaut pour éviter des appels payants lors d'une première installation. Le `.env` local utilise maintenant `llm` ; la clé existante a été conservée et reste ignorée par Git.
+Configuration évaluée à cette date : `openai:gpt-5.6-luna`, raisonnement `none`, plafond de **384 tokens de sortie**, timeout de **20 secondes**, sans relance automatique du fournisseur. Le même modèle jouait les personnages et sélectionnait les événements du coach.
 
 Luna est retenu pour ce prototype : il répond correctement aux intentions structurées, tient mieux compte de la surcharge que nano dans notre petit échantillon et son coût observé reste inférieur à un centime de dollar par partie. Ce choix n'établit pas une supériorité générale ; nano répondait plus vite lors de la comparaison.
 
@@ -63,7 +65,7 @@ Les six exécutions instrumentées totalisent **156 appels et 0,0268247 USD esti
 
 Après activation de `llm` dans `.env`, une exécution de la suite automatisée a hérité de ce mode et effectué des appels supplémentaires sans instrumentation des tokens. Elle a pris 138,01 secondes : 24 tests ont passé et le test de changement de mode a échoué, révélant la dépendance à la configuration locale. Le coût de cette exécution n'est pas connu ; **0,0268247 USD est le total des essais instrumentés seulement**, et non le total facturé pour cette session. Le budget de 0,25 USD du script n'était pas appliqué à cette suite. La facturation fournisseur reste la source pour le total du compte.
 
-Correction : une fixture automatique impose le mode `rules` et des clés factices pour chaque test, et bloque les transports HTTP/HTTPS externes synchrones et asynchrones. Le transport interne FastAPI reste disponible. Un test vérifie le mode et le blocage réseau. La suite finale passe avec le `.env` local toujours en mode live : **26 tests en 0,49 seconde**, sans appels fournisseur. [Preuve finale](evidence/pytest.txt).
+Correction actuelle : la suite injecte un faux modèle déterministe et bloque les transports HTTP/HTTPS externes synchrones et asynchrones. Le transport interne FastAPI reste disponible. Aucun test automatisé ne dépend d'une clé fournisseur.
 
 ## Limites
 

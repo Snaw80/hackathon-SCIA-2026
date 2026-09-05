@@ -8,6 +8,9 @@ export type GameEvent = {
   detail: string;
   effects: Record<string, number>;
   causes: string[];
+  speech?: string;
+  reason?: string;
+  emotion?: "calm" | "concerned" | "confident" | "frustrated" | "urgent";
 };
 export type Action = {
   id: string;
@@ -68,7 +71,6 @@ export type Game = {
   turn: number;
   max_turns: number;
   status: "active" | "finished";
-  mode: string;
   metrics: { progress: number; budget: number; trust: number; morale: number };
   security: { status: string; label: string; detail: string };
   agents: Character[];
@@ -85,7 +87,6 @@ export type Game = {
   last_run: {
     rounds: number;
     agent_calls: number;
-    fallbacks: number;
     duration_ms: number;
     steps: {
       node: string;

@@ -9,6 +9,48 @@ export type PresentationKind =
   | "engine"
   | "agent";
 
+export function agentExpression(
+  event: Pick<GameEvent, "speech" | "reason" | "emotion">,
+) {
+  if (!event.speech || !event.reason || !event.emotion) return null;
+  return {
+    speech: event.speech,
+    reason: event.reason,
+    emotion: event.emotion,
+  };
+}
+
+const councilActors = ["developer", "client", "sales", "security"] as const;
+
+export function latestAgentResponses(events: GameEvent[]): GameEvent[] {
+  const allowedActors = new Set<string>(councilActors);
+  let latestTurn = -1;
+
+  for (const event of events) {
+    if (allowedActors.has(event.actor) && agentExpression(event)) {
+      latestTurn = Math.max(latestTurn, event.turn);
+    }
+  }
+
+  if (latestTurn < 0) return [];
+
+  const latestByActor = new Map<string, GameEvent>();
+  for (const event of events) {
+    if (
+      event.turn === latestTurn &&
+      allowedActors.has(event.actor) &&
+      agentExpression(event)
+    ) {
+      latestByActor.set(event.actor, event);
+    }
+  }
+
+  return councilActors.flatMap((actor) => {
+    const response = latestByActor.get(actor);
+    return response ? [response] : [];
+  });
+}
+
 export function groupTimeline(events: GameEvent[]): TimelineTurn[] {
   const turns: TimelineTurn[] = [];
   for (const event of events) {

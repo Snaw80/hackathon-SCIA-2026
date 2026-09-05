@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 import pytest
+from pydantic import ValidationError
 from meltdown.agents import LangChainPolicy
 from meltdown.models import AgentIntent
 
@@ -24,12 +25,12 @@ def test_llm_configuration_caps_calls_and_uses_structured_output(monkeypatch):
     monkeypatch.setenv("MELTDOWN_REASONING_EFFORT", "none")
     LangChainPolicy("openai:gpt-5.4-nano")
     assert calls["options"]["max_tokens"] == 384
-    assert calls["options"]["max_retries"] == 0
+    assert calls["options"]["max_retries"] == 1
     assert calls["options"]["reasoning_effort"] == "none"
     assert calls["schema_options"]["include_raw"] is True
 
 
-def test_llm_parsing_failure_reports_usage_before_fallback():
+def test_llm_parsing_failure_reports_usage_before_propagating():
     policy = object.__new__(LangChainPolicy)
     records = []
     policy.on_result = records.append
@@ -51,7 +52,12 @@ def test_llm_parsing_failure_reports_usage_before_fallback():
 def test_llm_rejects_fabricated_facts_even_with_valid_schema():
     policy = object.__new__(LangChainPolicy)
     policy.structured = None
-    policy._invoke = lambda *args: AgentIntent(action="message", fact_ids=["secret"])
+    policy._invoke = lambda *args: AgentIntent(
+        action="message",
+        speech="A fabricated claim.",
+        reason="I want to disclose it.",
+        fact_ids=["secret"],
+    )
     with pytest.raises(ValueError, match="knowledge"):
         policy.decide({"allowed_actions": ["message"], "facts": {}})
 
@@ -59,7 +65,12 @@ def test_llm_rejects_fabricated_facts_even_with_valid_schema():
 def test_llm_rejects_self_messages():
     policy = object.__new__(LangChainPolicy)
     policy.structured = None
-    policy._invoke = lambda *args: AgentIntent(action="message", recipient="client", message="Hello")
+    policy._invoke = lambda *args: AgentIntent(
+        action="message",
+        recipient="client",
+        speech="Hello",
+        reason="I want to send an update.",
+    )
     with pytest.raises(ValueError, match="itself"):
         policy.decide({"actor": "client", "allowed_actions": ["message"], "facts": {}})
 
@@ -116,27 +127,28 @@ def test_technical_observation_distinguishes_units_from_time_and_carries_signoff
     assert "work" not in observation(game, "client", 1)
 
 
-def test_automated_tests_default_to_rules_and_block_provider_http():
-    import httpx
-    from meltdown.agents import configured_policy, RulesPolicy
+def test_non_wait_agent_intent_requires_grounded_visible_expression():
+    with pytest.raises(ValidationError):
+        AgentIntent(action="audit")
 
-    assert isinstance(configured_policy(), RulesPolicy)
+    intent = AgentIntent(
+        action="audit",
+        speech="I will investigate the export warning now.",
+        reason="The defect has not been assessed.",
+        emotion="concerned",
+    )
+
+    assert intent.speech.startswith("I will investigate")
+    assert intent.reason == "The defect has not been assessed."
+    assert intent.emotion == "concerned"
+
+
+def test_production_policy_requires_a_model_and_external_http_stays_blocked(monkeypatch):
+    import httpx
+    from meltdown.agents import configured_policy
+
+    monkeypatch.setenv("MELTDOWN_MODEL", "")
+    with pytest.raises(ValueError, match="MELTDOWN_MODEL"):
+        configured_policy()
     with pytest.raises(AssertionError, match="External HTTP"):
         httpx.get("https://api.openai.com/v1/models")
-
-
-def test_rules_client_asks_for_assurance_before_deciding_on_a_low_trust_offer():
-    from meltdown.agents import RulesPolicy
-    from meltdown.scenario import new_game, observation
-
-    game = new_game("question")
-    game["actions"] = ["request_delay"]
-    game["proposals"] = ["request_delay"]
-    game["metrics"]["trust"] = 40
-    context = observation(game, "client", 1)
-
-    intent = RulesPolicy().decide(context)
-
-    assert intent.action == "ask_player"
-    assert intent.question
-    assert intent.question_reason

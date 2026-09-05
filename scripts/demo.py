@@ -105,7 +105,6 @@ def main():
         evidence = {
             "recorded_at": datetime.now(timezone.utc).isoformat(),
             "strategy": name,
-            "mode": game["mode"],
             "turns": turns,
             "answered_agent_question": answered,
             "final_public_state": game,
@@ -120,7 +119,6 @@ def main():
             "turns": game["turn"],
             "answered_agent_question": answered,
             "agent_calls": sum(t["run"]["agent_calls"] for t in turns),
-            "fallbacks": sum(t["run"]["fallbacks"] for t in turns),
         }
         summaries.append(summary)
         print(json.dumps(summary, ensure_ascii=False))

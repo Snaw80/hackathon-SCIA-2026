@@ -3,7 +3,6 @@ import time
 from typing import Annotated, TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send, interrupt
-from .agents import RulesPolicy
 from .engine import apply_player_answers, prepare_turn, resolve_intents, finalize_turn
 from .models import AgentIntent, AnswerRequest, TurnRequest
 from .projection import public_view, build_debrief
@@ -24,8 +23,6 @@ class GraphState(TypedDict):
 
 
 def build_graph(store, policy, checkpointer):
-    fallback = RulesPolicy()
-
     def await_player(state):
         decision = interrupt(public_view(state["game"]))
         return {"request": decision}
@@ -70,20 +67,14 @@ def build_graph(store, policy, checkpointer):
 
     def agent(worker):
         context = worker["context"]
-        used_fallback = False
-        try:
-            intent = AgentIntent.model_validate(policy.decide(deepcopy(context)))
-            if intent.action not in context["allowed_actions"] or any(
-                key not in context["facts"] for key in intent.fact_ids
-            ):
-                raise ValueError("Invalid model intention")
-        except Exception:
-            used_fallback = True
-            intent = fallback.decide(context)
+        intent = AgentIntent.model_validate(policy.decide(deepcopy(context)))
+        if intent.action not in context["allowed_actions"]:
+            raise ValueError("The model selected an unavailable action.")
+        if any(key not in context["facts"] for key in intent.fact_ids):
+            raise ValueError("The model cited facts outside the character's knowledge.")
         packet = {
             "actor": context["actor"],
             "intent": intent.model_dump(),
-            "fallback": used_fallback,
             "turn": context["turn"],
             "round": context["round"],
             "causes": [m["cause"] for m in context["inbox"]],
@@ -105,7 +96,6 @@ def build_graph(store, policy, checkpointer):
         run = game["last_run"]
         run["rounds"] = state["round"]
         run["agent_calls"] += len(packets)
-        run["fallbacks"] += sum(p["fallback"] for p in packets.values())
         for actor in ROLES:
             if actor in packets:
                 run["steps"].append(
@@ -114,7 +104,7 @@ def build_graph(store, policy, checkpointer):
                         "agent": actor,
                         "round": state["round"],
                         "label": f"{ROLES[actor]['name']} · {ROLES[actor]['role']}",
-                        "status": "fallback" if packets[actor]["fallback"] else "ok",
+                        "status": "ok",
                     }
                 )
         run["steps"].append(
@@ -159,10 +149,7 @@ def build_graph(store, policy, checkpointer):
         game = deepcopy(state["game"])
         debrief = build_debrief(game)
         if hasattr(policy, "coach"):
-            try:
-                debrief = policy.coach(debrief)
-            except Exception:
-                debrief["source"] = "rules_fallback"
+            debrief = policy.coach(debrief)
         game["debrief"] = debrief
         return {"game": game}
 

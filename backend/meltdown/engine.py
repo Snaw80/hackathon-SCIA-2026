@@ -3,7 +3,21 @@ from .models import AgentIntent, AnswerRequest, TurnRequest
 from .scenario import ACTIONS, FACTS, action_reason, allowed_intents, observation
 
 
-def event(game, actor, kind, title, detail, *, effects=None, causes=None, audience=None, round_number=0):
+def event(
+    game,
+    actor,
+    kind,
+    title,
+    detail,
+    *,
+    effects=None,
+    causes=None,
+    audience=None,
+    round_number=0,
+    speech=None,
+    reason=None,
+    emotion=None,
+):
     item = {
         "id": f"e{len(game['events'])}",
         "turn": game["turn"] + 1,
@@ -16,6 +30,8 @@ def event(game, actor, kind, title, detail, *, effects=None, causes=None, audien
         "causes": list(causes or []),
         "audience": audience or ["player"],
     }
+    if speech is not None:
+        item.update(speech=speech, reason=reason, emotion=emotion)
     game["events"].append(item)
     return item
 
@@ -47,7 +63,7 @@ def prepare_turn(original, request: TurnRequest):
     game["work_blocked"] = False
     game["pending_questions"] = []
     game["answer_followup"] = False
-    game["last_run"] = {"rounds": 0, "agent_calls": 0, "fallbacks": 0, "duration_ms": 0, "steps": []}
+    game["last_run"] = {"rounds": 0, "agent_calls": 0, "duration_ms": 0, "steps": []}
     command_causes = []
     if request.command:
         command_event = event(
@@ -203,10 +219,13 @@ def resolve_intents(original, packets, round_number):
                 question["question"],
                 causes=causes,
                 round_number=round_number,
+                speech=intent.speech,
+                reason=intent.reason,
+                emotion=intent.emotion,
             )
             data["activity"] = "Waiting for your answer."
             continue
-        title, detail, effects = "Status update", intent.message, {}
+        title, detail, effects = "Status update", intent.speech, {}
         audience = ["player"]
         if action == "audit":
             game["risk_known"] = True
@@ -304,6 +323,9 @@ def resolve_intents(original, packets, round_number):
             causes=causes,
             audience=audience,
             round_number=round_number,
+            speech=intent.speech,
+            reason=intent.reason,
+            emotion=intent.emotion,
         )
         if action == "audit":
             queue_message(game, actor, "developer", detail, ["critical"], e, round_number)
