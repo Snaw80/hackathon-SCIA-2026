@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1100" viewBox="0 0 1200 1100">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#347782"/></marker></defs>
+<rect width="1200" height="1100" fill="white"/>
+<g font-family="Arial, sans-serif" fill="#182c38">
+<polyline points="465,59 465,90" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="465,158 465,195" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="567" y="181" text-anchor="middle" font-size="17">Command(resume)</text>
+<polyline points="465,263 465,300" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="522" y="285" text-anchor="middle" font-size="17">sinon</text>
+<polyline points="465,368 465,411" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="544" y="392" text-anchor="middle" font-size="18">Send × N</text>
+<polyline points="465,486 465,532" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="465,607 465,735" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575" y="670" text-anchor="middle" font-size="17">échanges terminés</text>
+<text x="575" y="693" text-anchor="middle" font-size="17">ou suivi résolu</text>
+<polyline points="300,229 90,229 90,769 300,769" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="72" y="490" text-anchor="middle" font-size="18" transform="rotate(-90 72 490)">version déjà livrée</text>
+<polyline points="300,334 247,334 247,769 300,769" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="230" y="642" text-anchor="middle" font-size="17" transform="rotate(-90 230 642)">aucun destinataire</text>
+<polyline points="300,570 170,570 170,334 300,334" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="151" y="442" text-anchor="middle" font-size="17" transform="rotate(-90 151 442)">messages · ronde suivante ≤ 2</text>
+<polyline points="630,570 745,570" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="690" y="546" text-anchor="middle" font-size="17">question</text>
+<polyline points="910,532 910,449 630,449" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="802" y="435" text-anchor="middle" font-size="17">réponses · Send ciblé</text>
+<polyline points="1075,570 1135,570 1135,791 630,791" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="1157" y="667" text-anchor="middle" font-size="17" transform="rotate(90 1157 667)">aucun destinataire</text>
+<polyline points="465,803 465,910" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="428" y="859" text-anchor="middle" font-size="17">sinon</text>
+<polyline points="630,769 910,769 910,817" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="822" y="752" text-anchor="middle" font-size="17">partie terminée</text>
+<polyline points="910,885 910,944 630,944" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="465,978 465,1023" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="553" y="1008" text-anchor="middle" font-size="17">terminée</text>
+<polyline points="300,944 31,944 31,124 300,124" fill="none" stroke="#347782" stroke-width="2.8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="15" y="546" text-anchor="middle" font-size="17" transform="rotate(-90 15 546)">partie active · tour suivant</text>
+<rect x="390.0" y="20" width="150" height="39" rx="12" fill="#dce8ee" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="45" text-anchor="middle" font-size="23" font-weight="bold">START</text>
+<rect x="300.0" y="90" width="330" height="68" rx="12" fill="#fff2dc" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="115" text-anchor="middle" font-size="23" font-weight="bold">await_player</text>
+<text x="465" y="138" text-anchor="middle" font-size="18">interrupt · attente de la décision</text>
+<rect x="300.0" y="195" width="330" height="68" rx="12" fill="#edf3f7" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="220" text-anchor="middle" font-size="23" font-weight="bold">prepare</text>
+<text x="465" y="243" text-anchor="middle" font-size="18">Valider les décisions · ronde 1</text>
+<rect x="300.0" y="300" width="330" height="68" rx="12" fill="#edf3f7" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="325" text-anchor="middle" font-size="23" font-weight="bold">organize</text>
+<text x="465" y="348" text-anchor="middle" font-size="18">Contexte filtré · agents sélectionnés</text>
+<rect x="300.0" y="411" width="330" height="75" rx="12" fill="#ebf2df" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="436" text-anchor="middle" font-size="23" font-weight="bold">agent</text>
+<text x="465" y="459" text-anchor="middle" font-size="18">Même worker par personnage</text>
+<text x="465" y="478" text-anchor="middle" font-size="18">Sortie structurée et validée</text>
+<rect x="300.0" y="532" width="330" height="75" rx="12" fill="#eeedf7" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="557" text-anchor="middle" font-size="23" font-weight="bold">resolve</text>
+<text x="465" y="580" text-anchor="middle" font-size="18">Barrière de collecte · effets métier</text>
+<text x="465" y="599" text-anchor="middle" font-size="18">Incrément du numéro de ronde</text>
+<rect x="745.0" y="532" width="330" height="75" rx="12" fill="#fff2dc" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="910" y="557" text-anchor="middle" font-size="23" font-weight="bold">await_answers</text>
+<text x="910" y="580" text-anchor="middle" font-size="18">interrupt · réponse du joueur</text>
+<rect x="300.0" y="735" width="330" height="68" rx="12" fill="#eeedf7" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="760" text-anchor="middle" font-size="23" font-weight="bold">finalize</text>
+<text x="465" y="783" text-anchor="middle" font-size="18">Une seule période de travail</text>
+<rect x="745.0" y="817" width="330" height="68" rx="12" fill="#ebf2df" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="910" y="842" text-anchor="middle" font-size="23" font-weight="bold">coach</text>
+<text x="910" y="865" text-anchor="middle" font-size="18">Sélection des événements sources</text>
+<rect x="300.0" y="910" width="330" height="68" rx="12" fill="#edf3f7" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="935" text-anchor="middle" font-size="23" font-weight="bold">commit</text>
+<text x="465" y="958" text-anchor="middle" font-size="18">État canonique · reçu idempotent</text>
+<rect x="390.0" y="1023" width="150" height="39" rx="12" fill="#dce8ee" stroke="#8aa2b1" stroke-width="1.7"/>
+<text x="465" y="1048" text-anchor="middle" font-size="23" font-weight="bold">END</text>
+<text x="930" y="1024" text-anchor="middle" font-size="17">Flèches pointillées</text>
+<text x="930" y="1048" text-anchor="middle" font-size="17">Raccourcis sans activation d’agent</text>
+</g></svg>

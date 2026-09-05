@@ -147,7 +147,7 @@ def build_graph(store, policy, checkpointer):
 
     def coach(state):
         game = deepcopy(state["game"])
-        debrief = build_debrief(game)
+        debrief = build_debrief(game, all_moments=hasattr(policy, "coach"))
         if hasattr(policy, "coach"):
             debrief = policy.coach(debrief)
         game["debrief"] = debrief

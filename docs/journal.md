@@ -100,3 +100,16 @@ Pour une mesure, préciser le protocole, le nombre d'essais et les versions. Pou
 **Vérification.** Cinq tests de projection frontend et les 26 tests backend isolés passent. Build Next.js/TypeScript et Ruff sans erreur. Revue indépendante du code. Aucun nouvel appel LLM pendant ce jalon ; `.env` est conservé. Le fichier `docs/evidence/threejs-checks.txt` conserve les contrôles.
 
 **Limites.** Aucune capture, inspection DOM, interaction tactile ou mesure GPU dans un navigateur pendant ce jalon. Le fallback et les animations doivent encore être vérifiés visuellement sur le matériel de démonstration. Ni nouveaux scénarios, ni GLTF externe, ni déploiement public. Assistance IA utilisée pour l'implémentation, la revue et la documentation.
+
+
+## 5 septembre 2026 — amélioration ciblée des appels LLM
+
+**Demande et validation.** Améliorer rapidement l'usage des LLM ; trois changements validés avant implémentation : contexte de l'interpréteur, correction bornée des sorties invalides, sélection du coach sur l'ensemble des événements éligibles.
+
+**Réalisé.** Contexte limité aux données publiques et aux huit derniers événements ; même validation métier avant le tour ; une génération corrective maximum sans secours à règles ; propagation des erreurs fournisseur ; sélection de trois moments maximum, incluant événements tardifs et types répétés. Les corrections passent par l'instrumentation existante et ne contournent pas le budget d'évaluation.
+
+**Vérification.** Treize tests ajoutés, dont une correction via le service sans double coût ni double tour et une partie complète jusqu'au coach. Au total : 56 tests backend, 10 tests frontend, Ruff et build Next.js réussis. Preuves dans [llm-improvements-checks.txt](evidence/llm-improvements-checks.txt). Aucun appel fournisseur réel ni nouveau parcours navigateur ; coûts, latence et qualité réelle restent à réévaluer. Rapport Markdown et documentation actualisés.
+
+**Mise à jour du rapport Word.** Ajout d’une page technique sur les contrats LLM, la correction bornée et les 56 tests backend / 10 tests frontend ; actualisation ciblée du résumé, du contrôle IA et de la conclusion. Structure et captures conservées, distinction explicite entre parcours historique et tests du nouveau contrat. DOCX rendu et 11 pages vérifiées visuellement ; PDF associé synchronisé.
+
+**Réécriture du rapport courant.** Rapport entièrement restructuré en six pages et environ 1 480 mots, avec cinq captures produit et une figure d’architecture. Présentation continue du concept, du moteur, des contrats LLM, de l’orchestration, de la persistance, de la 3D et de la validation ; suppression des ajouts datés du rapport. Markdown, DOCX et PDF synchronisés, six pages contrôlées visuellement.

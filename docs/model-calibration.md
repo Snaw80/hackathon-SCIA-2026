@@ -2,6 +2,8 @@
 
 > Archive de calibration : ces mesures précèdent le contrat d'expression du 4 septembre 2026. Le runtime actuel est exclusivement LLM, exige une réplique, une raison et une émotion pour chaque action non passive, effectue une relance fournisseur et ne remplace plus une erreur par une politique de personnage à règles. Relancer `scripts/evaluate_models.py` pour mesurer ce nouveau contrat avec un fournisseur réel.
 
+> Mise à jour du 5 septembre : une sortie invalide autorise désormais une seule génération corrective, elle-même soumise à une relance fournisseur. Chaque génération traverse la réservation de budget avant l'appel, y compris la correction. Une décision peut donc entraîner jusqu'à quatre tentatives fournisseur. Le contexte de l'interpréteur et les candidats du coach ont également changé. Les mesures historiques ci-dessous ne mesurent pas ces changements ; aucun nouveau coût ni gain de qualité n'a été mesuré pendant cette amélioration.
+
 ## Choix retenu
 
 Configuration évaluée à cette date : `openai:gpt-5.6-luna`, raisonnement `none`, plafond de **384 tokens de sortie**, timeout de **20 secondes**, sans relance automatique du fournisseur. Le même modèle jouait les personnages et sélectionnait les événements du coach.

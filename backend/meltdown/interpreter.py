@@ -12,7 +12,11 @@ def canonical_summary(actions):
 
 
 def interpret_command(game, command, policy):
-    result = CommandInterpretation.model_validate(policy.interpret(game, command))
+    return validate_interpretation(game, policy.interpret(game, command))
+
+
+def validate_interpretation(game, result):
+    result = CommandInterpretation.model_validate(result)
     if any(action not in ACTIONS for action in result.actions):
         raise ValueError("The model returned an unknown action.")
     if result.confidence == "clear":

@@ -46,9 +46,11 @@ Chaque personnage est piloté par un modèle via LangChain. Il n'existe plus de 
 - `MELTDOWN_REASONING_EFFORT=none`, `MELTDOWN_MAX_OUTPUT_TOKENS=384`, `MELTDOWN_TIMEOUT_SECONDS=20`.
 - La clé du fournisseur correspondant ; les intégrations OpenAI et Anthropic sont installées.
 
-Les appels utilisent une sortie structurée, un plafond de 384 tokens de sortie, un timeout de 20 secondes et une relance fournisseur. Chaque action non passive inclut maintenant une réplique, une raison courte et une émotion, affichées séparément des faits écrits par le moteur. Une erreur persistante interrompt la ronde dans un état sauvegardé et propose une relance explicite. Au maximum huit appels aux personnages ont lieu par tour, puis un appel de sélection pédagogique en fin de partie.
+Les appels utilisent une sortie structurée, un plafond de 384 tokens de sortie par tentative, un timeout fournisseur de 20 secondes et une relance fournisseur. Une sortie invalide déclenche au plus une génération corrective pour l'interpréteur, les personnages et le coach. Les erreurs fournisseur ne déclenchent pas cette correction. Avec une relance fournisseur par génération, une décision logique peut entraîner jusqu'à quatre tentatives fournisseur. Chaque génération conserve les hooks de mesure et la réservation de budget dans le script d'évaluation. Une erreur persistante interrompt la ronde dans un état sauvegardé et propose une reprise explicite.
 
-Le coach LLM sélectionne et ordonne des moments parmi des faits déjà rédigés par le moteur. Il ne produit pas de nouvelles affirmations factuelles libres.
+Chaque action non passive inclut une réplique, une raison courte et une émotion, affichées séparément des faits écrits par le moteur. L'interpréteur reçoit les indicateurs publics, les tâches visibles, l'état de sécurité et les huit derniers événements publics pour contextualiser la consigne. Les décisions claires restent validées par le moteur avant le démarrage du tour.
+
+Le coach LLM sélectionne jusqu'à trois moments parmi tous les événements pédagogiques publics éligibles, y compris les événements tardifs et les répétitions d'un même type. Les références inconnues ou dupliquées sont rejetées et le texte factuel reste rédigé par le moteur.
 
 Le modèle a été testé avec des appels OpenAI réels. Les tests automatisés injectent un faux modèle déterministe et bloquent les appels HTTP externes, indépendamment du `.env` local. Le [protocole, les résultats et le coût estimé](docs/model-calibration.md) est documenté. La clé reste dans `.env`, ignoré par Git. Le plafond de sortie comprend les éventuels tokens de raisonnement.
 

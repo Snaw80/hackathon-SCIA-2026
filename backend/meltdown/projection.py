@@ -22,7 +22,7 @@ ALTERNATIVES = {
 }
 
 
-def build_debrief(game):
+def build_debrief(game, *, all_moments=False):
     visible = public_events(game)
     candidate_types = {
         "audit": "investigate",
@@ -36,7 +36,7 @@ def build_debrief(game):
     candidates = []
     seen = set()
     for e in visible:
-        if e["type"] in candidate_types and e["type"] not in seen:
+        if e["type"] in candidate_types and (all_moments or e["type"] not in seen):
             seen.add(e["type"])
             candidates.append(
                 {
@@ -59,7 +59,7 @@ def build_debrief(game):
     return {
         "headline": game["outcome"]["title"],
         "summary": f"After {game['turn']} turns: progress {game['metrics']['progress']} %, budget {game['metrics']['budget']}/100, client trust {game['metrics']['trust']}/100 and morale {game['metrics']['morale']}/100. The moments below come from recorded events. Alternatives are suggestions to try, not simulated outcomes.",
-        "moments": candidates[:3],
+        "moments": candidates if all_moments else candidates[:3],
         "source": "rules",
     }
 
